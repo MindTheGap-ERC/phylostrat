@@ -1,0 +1,35 @@
+moves = VectorMoves()
+
+speciation_rate ~ dnExponential(10)
+extinction_rate ~ dnExponential(10)
+
+moves.append( mvScale(speciation_rate, lambda = 0.01, weight = 1))
+moves.append( mvScale(speciation_rate, lambda = 0.1, weight = 1))
+moves.append( mvScale(speciation_rate, lambda = 1, weight = 1))
+
+moves.append( mvScale(extinction_rate, lambda = 0.01, weight = 1))
+moves.append( mvScale(extinction_rate, lambda = 0.1, weight = 1))
+moves.append( mvScale(extinction_rate, lambda = 1, weight = 1))
+
+rho <- 1.0
+
+phi ~ dnExponential(10000)
+
+moves.append( mvScale(phi, weight = 1))
+
+origin_time ~ dnUnif(0.0, 55.0)
+
+moves.append( mvSlide(origin_time, delta = 0.01, weight = 5.0))
+moves.append( mvSlide(origin_time, delta = 0.1, weight  = 5.0))
+moves.append( mvSlide(origin_time, delta = 1, weight = 5.0))
+rho <- 1.0
+
+taxa <- readTaxonData("code/bears_taxa.tsv")
+
+
+fbd ~ dnFBDP(rootAge = origin_time, lambda = speciation_rate, mu = extinction_rate, phi = phi, rho = rho, taxa = taxa)
+
+fossils = fbd.getFossils()
+
+
+
