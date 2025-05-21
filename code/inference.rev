@@ -1,0 +1,29 @@
+morph <- readDiscreteCharacterData("data/char_mat.nex")
+
+taxa <- morph.names()
+ntaxa <- morph.ntaxa()
+
+moves = VectorMoves()
+
+speciation_rate ~ dnExponential(1)
+extinction_rate <- 0
+
+moves.append( mvScale(speciation_rate, lambda=0.01, weight=1) )
+moves.append( mvScale(speciation_rate, lambda=0.1,  weight=1) )
+moves.append( mvScale(speciation_rate, lambda=1.0,  weight=1) )
+
+rho <- 1
+
+psi ~ dnExponential(10) 
+
+moves.append( mvScale(psi, lambda=0.01, weight=1) )
+moves.append( mvScale(psi, lambda=0.1,  weight=1) )
+moves.append( mvScale(psi, lambda=1,    weight=1) )
+
+origin_time ~ dnUnif(1, 4)
+
+moves.append( mvSlide(origin_time, delta=0.01, weight=5.0) )
+moves.append( mvSlide(origin_time, delta=0.1,  weight=5.0) )
+moves.append( mvSlide(origin_time, delta=1,    weight=5.0) )
+
+fbd_dist ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
