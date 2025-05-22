@@ -23,7 +23,7 @@ moves.append( mvSlide(origin_time, delta = 0.01, weight = 5.0))
 moves.append( mvSlide(origin_time, delta = 0.1, weight  = 5.0))
 moves.append( mvSlide(origin_time, delta = 1, weight = 5.0))
 
-taxa <- readTaxonData("code/bears_taxa.tsv")
+taxa <- readTaxonData("code/bears.tsv")
 #taxa <- v(taxon("a"), taxon("b"))
 
 
