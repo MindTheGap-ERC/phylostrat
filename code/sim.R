@@ -52,6 +52,7 @@ plot(x = scenarioA$t_myr,
 # generate sampled ancestor tree
 tree_sa_complete = FossilSim::SAtree.from.fossils(tree = tree_complete, 
                                                   fossils = fossils_full)
+fossils_full = tree_sa_complete$fossils
 # apply preservation of fossils
 pres = identity
 ctc = get_collection_prob(adm)
@@ -82,7 +83,7 @@ char_mat_inc = char_mat_full[fossils_inc$tip.label,]
 # select equal no. of specimens, continuous sampling
 char_mat_cont = char_mat_full[fossils_cont$tip.label,]
 # write character matrices
-ape::write.nexus.data(x = char_mat, 
+ape::write.nexus.data(x = char_mat_full, 
                       file = "data/char_mat_full.nex",
                       format = "standard")
 ape::write.nexus.data(x = char_mat_inc, 
@@ -94,22 +95,13 @@ ape::write.nexus.data(x = char_mat_cont,
 
 #### Export specimen ages ####
 df_full = fossils_full |>
-  FossilSim::SAtree.from.fossils(tree_complete, fossils = _) |>
-  (\(x){x$tree})() |>
-  FossilSim::sampled.tree.from.combined(rho = rho) |>
-  get_fossil_ages(t_max = t_max)
+  get_fossil_ages()
 
 df_inc = fossils_inc |>
-  FossilSim::SAtree.from.fossils(tree_complete, fossils = _) |>
-  (\(x){x$tree})() |>
-  FossilSim::sampled.tree.from.combined(rho = rho) |>
-  get_fossil_ages(t_max = t_max)
+  get_fossil_ages()
 
 df_cont = fossils_cont |>
-  FossilSim::SAtree.from.fossils(tree_complete, fossils = _) |>
-  (\(x){x$tree})() |>
-  FossilSim::sampled.tree.from.combined(rho = rho) |>
-  get_fossil_ages(t_max = t_max)
+  get_fossil_ages()
 
 # export 
 write.table(df_full, 

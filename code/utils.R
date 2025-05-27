@@ -14,17 +14,12 @@ get_collection_prob = function(adm){
 }
 
 
-get_fossil_ages = function(tree, t_max){
-  #' @title get ages of samples from sampled tree
+get_fossil_ages = function(fossils){
+  #' @title get ages of samples from fossils object
   #' 
-  #' @param tree sampled tree
-  #' @param t_max length of simulation
-  #' @param signif significant digits of ages
-  #' 
-  x = pmax(t_max -  ape::node.depth.edgelength(tree)[seq_len(length(tree$tip.label))], 0)
-  df = data.frame(taxon = tree$tip.label,
-                  min_age = x ,
-                  max_age = x)
+  df = data.frame(taxon = fossils$tip.label,
+                  min_age = fossils$hmin,
+                  max_age = fossils$hmax)
   return(df)
 }
 
