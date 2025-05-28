@@ -132,5 +132,6 @@ get_skyline_breakpoints = function(adm, hiat_min){
   }
   return(skyline |> unname() |> sort())
 }
-get_skyline_breakpoints(adm, hiat_min = hiat_min)
+skyline = get_skyline_breakpoints(adm, hiat_min = hiat_min)
 
+skyline_bp_age = t_max - skyline |> rev()
