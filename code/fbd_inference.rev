@@ -35,6 +35,11 @@ moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=6.0) )
 
 moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=40.0) )
 moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=5.0) )
+moves.append( mvSubtreeScale(fbd_tree, weight = 5.0))
+moves.append( mvNNI(fbd_tree, weight = 5.0))
+#moves.append( mvGPR(fbd_tree, weight = 5.0))
+# Adding this move throws an error: Problem while working with tree: Node index was never set.
+# in mymcmc.run()
 
 num_sa := fbd_tree.numSampledAncestors()
 
@@ -65,8 +70,11 @@ monitors = VectorMonitors()
 monitors.append( mnModel(filename=outfile, printgen=10) )
 
 monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, mrca) )
+monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
 
 mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=20000,tuningInterval=10000)
 
 mymcmc.run(generations=100000)
 
