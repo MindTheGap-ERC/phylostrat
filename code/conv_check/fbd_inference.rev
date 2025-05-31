@@ -31,7 +31,7 @@ moves.append( mvSlide(origin_time, delta=1,    weight=5.0) )
 fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
 
 moves.append( mvFNPR(fbd_tree, weight=15.0) )
-moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=6.0) )
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=40.0) )
 
 moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=40.0) )
 moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=5.0) )
