@@ -1,6 +1,6 @@
 SUFFIX2=cont
 SUFFIX1=inc
-NO=5
+NO=6
 
 
 rb_command1="morph <- readDiscreteCharacterData(\"data/char_mat_${SUFFIX2}.nex\"); taxa <- readTaxonData(\"data/taxa_${SUFFIX2}.tsv\"); outfile <- \"output/test_${SUFFIX2}_${NO}_1.log\"; treefile_name <- \"output/trees_${SUFFIX2}_${NO}_1.log\";source(\"code/conv_check/fbd_inference.rev\")"
