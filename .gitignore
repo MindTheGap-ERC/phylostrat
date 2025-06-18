@@ -11,3 +11,6 @@ docs
 *.nex
 *.tsv
 *.txt
+*.Rdata
+
+/data/osf/*
