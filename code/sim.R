@@ -32,7 +32,6 @@ t_max = max_time(adm_A_2km) # total duration of simulation
 n_sim = 1 # number of trees simulated
 lambda = 1 # origination rate
 mu = 0.3 # extinction rate
-rho = 0  # sampling fraction in the present (= top of section)
 rate_sampling_true = 100 # rate of fossil recovery per lineage
 rate_bin_evol = 1 # rate of evolution for the binary characters
 n_char = 1000 # number of characters sampled per fossil
@@ -134,10 +133,10 @@ fossils_inc_B = tree_sa_complete$fossils |>
 # continuoiusly sampled fossils
 fossils_cont = tree_sa_complete$fossils |> subsample_fossils(n = n_pres_fossils)
 
-plot(fossils_full, tree = tree_complete, rho = rho)
-plot(fossils_cont, tree = tree_complete, rho = rho)
-plot(fossils_inc_A, tree = tree_complete, rho = rho)
-plot(fossils_inc_B, tree = tree_complete, rho = rho)
+plot(fossils_full, tree = tree_complete, rho = 0)
+plot(fossils_cont, tree = tree_complete, rho = 0)
+plot(fossils_inc_A, tree = tree_complete, rho = 0)
+plot(fossils_inc_B, tree = tree_complete, rho = 0)
 
 # export all fossil ages
 
@@ -281,7 +280,7 @@ get_skyline_breakpoints = function(adm, hiat_min){
   }
   return(skyline |> unname() |> sort())
 }
-skyline = get_skyline_breakpoints(adm, hiat_min = hiat_min)
+skyline = get_skyline_breakpoints(adm_A_2km, hiat_min = hiat_min)
 
 skyline_bp_age = t_max - skyline |> rev()
 
