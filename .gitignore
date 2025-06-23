@@ -14,3 +14,5 @@ docs
 *.Rdata
 
 /data/osf/*
+
+history.txt
