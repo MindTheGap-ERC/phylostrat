@@ -1,0 +1,8 @@
+clear()
+
+morph <- readDiscreteCharacterData("../data/sim/char_mat_cont_rho0_nchar1000_1.nex")
+taxa <- readTaxonData("../data/sim/fossils_cont_rho0_1.tsv")
+outfile <- "../output/res_base_cont_1000_1.log"
+treefile_name <- "../output/trees_base_cont_1000_1.log"
+
+source("fbd_inference.rev", TRUE)

@@ -1,4 +1,3 @@
-
 ntaxa <- morph.ntaxa()
 
 moves = VectorMoves()
@@ -32,14 +31,15 @@ moves.append( mvSlide(origin_time, delta=1,    weight=5.0) )
 fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
 
 moves.append( mvFNPR(fbd_tree, weight=100.0) )
-moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=200.0) )
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=100.0) )
 
-moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=40.0) )
+moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=5.0) )
 moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=5.0) )
-moves.append( mvSubtreeScale(fbd_tree, weight = 5.0))
-moves.append( mvNNI(fbd_tree, weight = 100.0))
-moves.append( mvGPR(fbd_tree, weight = 100.0))
+moves.append( mvSubtreeScale(fbd_tree, weight = 50.0))
+moves.append( mvNNI(fbd_tree, weight = 5.0))
+moves.append( mvGPR(fbd_tree, weight = 5.0))
 moves.append( mvNarrow(fbd_tree, weight = 5.0))
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=200.0) )
 # moves.append( mvAddRemoveTip(fbd_tree, extant = FALSE, extinct = TRUE, sa = TRUE, weight = 5.0))
 # Adding this move throws an error: Problem while working with tree: Node index was never set.
 # in mymcmc.run()
