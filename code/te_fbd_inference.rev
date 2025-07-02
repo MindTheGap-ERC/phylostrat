@@ -1,0 +1,153 @@
+# morphological data - sampled in the present (rho = 1), 1000 characters, first replicate-continuous sampling
+morph <- readDiscreteCharacterData("data/sim/char_mat_cont_rho1_nchar1000_1.nex")
+# load taxa and ages - sampled in the present (rho1), first replicate, with continuous sampling through time
+taxa <- readTaxonData("data/sim/fossils_cont_rho1_1.tsv")
+# molecular data
+mol <- readDiscreteCharacterData("data/sim/mol_data_1.nex")
+
+outfile <- "output/test.log"
+treefile_name <- "output/test_tree.log"
+
+# add missing taxa to have a joint taxon set that contains all tips
+morph.addMissingTaxa(taxa)
+mol.addMissingTaxa(taxa)
+
+# helper variables
+ntaxa <- morph.ntaxa()
+
+# initialize moves for MCMC
+moves = VectorMoves()
+
+# priors for the FBD
+speciation_rate ~ dnExponential(1)
+moves.append( mvScale(speciation_rate, lambda=0.01, weight=1) )
+moves.append( mvScale(speciation_rate, lambda=0.1,  weight=1) )
+moves.append( mvScale(speciation_rate, lambda=1.0,  weight=1) )
+
+extinction_rate ~ dnExponential(1)
+moves.append( mvScale(extinction_rate, lambda=0.01, weight=1) )
+moves.append( mvScale(extinction_rate, lambda=0.1,  weight=1) )
+moves.append( mvScale(extinction_rate, lambda=1.0,  weight=1) )
+
+# all extant taxa are sampled
+rho <- 1 
+
+# sampling intensity
+psi ~ dnExponential(1) 
+moves.append( mvScale(psi, lambda=0.01, weight=1) )
+moves.append( mvScale(psi, lambda=0.1,  weight=1) )
+moves.append( mvScale(psi, lambda=1,    weight=1) )
+
+# informative prior on origin time - section is not older than 4 Myr and not younger than 1 Myr
+origin_time ~ dnUnif(1, 4)
+moves.append( mvSlide(origin_time, delta=0.01, weight=5.0) )
+moves.append( mvSlide(origin_time, delta=0.1,  weight=5.0) )
+moves.append( mvSlide(origin_time, delta=1,    weight=5.0) )
+
+# tree prior
+fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
+# usually topology converges slowly -> increase weights on the topology moves
+moves.append( mvFNPR(fbd_tree, weight=50.0) )
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=100.0) )
+moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=40.0) )
+moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=5.0) )
+moves.append( mvSubtreeScale(fbd_tree, weight = 5.0))
+moves.append( mvNNI(fbd_tree, weight = 50.0))
+moves.append( mvGPR(fbd_tree, weight = 5.0))
+moves.append( mvNarrow(fbd_tree, weight = 5.0))
+
+# deterministic variable - no of sampled ancestors & time to most recent ancestor as sanity check
+num_sa := fbd_tree.numSampledAncestors()
+mrca := tmrca(fbd_tree, clade(taxa))
+
+# molecular evolution
+# HKY model, 5 categories for the gamma distribution. alpha shape parameter set to 0.25, transition to transversion ratio is 5
+# transition to transversion ratio
+# construct prior using the true kappa value as mean
+expected_kappa <- 5
+sd <- 1
+mean <- ln(expected_kappa) - 0.5 * sd^2
+kappa ~ dnLognormal(mean = mean, sd = sd)
+moves.append( mvScale(kappa, lambda = 0.01, weight = 5.0))
+moves.append( mvScale(kappa, lambda = 0.1, weight = 5.0))
+moves.append( mvScale(kappa, lambda = 1.0, weight = 5.0))
+# prior on base frequencies - all equal
+pi ~ dnDirichlet( v(1,1,1,1))
+moves.append(mvSimplexElementScale(pi, alpha = 10.0, weight = 10.0))
+# Q matrix for HKY model
+Q_mol := fnHKY(kappa = kappa, baseFrequencies = pi)
+
+# rate heterogeniety
+# construct prior using the correct value as mean and the correct number of categories
+no_cat <- 5
+alpha_shape <- 0.25
+alpha_mol ~ dnExponential(lambda = 1/alpha_shape)
+moves.append( mvScale(alpha_mol, lambda = 0.01, weight = 5.0))
+moves.append( mvScale(alpha_mol, lambda = 0.1, weight = 5.0))
+moves.append( mvScale(alpha_mol, lambda = 1.0, weight = 5.0))
+
+# uncorrelated exponential relaxed clock
+n_taxa <- taxa.size()
+n_branches <- 2 * n_taxa - 2
+branch_rates_mean ~ dnExponential(lambda = 10.0)
+moves.append( mvScale(branch_rates_mean, lambda=0.01, weight=1.0) )
+moves.append( mvScale(branch_rates_mean, lambda=0.1,  weight=1.0) )
+moves.append( mvScale(branch_rates_mean, lambda=1.0,  weight=1.0) )
+for(i in 1:n_branches){
+    branch_rates[i] ~ dnExp(1/branch_rates_mean)
+    moves.append( mvScale(branch_rates[i], lambda=1.0,  weight=1.0) )
+    moves.append( mvScale(branch_rates[i], lambda=0.1,  weight=1.0) )
+    moves.append( mvScale(branch_rates[i], lambda=0.01, weight=1.0) )
+}
+moves.append( mvVectorScale(branch_rates, lambda=0.01, weight=4.0) )
+moves.append( mvVectorScale(branch_rates, lambda=0.1,  weight=4.0) )
+moves.append( mvVectorScale(branch_rates, lambda=1.0,  weight=4.0) )
+
+rates_mol := fnDiscretizeGamma(shape = alpha_mol, rate = alpha_mol, numCats = no_cat)
+
+
+
+
+
+phy_seq ~ dnPhyloCTMC(tree = fbd_tree, Q = Q_mol, siteRates = rates_mol, branchRates = branch_rates, type = "DNA")
+
+phy_seq.clamp(mol)
+
+
+# morphological evolution
+Q_morpho := fnJC(2)
+alpha_morpho ~ dnExponential(1.0)
+rates_morpho := fnDiscretizeGamma(shape = alpha_morpho, rate = alpha_morpho, 4)
+
+moves.append( mvScale(alpha_morpho, lambda=0.01, weight=5.0) )
+moves.append( mvScale(alpha_morpho, lambda=0.1,  weight=3.0) )
+moves.append( mvScale(alpha_morpho, lambda=1,    weight=1.0) )
+
+clock_morpho ~ dnExponential(1.0)
+
+
+moves.append( mvScale(clock_morpho, lambda=0.01, weight=4.0) )
+moves.append( mvScale(clock_morpho, lambda=0.1,  weight=4.0) )
+moves.append( mvScale(clock_morpho, lambda=1,    weight=4.0) )
+
+
+
+phyMorpho ~ dnPhyloCTMC(tree = fbd_tree, siteRates = rates_morpho, branchRates = clock_morpho, Q = Q_morpho, type = "Standard", coding = "all")
+
+phyMorpho.clamp(morph)
+
+mymodel = model(phyMorpho)
+
+monitors = VectorMonitors()
+monitors.append( mnModel(filename=outfile, printgen=10) )
+
+monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, mrca) )
+monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
+
+mymcmc = mcmc(mymodel, monitors, moves)
+
+mymcmc.burnin(generations=20000,tuningInterval=10000)
+
+mymcmc.run(generations=100000)
+
+q()
