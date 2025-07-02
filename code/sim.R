@@ -41,6 +41,9 @@ hiat_min = 0.5 # minimum duration of hiatus (Myr) to be considered in the skylin
 n_pres_fossils = 30 # number of preserved fossils after stratigraphic effects
 length_alignment = 2000
 mod = "-mHKY -t5 -a0.25 -g5" # HKY model, 5 categories for the gamma distribution. alpha shape parameter set to 0.25, transition to transversion ratio is 5
+# parameters for the strict morphological clock
+sd = 0.1 # standard deviation (log scale)
+obs_mean = 1 # observed mean of the lognormal distribution
 
 #### set seed ####
 seed = 1234
@@ -229,13 +232,20 @@ for (id in seq_len(runs)){
       char_mat = geiger::sim.char(phy = tree,
                                   par = par,
                                   model = "discrete",
-                                  nsim = 1000)
+                                  nsim = nchar)
       char_mat = apply(char_mat, 1, function(x) x -1) |> t()
       return(char_mat)
     }
     
+
+    # strict morphological clock with clock rate following a lognormal distribution with mean 1
+    mu = log(obs_mean) - sd^2/2
+    clock_rate = rlnorm(1, meanlog = mu, sdlog = sd)
+    
+    tree_w_rate = tree_fp_complete
+    tree_w_rate$edge.length = tree_w_rate$edge.length * clock_rate
     # simulate full morph character matrix
-    char_mat_full = sim_bin_char(tree = tree_fp_complete,
+    char_mat_full = sim_bin_char(tree = tree_w_rate,
                                  rate = rate_bin_evol, 
                                  nchar = n_char)
     ## subset character matrix
@@ -262,6 +272,8 @@ for (id in seq_len(runs)){
     }
     
     #### simulate molecular data ####
+    
+    
     opts = paste0(mod, " -l", length_alignment)
     a = phyclust::seqgen(opts = opts, rooted.tree = tree_fp_complete) |>
       strsplit(" +")

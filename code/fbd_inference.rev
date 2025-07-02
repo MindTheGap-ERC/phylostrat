@@ -3,66 +3,65 @@ ntaxa <- morph.ntaxa()
 moves = VectorMoves()
 
 speciation_rate ~ dnExponential(1)
-extinction_rate ~ dnExponential(1)
-
 moves.append( mvScale(speciation_rate, lambda=0.01, weight=1) )
 moves.append( mvScale(speciation_rate, lambda=0.1,  weight=1) )
 moves.append( mvScale(speciation_rate, lambda=1.0,  weight=1) )
 
+extinction_rate ~ dnExponential(1)
 moves.append( mvScale(extinction_rate, lambda=0.01, weight=1) )
 moves.append( mvScale(extinction_rate, lambda=0.1,  weight=1) )
 moves.append( mvScale(extinction_rate, lambda=1.0,  weight=1) )
 
-
 rho <- 0
 
-psi ~ dnExponential(1) 
-
+psi ~ dnExponential(1)
 moves.append( mvScale(psi, lambda=0.01, weight=1) )
 moves.append( mvScale(psi, lambda=0.1,  weight=1) )
 moves.append( mvScale(psi, lambda=1,    weight=1) )
 
-origin_time ~ dnUnif(2, 4)
-
+origin_time ~ dnUnif(1, 4)
 moves.append( mvSlide(origin_time, delta=0.01, weight=5.0) )
 moves.append( mvSlide(origin_time, delta=0.1,  weight=5.0) )
 moves.append( mvSlide(origin_time, delta=1,    weight=5.0) )
 
 fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
-
-moves.append( mvFNPR(fbd_tree, weight=15.0) )
-moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=6.0) )
-
+moves.append( mvFNPR(fbd_tree, weight=50.0) )
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=100.0) )
 moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=40.0) )
 moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=5.0) )
 moves.append( mvSubtreeScale(fbd_tree, weight = 5.0))
-moves.append( mvNNI(fbd_tree, weight = 5.0))
+moves.append( mvNNI(fbd_tree, weight = 50.0))
 moves.append( mvGPR(fbd_tree, weight = 5.0))
 moves.append( mvNarrow(fbd_tree, weight = 5.0))
 # moves.append( mvAddRemoveTip(fbd_tree, extant = FALSE, extinct = TRUE, sa = TRUE, weight = 5.0))
 # Adding this move throws an error: Problem while working with tree: Node index was never set.
 # in mymcmc.run()
 
+
+## other parameters traced
+# no sampled ancestors
 num_sa := fbd_tree.numSampledAncestors()
+# time to most recent ancestor
+tmrca := tmrca(fbd_tree, clade(taxa))
 
+# Model of morphological evolution: Mk1 model without ascertaintment correction
 Q_morpho := fnJC(2)
-alpha_morpho ~ dnExponential(1.0)
-rates_morpho := fnDiscretizeGamma(alpha_morpho, alpha_morpho, 4)
 
-moves.append( mvScale(alpha_morpho, lambda=0.01, weight=5.0) )
-moves.append( mvScale(alpha_morpho, lambda=0.1,  weight=3.0) )
-moves.append( mvScale(alpha_morpho, lambda=1,    weight=1.0) )
+# strict morphological clock
+obs_mean ~ dnExponential(lambda = 1)
+moves.append( mvScale(obs_mean, lambda=0.01, weight=4.0) )
+moves.append( mvScale(obs_mean, lambda=0.1,  weight=4.0) )
+moves.append( mvScale(obs_mean, lambda=1,    weight=4.0) )
 
-clock_morpho ~ dnExponential(1.0)
+sd ~ dnExponential(lambda = 1)
+moves.append( mvScale(sd, lambda=0.01, weight=4.0) )
+moves.append( mvScale(sd, lambda=0.1,  weight=4.0) )
+moves.append( mvScale(sd, lambda=1,    weight=4.0) )
 
+mean := ln(x = obs_mean) - sd^2 * 0.5
+clock_morpho ~ dnLognormal(mean = mean, sd = sd)
 
-moves.append( mvScale(clock_morpho, lambda=0.01, weight=4.0) )
-moves.append( mvScale(clock_morpho, lambda=0.1,  weight=4.0) )
-moves.append( mvScale(clock_morpho, lambda=1,    weight=4.0) )
-
-mrca := tmrca(fbd_tree, clade(taxa))
-
-phyMorpho ~ dnPhyloCTMC(tree = fbd_tree, siteRates = rates_morpho, branchRates = clock_morpho, Q = Q_morpho, type = "Standard", coding = "all")
+phyMorpho ~ dnPhyloCTMC(tree = fbd_tree, branchRates = clock_morpho, Q = Q_morpho, type = "Standard", coding = "all")
 
 phyMorpho.clamp(morph)
 
@@ -71,7 +70,7 @@ mymodel = model(phyMorpho)
 monitors = VectorMonitors()
 monitors.append( mnModel(filename=outfile, printgen=10) )
 
-monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, mrca) )
+monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, tmrca) )
 monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
 
 mymcmc = mcmc(mymodel, monitors, moves)
