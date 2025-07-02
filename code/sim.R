@@ -29,10 +29,10 @@ adm_B_6km = admtools::tp_to_adm(t = t[sel],
                                 L_unit = "m")
 #### Constants ####
 n_chars = c(30, 300, 1000) # number of characters sampled per fossil
-runs = 50 # no of runs 
+runs = 1 # no of runs 
 path = "data/sim/" # path to store outputs
 t_max = admtools::max_time(adm_A_2km) # total duration of simulation
-n_sim = 1 # number of trees simulated
+n_sim = 50 # number of trees simulated
 lambda = 1 # origination rate
 mu = 0.3 # extinction rate
 rate_sampling_true = 100 # rate of fossil recovery per lineage
@@ -268,7 +268,7 @@ for (id in seq_len(runs)){
     l = list()
     for (i in 1:length(a)){
       if (a[[i]][1] %in% recent_tips){
-        l[[ a[[i]][1] ]] = a[[i]][2]
+        l[[ a[[i]][1] ]] = unlist(strsplit(a[[i]][2], split = ""))
       }
     }
     write.nexus.data(l,
