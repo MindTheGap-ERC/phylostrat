@@ -16,18 +16,18 @@ BASE_COLLECTION="./outputs"
 #     shell:
 #         """julia --project=. param_input.jl {output.param_result} """
         
-ID = [str(i) for i in range(1, 2)]
+ID =   ["1"]#[str(i) for i in range(1, 2)]
 NCHAR = ["30"] # ["30", "300", "1000"]
 CASE = ["cont"] # ["cont", "inc_A", "inc_B"]
 
 rule fbd_analysis_constant_rates:
     input:
-        char=expand("data/sim/char_mat_{case}_rho0_nchar{nchar}_{id}.nex", id = ID, nchar = NCHAR, case = CASE),
-        fossils=expand("data/sim/fossils_{case}_rho0_{id}.tsv", id = ID, case = CASE)
+        char=expand("./data/sim/char_mat_{case}_rho0_nchar{nchar}_{id}.nex", id = ID, nchar = NCHAR, case = CASE),
+        fossils=expand("./data/sim/fossils_{case}_rho0_{id}.tsv", id = ID, case = CASE)
     output:
         #storage(BASE_COLLECTION + "/simulation/mcmc_trace_{run_id}.log")
-        numeric=expand("output/res_const_{case}_{id}_{nchar}.log", id = ID, nchar = NCHAR, case = CASE),
-        trees=expand("output/trees_const_{case}_{id}_{nchar}.log", id = ID, nchar = NCHAR, case = CASE)
+        numeric=expand("./output/res_const_{case}_{id}_{nchar}.log", id = ID, nchar = NCHAR, case = CASE),
+        trees=expand("./output/trees_const_{case}_{id}_{nchar}.log", id = ID, nchar = NCHAR, case = CASE)
     shell:
         "bash code/inference_test.sh {input.char} {input.fossils} {output.numeric} {output.trees}"
 
