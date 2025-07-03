@@ -42,8 +42,12 @@ n_pres_fossils = 30 # number of preserved fossils after stratigraphic effects
 length_alignment = 2000
 mod = "-mHKY -t5 -a0.25 -g5" # HKY model, 5 categories for the gamma distribution. alpha shape parameter set to 0.25, transition to transversion ratio is 5
 # parameters for the strict morphological clock
-sd = 0.1 # standard deviation (log scale)
-obs_mean = 1 # observed mean of the lognormal distribution
+sd_morph = 0.1 # standard deviation (log scale) for strict morph. clock
+obs_mean_morph = 1 # observed mean of the lognormal distribution for strict morph. clock
+
+# parameters for the strict molecular clock
+sd_mol = 0.1 # standard deviation (log scale) for the strict molecular clock
+obs_mean_mol = 1 # observed mean of the lognormal distribution for the strict molecular clock 
 
 #### set seed ####
 seed = 1234
@@ -220,11 +224,11 @@ for (id in seq_len(runs)){
     
     #### Simulate character matrices ####
     # strict morphological clock with clock rate following a lognormal distribution with mean 1
-    mu_clock = log(obs_mean) - sd^2/2
-    clock_rate = rlnorm(1, meanlog = mu_clock, sdlog = sd)
+    mu_clock_morph = log(obs_mean_morph) - sd_morph^2/2
+    clock_rate_morph = rlnorm(1, meanlog = mu_clock_morph, sdlog = sd_morph)
     
-    tree_w_rate = tree_fp_complete
-    tree_w_rate$edge.length = tree_w_rate$edge.length * clock_rate
+    tree_w_rate_morph = tree_fp_complete
+    tree_w_rate_morph$edge.length = tree_w_rate_morph$edge.length * clock_rate_morph
     sim_bin_char = function(tree, rate, nchar){
       #' @title simulate discrete traits along tree
       #' 
@@ -244,7 +248,7 @@ for (id in seq_len(runs)){
     }
     
     # simulate full morph character matrix
-    char_mat_full = sim_bin_char(tree = tree_w_rate,
+    char_mat_full = sim_bin_char(tree = tree_w_rate_morph,
                                  rate = rate_bin_evol, 
                                  nchar = max(n_chars))
     for (n_char in n_chars){
@@ -272,8 +276,14 @@ for (id in seq_len(runs)){
     }
     
     #### simulate molecular data ####
+    mu_clock_mol = log(obs_mean_mol) - sd_mol^2/2
+    clock_rate_mol = rlnorm(1, meanlog = mu_clock_mol, sdlog = sd_mol)
+    
+    tree_w_rate_mol = tree_fp_complete
+    tree_w_rate_mol$edge.length = tree_w_rate_mol$edge.length * clock_rate_mol
+    
     opts = paste0(mod, " -l", length_alignment)
-    a = phyclust::seqgen(opts = opts, rooted.tree = tree_fp_complete) |>
+    a = phyclust::seqgen(opts = opts, rooted.tree = tree_w_rate_mol) |>
       strsplit(" +")
     l = list()
     for (i in 1:length(a)){
