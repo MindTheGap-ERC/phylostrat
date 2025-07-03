@@ -50,10 +50,11 @@ sd_mol = 0.1 # standard deviation (log scale) for the strict molecular clock
 obs_mean_mol = 1 # observed mean of the lognormal distribution for the strict molecular clock 
 
 #### set seed ####
-seed = 1234
+seed = 4
 set.seed(seed)
 
 for (id in seq_len(runs)){
+  cat(paste0(id, "\n"))
     #### simulate tree ####
     # make sure the tree is not trivial (e.g., one tip or goes fully extinct before t_max)
     repeat{
