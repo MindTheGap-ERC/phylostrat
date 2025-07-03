@@ -29,10 +29,10 @@ adm_B_6km = admtools::tp_to_adm(t = t[sel],
                                 L_unit = "m")
 #### Constants ####
 n_chars = c(30, 300, 1000) # number of characters sampled per fossil
-runs = 1 # no of runs 
+runs = 50 # no of runs 
 path = "data/sim/" # path to store outputs
 t_max = admtools::max_time(adm_A_2km) # total duration of simulation
-n_sim = 50 # number of trees simulated
+n_sim = 1 # number of trees simulated
 lambda = 1 # origination rate
 mu = 0.3 # extinction rate
 rate_sampling_true = 100 # rate of fossil recovery per lineage
@@ -67,7 +67,7 @@ for (id in seq_len(runs)){
     }
     ape::write.nexus(tree_complete,
                      file = paste0(path, "tree_complete_",id,".nex"))
-    plot.phylo(tree_complete)
+    plot.phylo(tree_complete, main = as.character(id))
     axis(1)
     
     #### Simulate fossil record ####
@@ -216,9 +216,15 @@ for (id in seq_len(runs)){
                   quote = FALSE,
                   row.names = FALSE)
     
+  
     
-    #### simulate character matrix ####
-    for (n_char in n_chars){
+    #### Simulate character matrices ####
+    # strict morphological clock with clock rate following a lognormal distribution with mean 1
+    mu_clock = log(obs_mean) - sd^2/2
+    clock_rate = rlnorm(1, meanlog = mu_clock, sdlog = sd)
+    
+    tree_w_rate = tree_fp_complete
+    tree_w_rate$edge.length = tree_w_rate$edge.length * clock_rate
     sim_bin_char = function(tree, rate, nchar){
       #' @title simulate discrete traits along tree
       #' 
@@ -237,43 +243,35 @@ for (id in seq_len(runs)){
       return(char_mat)
     }
     
-
-    # strict morphological clock with clock rate following a lognormal distribution with mean 1
-    mu = log(obs_mean) - sd^2/2
-    clock_rate = rlnorm(1, meanlog = mu, sdlog = sd)
-    
-    tree_w_rate = tree_fp_complete
-    tree_w_rate$edge.length = tree_w_rate$edge.length * clock_rate
     # simulate full morph character matrix
     char_mat_full = sim_bin_char(tree = tree_w_rate,
                                  rate = rate_bin_evol, 
-                                 nchar = n_char)
+                                 nchar = max(n_chars))
+    for (n_char in n_chars){
     ## subset character matrix
-    # select specimens preserved from the adm
-    char_mat_inc_A_rho0 = char_mat_full[fossils_inc_A$tip.label,] |>
+    # select specimens preserved from the adm and correct no of characters
+    char_mat_inc_A_rho0 = char_mat_full[fossils_inc_A$tip.label,seq_len(n_char)] |>
       ape::write.nexus.data(file = paste0(path,"char_mat_inc_A_rho0_nchar", n_char, "_",id,".nex"),
                             format = "standard")
-    char_mat_inc_A_rho1 = char_mat_full[c(fossils_inc_A$tip.label, recent_tips),] |>
+    char_mat_inc_A_rho1 = char_mat_full[c(fossils_inc_A$tip.label, recent_tips),seq_len(n_char)] |>
       ape::write.nexus.data(file = paste0(path,"char_mat_inc_A_rho1_nchar", n_char, "_",id,".nex"),
                             format = "standard")
-    char_mat_inc_B_rho0 = char_mat_full[fossils_inc_B$tip.label,] |>
+    char_mat_inc_B_rho0 = char_mat_full[fossils_inc_B$tip.label,seq_len(n_char)] |>
       ape::write.nexus.data(file = paste0(path,"char_mat_inc_B_rho0_nchar", n_char, "_",id,".nex"),
                             format = "standard")
-    char_mat_inc_B_rho1 = char_mat_full[c(fossils_inc_B$tip.label, recent_tips),] |>
+    char_mat_inc_B_rho1 = char_mat_full[c(fossils_inc_B$tip.label, recent_tips),seq_len(n_char)] |>
       ape::write.nexus.data(file = paste0(path,"char_mat_inc_B_rho1_nchar", n_char, "_",id,".nex"),
                             format = "standard")
     # select equal no. of specimens, continuous sampling
-    char_mat_cont_rho0 = char_mat_full[fossils_cont$tip.label,] |>
+    char_mat_cont_rho0 = char_mat_full[fossils_cont$tip.label,seq_len(n_char)] |>
       ape::write.nexus.data(file = paste0(path,"char_mat_cont_rho0_nchar", n_char, "_",id,".nex"),
                             format = "standard")
-    char_mat_cont_rho1 = char_mat_full[c(fossils_cont$tip.label, recent_tips),] |>
+    char_mat_cont_rho1 = char_mat_full[c(fossils_cont$tip.label, recent_tips),seq_len(n_char)] |>
       ape::write.nexus.data(file = paste0(path,"char_mat_cont_rho1_nchar", n_char, "_",id,".nex"),
                             format = "standard")
     }
     
     #### simulate molecular data ####
-    
-    
     opts = paste0(mod, " -l", length_alignment)
     a = phyclust::seqgen(opts = opts, rooted.tree = tree_fp_complete) |>
       strsplit(" +")
