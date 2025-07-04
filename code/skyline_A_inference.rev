@@ -30,10 +30,10 @@ monitors.append( mnModel(filename=outfile, printgen=10) )
 # save tree every 10 generations
 monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree_skyline_A))
 # print to screen every 10 generations
-monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, mrca) )
+monitors.append( mnScreen(printgen=1000, num_sa, origin_time, speciation_rate, mrca) )
 
 # mcmc settings 
-mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves, nruns = nruns, ntries = 10000)
 mymcmc.burnin(generations=20000,tuningInterval=10000)
 mymcmc.run(generations=100000)
 

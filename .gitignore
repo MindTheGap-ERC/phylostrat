@@ -18,3 +18,5 @@ docs
 history.txt
 
 .snakemake/*
+
+*.pdf
