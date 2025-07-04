@@ -31,10 +31,10 @@ monitors.append( mnModel(filename=outfile, printgen=10) )
 # save tree
 monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree_const))
 # print every 10 generations to screen
-monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, tmrca) )
+monitors.append( mnScreen(printgen=1000, num_sa, origin_time, speciation_rate, tmrca) )
 
 # initialize mcmc
-mymcmc = mcmc(mymodel, monitors, moves)
+mymcmc = mcmc(mymodel, monitors, moves, nruns = nruns, ntries = 10000)
 # set burn in and tuning interval
 mymcmc.burnin(generations=20000,tuningInterval=10000)
 # start mcmc run

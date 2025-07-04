@@ -27,7 +27,7 @@ moves.append( mvNodeTimeSlideUniform(fbd_tree_const, weight=40.0) )
 moves.append( mvRootTimeSlideUniform(fbd_tree_const, origin_time, weight=5.0) )
 moves.append( mvSubtreeScale(fbd_tree_const, weight = 5.0))
 moves.append( mvNNI(fbd_tree_const, weight = 50.0))
-moves.append( mvGPR(fbd_tree_const, weight = 5.0))
+moves.append( mvGPR(fbd_tree_const, weight = 50.0))
 moves.append( mvNarrow(fbd_tree_const, weight = 5.0))
 # moves.append( mvAddRemoveTip(fbd_tree_const, extant = FALSE, extinct = TRUE, sa = TRUE, weight = 5.0))
 # Adding this move throws an error: Problem while working with tree: Node index was never set.
