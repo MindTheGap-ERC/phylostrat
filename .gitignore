@@ -13,7 +13,8 @@ docs
 *.txt
 *.Rdata
 
-/data/osf/*
+/data/osf/R_outputs/*
+/data/osf/matlab_outputs/*
 
 history.txt
 
