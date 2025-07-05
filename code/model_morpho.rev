@@ -4,12 +4,12 @@
 Q_morpho := fnJC(2)
 
 # strict morphological clock
-obs_mean_morpho ~ dnExponential(lambda = 1)
+obs_mean_morpho ~ dnExponential(lambda = 1.0)
 moves.append( mvScale(obs_mean_morpho, lambda=0.01, weight=4.0) )
 moves.append( mvScale(obs_mean_morpho, lambda=0.1,  weight=4.0) )
 moves.append( mvScale(obs_mean_morpho, lambda=1,    weight=4.0) )
 
-sd_morpho ~ dnExponential(lambda = 1)
+sd_morpho ~ dnExponential(lambda = 1.0)
 moves.append( mvScale(sd_morpho, lambda=0.01, weight=4.0) )
 moves.append( mvScale(sd_morpho, lambda=0.1,  weight=4.0) )
 moves.append( mvScale(sd_morpho, lambda=1,    weight=4.0) )

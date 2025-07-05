@@ -25,7 +25,7 @@ moves = VectorMoves()
 
 ## FBD model
 rho <- 1
-source("code/model_fbd_cont.rev")
+source("code/model_fbd_const.rev")
 
 # deterministic variable - no of sampled ancestors & time to most recent ancestor as sanity check
 num_sa := fbd_tree_const.numSampledAncestors()
