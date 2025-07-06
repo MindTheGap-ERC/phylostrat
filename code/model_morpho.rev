@@ -4,15 +4,20 @@
 Q_morpho := fnJC(2)
 
 # strict morphological clock
-obs_mean_morpho ~ dnExponential(lambda = 1.0)
-moves.append( mvScale(obs_mean_morpho, lambda=0.01, weight=4.0) )
-moves.append( mvScale(obs_mean_morpho, lambda=0.1,  weight=4.0) )
-moves.append( mvScale(obs_mean_morpho, lambda=1,    weight=4.0) )
+#obs_mean_morpho ~ dnExponential(lambda = 0.1)
+#moves.append( mvScale(obs_mean_morpho, lambda=0.01, weight=4.0) )
+#moves.append( mvScale(obs_mean_morpho, lambda=0.1,  weight=4.0) )
+#moves.append( mvScale(obs_mean_morpho, lambda=1,    weight=4.0) )
 
-sd_morpho ~ dnExponential(lambda = 1.0)
-moves.append( mvScale(sd_morpho, lambda=0.01, weight=4.0) )
-moves.append( mvScale(sd_morpho, lambda=0.1,  weight=4.0) )
-moves.append( mvScale(sd_morpho, lambda=1,    weight=4.0) )
+#sd_morpho ~ dnExponential(lambda = 1.0)
+#moves.append( mvScale(sd_morpho, lambda=0.01, weight=4.0) )
+#moves.append( mvScale(sd_morpho, lambda=0.1,  weight=4.0) )
+#moves.append( mvScale(sd_morpho, lambda=1,    weight=4.0) )
 
-mean := ln(x = obs_mean_morpho) - sd_morpho^2 * 0.5
-branch_rates_morpho ~ dnLognormal(mean = obs_mean_morpho, sd = sd_morpho)
+#mean := ln(x = obs_mean_morpho) - sd_morpho^2 * 0.5
+#branch_rates_morpho ~ dnLognormal(mean = obs_mean_morpho, sd = sd_morpho)
+
+branch_rates_morpho ~ dnExponential(lambda = 10.0)
+moves.append( mvScale(branch_rates_morpho, lambda = 0.01, weight = 4.0))
+moves.append( mvScale(branch_rates_morpho, lambda = 0.1, weight = 4.0))
+moves.append( mvScale(branch_rates_morpho, lambda = 1.0, weight = 4.0))
