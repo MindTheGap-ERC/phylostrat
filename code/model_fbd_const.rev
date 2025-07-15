@@ -29,7 +29,7 @@ moves.append( mvGPR(fbd_tree_const, weight = 100.0))
 moves.append( mvCollapseExpandFossilBranch(fbd_tree_const, origin_time, weight=300.0) )
 
 moves.append( mvNodeTimeSlideUniform(fbd_tree_const, weight=100.0) )
-moves.append( mvNodeTimeScale(fbd_tree_const, weight = 100.0))
+moves.append( mvNodeTimeScale(fbd_tree_const, weight = 200.0))
 moves.append( mvRootTimeSlideUniform(fbd_tree_const, origin_time, weight=50.0) )
 
 moves.append( mvSubtreeScale(fbd_tree_const, weight = 100.0))

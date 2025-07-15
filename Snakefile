@@ -5,7 +5,7 @@ MCMC_LOCATION = "output/"
 NO_OF_REPLICAS = 50
 #replica ID
 ID = ["1"]#[str(i) for i in range(1, NO_OF_REPLICAS + 1)]
-NCHAR = ["30", "300"] # ["30", "300", "1000"]
+NCHAR = ["30", "300", "1000"] # ["30", "300", "1000"]
 CASE =  ["cont", "inc_A", "inc_B"] #["cont"] #
 RHO = ["0", "1"]
 NRUNS_NUM = 2 # number of independent chains run per analysis. must be larger than 2
