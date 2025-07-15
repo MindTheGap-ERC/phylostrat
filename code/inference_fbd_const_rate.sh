@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/.bashrc
+set -euo pipefail
 INPUT_CHAR=$1
 INPUT_FOSSILS=$2
 OUTPUT_NUMERIC=$3
