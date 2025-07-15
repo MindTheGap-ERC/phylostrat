@@ -7,6 +7,17 @@ library(admtools)
 library(StratPal)
 library(phyclust)
 
+#### Create directories ####
+if (!dir.exists("data/sim")){
+  dir.create("data/sim")
+}
+if(!dir.exists("data/osf")){
+  dir.create("data/osf")
+}
+if(!dir.exists("output")){
+  dir.create("output")
+}
+
 #### Load age-depth models from Hohmann et al (2024) ####
 if (!file.exists("data/osf/R_outputs/ageDepthModelsScenariosAandB.Rdata")){
   # download raw data if needed
