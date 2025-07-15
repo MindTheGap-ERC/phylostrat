@@ -36,14 +36,14 @@ n_sim = 1 # number of trees simulated
 lambda = 1 # origination rate
 mu = 0.3 # extinction rate
 rate_sampling_true = 100 # rate of fossil recovery per lineage
-rate_bin_evol = 0.1 # rate of evolution for the binary characters
+rate_bin_evol = 1 # rate of evolution for the binary characters
 hiat_min = 0.5 # minimum duration of hiatus (Myr) to be considered in the skyline model
 n_pres_fossils = 30 # number of preserved fossils after stratigraphic effects
 length_alignment = 2000
 mod = "-mHKY -t5 -a0.25 -g5" # HKY model, 5 categories for the gamma distribution. alpha shape parameter set to 0.25, transition to transversion ratio is 5
 # parameters for the strict morphological clock
 sd_morph = 0.1 # standard deviation (log scale) for strict morph. clock
-obs_mean_morph = 1 # observed mean of the lognormal distribution for strict morph. clock
+obs_mean_morph = 0.1 # observed mean of the lognormal distribution for strict morph. clock
 
 # parameters for the strict molecular clock
 sd_mol = 0.1 # standard deviation (log scale) for the strict molecular clock
