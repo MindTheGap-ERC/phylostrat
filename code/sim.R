@@ -47,7 +47,7 @@ obs_mean_morph = 0.1 # observed mean of the lognormal distribution for strict mo
 
 # parameters for the strict molecular clock
 sd_mol = 0.1 # standard deviation (log scale) for the strict molecular clock
-obs_mean_mol = 1 # observed mean of the lognormal distribution for the strict molecular clock 
+obs_mean_mol = 0.1 # observed mean of the lognormal distribution for the strict molecular clock 
 
 #### set seed ####
 seed = 4
