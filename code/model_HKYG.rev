@@ -3,9 +3,7 @@
 # transition to transversion ratio
 # construct prior using the true kappa value as mean
 expected_kappa <- 5
-sd <- 1
-mean <- ln(expected_kappa) - 0.5 * sd^2
-kappa ~ dnLognormal(mean = mean, sd = sd)
+kappa ~ dnExponential(lambda = 1/expected_kappa)
 moves.append( mvScale(kappa, lambda = 0.01, weight = 5.0))
 moves.append( mvScale(kappa, lambda = 0.1, weight = 5.0))
 moves.append( mvScale(kappa, lambda = 1.0, weight = 5.0))
