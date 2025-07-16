@@ -1,0 +1,1 @@
+bash code/inference_fbd_const_rate.sh data/baseline/char_mat_rho0_nchar30_1.nex data/baseline/fossils_full_rho0_1.tsv output/test1.log output/test_tree1.log 5

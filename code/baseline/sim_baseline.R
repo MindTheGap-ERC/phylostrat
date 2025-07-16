@@ -7,6 +7,7 @@ library(TreeSim)
 library(admtools)
 library(StratPal)
 library(phyclust)
+library(osfr)
 
 #### Constants ####
 n_chars = c(30, 300, 1000) # number of characters sampled per fossil
