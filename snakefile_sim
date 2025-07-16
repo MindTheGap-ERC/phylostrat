@@ -1,0 +1,64 @@
+# workflow to generate simulation data and store them on yoda
+
+BASE_COLLECTION="irods://nluu11p/home/research-mindthegap/phylostrat"
+
+NO_OF_REPLICAS = 50
+#replica ID
+ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
+NCHAR = ["30", "300", "1000"] # ["30", "300", "1000"]
+CASE =  ["cont", "inc_A", "inc_B"] #["cont"] #
+RHO = ["0", "1"]
+
+storage yoda:
+    provider="irods"
+
+rule all:
+    input:
+        storage.yoda(expand(BASE_COLLECTION + "/simulation_data/tree_complete_{id}.nex", id = ID)),
+        storage.yoda(expand(BASE_COLLECTION + "/simulation_data/mol_data_{id}.nex", id = ID)),
+        storage.yoda(expand(BASE_COLLECTION + "/simulation_data/tree_all_fossils_{id}.nex", id = ID)),
+        storage.yoda(expand(BASE_COLLECTION + "/simulation_data/fossils_{case}_rho{rho}_{id}.tsv", id = ID, rho = RHO, case = CASE)),
+        storage.yoda(expand(BASE_COLLECTION + "/simulation_data/char_mat_{case}_rho{rho}_nchar{nchar}_{id}.nex", case = CASE, rho = RHO, nchar = NCHAR, id = ID))
+
+
+rule copy_data_to_yoda:
+    output:
+        full_tree = storage.yoda(BASE_COLLECTION + "/simulation_data/tree_complete_{id}.nex"),
+        mol = storage.yoda(BASE_COLLECTION + "/simulation_data/mol_data_{id}.nex"),
+        fossil_tree = storage.yoda(BASE_COLLECTION + "/simulation_data/tree_all_fossils_{id}.nex")       
+    input:
+        full_tree = "data/sim/tree_complete_{id}.nex",
+        mol = "data/sim/mol_data_{id}.nex",
+        fossil_tree = "data/sim/tree_all_fossils_{id}.nex"        
+    shell:
+        """
+        cp {input.full_tree} {output.full_tree}
+        cp {input.mol} {output.mol}
+        cp {input.fossil_tree} {output.fossil_tree}
+        """
+
+rule copy_fossils_to_yoda:
+    output:
+        fossils = storage.yoda(BASE_COLLECTION + "/simulation_data/fossils_{case}_rho{rho}_{id}.tsv")
+    input:
+        fossils = "data/sim/fossils_{case}_rho{rho}_{id}.tsv"
+    shell:
+        "cp {input.fossils} {output.fossils}"
+
+rule copy_char_to_yoda:
+    output:
+        char_mat = storage.yoda(BASE_COLLECTION + "/simulation_data/char_mat_{case}_rho{rho}_nchar{nchar}_{id}.nex")
+    input:
+        char_mat = "data/sim/char_mat_{case}_rho{rho}_nchar{nchar}_{id}.nex"
+    shell:
+        "cp {input.char_mat} {output.char_mat}"
+
+rule simulate_data_locally:
+    output:
+        expand("data/sim/tree_complete_{id}.nex", id = ID),
+        expand("data/sim/fossils_{case}_rho{rho}_{id}.tsv", case = CASE, id = ID, rho = RHO),
+        expand("data/sim/tree_all_fossils_{id}.nex", id = ID),
+        expand("data/sim/mol_data_{id}.nex", id = ID),
+        expand("data/sim/char_mat_{case}_rho{rho}_nchar{nchar}_{id}.nex", case = CASE, rho = RHO, nchar = NCHAR, id = ID)
+    shell:
+        "Rscript code/sim.R"
