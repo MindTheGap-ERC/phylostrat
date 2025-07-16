@@ -37,10 +37,10 @@ phy_seq.clamp(mol)
 mymodel = model(phy_morpho, phy_seq)
 
 monitors = VectorMonitors()
-monitors.append( mnModel(filename=outfile, printgen=1000) )
+monitors.append( mnModel(filename=outfile, printgen=10) )
 
-monitors.append( mnScreen(printgen=10, num_sa, origin_time, speciation_rate, tmrca) )
-monitors.append(mnFile(filename = treefile, printgen = 100, fbd_tree_const))
+monitors.append( mnScreen(printgen=10000, num_sa, origin_time, speciation_rate, tmrca) )
+monitors.append(mnFile(filename = treefile, printgen = 10, fbd_tree_const))
 
 mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
 
