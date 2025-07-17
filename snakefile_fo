@@ -6,7 +6,7 @@ BASE_COLLECTION_STORAGE="irods://nluu11p/home/research-mindthegap/phylostrat/fo_
 NO_OF_REPLICAS = 50
 #replica ID
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
-NCHAR = ["30"] # ["30", "300", "1000"]
+NCHAR = ["30", "300", "1000"]
 CASE =  ["cont", "inc_A", "inc_B"] #["cont"] #
 RHO = ["0", "1"]
 NRUN = ["1", "2"]
