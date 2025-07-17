@@ -24,8 +24,8 @@ rule all:
 
 rule fbd_analysis_constant_rates:
     params:
-        numeric=BASE_COLLECTION_STORAGE + "res_const_{case}_{id}_{nchar}.log",
-        trees=BASE_COLLECTION_STORAGE  + "trees_const_{case}_{id}_{nchar}.log"
+        numeric=storage.yoda(BASE_COLLECTION_STORAGE + "res_const_{case}_{id}_{nchar}.log"),
+        trees=storage.yoda(BASE_COLLECTION_STORAGE  + "trees_const_{case}_{id}_{nchar}.log")
     input:
         char= storage.yoda(BASE_COLLECTION_SIM + "char_mat_{case}_rho0_nchar{nchar}_{id}.nex"),
         fossils=storage.yoda(BASE_COLLECTION_SIM + "fossils_{case}_rho0_{id}.tsv")
@@ -37,8 +37,8 @@ rule fbd_analysis_constant_rates:
 
 rule fbd_analysis_skyline_A:
     params:
-        numeric=BASE_COLLECTION_STORAGE + "res_skyline_A_{id}_{nchar}.log",
-        trees=BASE_COLLECTION_STORAGE + "trees_skyline_A_{id}_{nchar}.log"
+        numeric=storage.yoda(BASE_COLLECTION_STORAGE + "res_skyline_A_{id}_{nchar}.log"),
+        trees=storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_{id}_{nchar}.log")
     input:
         char = storage.yoda(BASE_COLLECTION_SIM + "char_mat_inc_A_rho0_nchar{nchar}_{id}.nex"),
         fossils= storage.yoda(BASE_COLLECTION_SIM + "fossils_inc_A_rho0_{id}.tsv")
