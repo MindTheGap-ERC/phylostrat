@@ -15,7 +15,8 @@ BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/simul
 BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/te_phylo/"
 
 storage yoda:
-    provider="irods"
+    provider="irods",
+    max_requests_per_second="1000"
 
 rule all:
     input:
