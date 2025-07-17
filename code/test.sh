@@ -1,1 +1,3 @@
-bash code/inference_fbd_const_rate_te.sh data/sim/char_mat_cont_rho1_nchar30_1.nex data/sim/fossils_cont_rho1_1.tsv data/sim/mol_data_1.nex output/test1.log output/test_tree1.log
+#bash code/inference_fbd_const_rate_te.sh data/sim/char_mat_cont_rho1_nchar30_1.nex data/sim/fossils_cont_rho1_1.tsv data/sim/mol_data_1.nex output/test1.log output/test_tree1.log
+
+bash code/inference_fbd_skyline_A_te.sh data/sim/char_mat_cont_rho1_nchar30_1.nex data/sim/fossils_cont_rho1_1.tsv data/sim/mol_data_1.nex output/test1.log output/test_tree1.log
