@@ -13,7 +13,8 @@ RHO = ["0", "1"]
 NRUN = ["1", "2"]
 
 storage yoda:
-    provider="irods"
+    provider="irods",
+    max_requests_per_second="1000"
 
 rule all:
     input:
