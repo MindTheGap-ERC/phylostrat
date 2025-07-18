@@ -1,0 +1,43 @@
+# fossil only fbd inference - skyline model
+
+moves = VectorMoves()
+
+# skyline FBD model
+rho <- 0
+source("code/model_fbd_skyline_A.rev")
+
+# model of morphological evolution
+source("code/model_morpho.rev")
+
+# deterministic variables
+num_sa := fbd_tree.numSampledAncestors()
+mrca := tmrca(fbd_tree, clade(taxa))
+tclade := tmrca(fbd_tree, clade(v(taxa[1], taxa[2])))
+tree_length := fbd_tree.treeLength()
+
+# combine models
+phy_morpho ~ dnPhyloCTMC(tree = fbd_tree, branchRates = branch_rates_morpho, Q = Q_morpho, type = "Standard", coding = "all")
+
+# condition on data
+phy_morpho.clamp(morph)
+
+# collect model components
+mymodel = model(phy_morpho)
+#mymodel.graph("fbd_skyline_A_fo.dot")
+mymodel.ignoreAllData()
+
+# initialize monitors
+monitors = VectorMonitors()
+# save results every 10 generations
+monitors.append( mnModel(filename=outfile, printgen=10) )
+# save tree every 10 generations
+monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
+# print to screen every 10 generations
+monitors.append( mnScreen(printgen=1000, num_sa, branch_rates_morpho, tclade, tree_length) )
+
+# mcmc settings 
+mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
+mymcmc.burnin(generations=20000,tuningInterval=15000)
+mymcmc.run(generations=100000)
+
+q()
