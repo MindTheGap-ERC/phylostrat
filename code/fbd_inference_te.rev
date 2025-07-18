@@ -33,6 +33,7 @@ phy_seq ~ dnPhyloCTMC(tree = fbd_tree, Q = Q_mol, siteRates = rates_mol, branchR
 phy_seq.clamp(mol)
 
 mymodel = model(phy_morpho, phy_seq)
+#mymodel.graph("fbd_te.dot")
 
 # monitors
 monitors = VectorMonitors()

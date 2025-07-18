@@ -10,10 +10,10 @@ source("code/model_fbd_skyline_A.rev")
 source("code/model_morpho.rev")
 
 # deterministic variables
-num_sa := fbd_tree_skyline_A.numSampledAncestors()
-mrca := tmrca(fbd_tree_skyline_A, clade(taxa))
-tclade := tmrca(fbd_tree_skyline_A, clade(v(taxa[1], taxa[2])))
-tree_length := fbd_tree_skyline_A.treeLength()
+num_sa := fbd_tree.numSampledAncestors()
+mrca := tmrca(fbd_tree, clade(taxa))
+tclade := tmrca(fbd_tree, clade(v(taxa[1], taxa[2])))
+tree_length := fbd_tree.treeLength()
 
 # combine models
 phy_morpho ~ dnPhyloCTMC(tree = fbd_tree, branchRates = branch_rates_morpho, Q = Q_morpho, type = "Standard", coding = "all")
@@ -23,6 +23,7 @@ phy_morpho.clamp(morph)
 
 # collect model components
 mymodel = model(phy_morpho)
+#mymodel.graph("fbd_skyline_A_fo.dot")
 
 # initialize monitors
 monitors = VectorMonitors()
