@@ -1,0 +1,113 @@
+/* Graphical model description in DOT language                                    */
+/*    To view graph:                                                              */
+/*       open this file in the program Graphviz: http://www.graphviz.org          */
+/*       or paste contents into an online viewer: http://stamm-wilbrandt.de/GraphvizFiddle */
+
+digraph REVDAG {
+   n_phy_morpho [shape=oval, style=filled, fillcolor=gray, label="phy_morpho"]
+   n_fbd_tree [shape=oval, style=filled, fillcolor=white, label="fbd_tree"]
+   n_origin_time [shape=oval, style=filled, fillcolor=white, label="origin_time"]
+   n_true_orig_time [shape=record, style=filled, fillcolor=white, label="{true_orig_time|2}"]
+   n_0x59fe8682c000 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ add(RealPos<any>) ]"]
+   n_0x59fe8682c300 [shape=box, style=filled, fillcolor=white, label="0.5"]
+   n_speciation_rate [shape=oval, style=filled, fillcolor=white, label="speciation_rate"]
+   n_0x59fe8682d470 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe8682d7b0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_true_spec [shape=record, style=filled, fillcolor=white, label="{true_spec|1}"]
+   n_speciation_rate_offset [shape=record, style=filled, fillcolor=white, label="{speciation_rate.offset|0}"]
+   n_extinction_rate [shape=oval, style=filled, fillcolor=white, label="extinction_rate"]
+   n_0x59fe8682ee80 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe8682f1c0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_true_ext [shape=record, style=filled, fillcolor=white, label="{true_ext|0.3}"]
+   n_extinction_rate_offset [shape=record, style=filled, fillcolor=white, label="{extinction_rate.offset|0}"]
+   n_psi [shape=oval, style=filled, fillcolor=white, label="psi"]
+   n_0x59fe86830a30 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe86830ce0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_guess_psi [shape=record, style=filled, fillcolor=white, label="{guess_psi|1}"]
+   n_psi_offset [shape=record, style=filled, fillcolor=white, label="{psi.offset|0}"]
+   n_r [shape=record, style=filled, fillcolor=white, label="{r|0}"]
+   n_rho [shape=record, style=filled, fillcolor=white, label="{rho|1}"]
+   n_num_sa [shape=oval, style="dashed,filled", fillcolor=white, label="num_sa\n[ numSampledAncestors()) ]"]
+   n_tmrca [shape=oval, style="dashed,filled", fillcolor=white, label="tmrca\n[ tmrca(TimeTree<any>) ]"]
+   n_phy_seq [shape=oval, style=filled, fillcolor=gray, label="phy_seq"]
+   n_branch_rates_mol [shape=oval, style=filled, fillcolor=white, label="branch_rates_mol"]
+   n_0x59fe86970630 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe86970970 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_true_rate_mol [shape=record, style=filled, fillcolor=white, label="{true_rate_mol|0.1}"]
+   n_branch_rates_mol_offset [shape=record, style=filled, fillcolor=white, label="{branch_rates_mol.offset|0}"]
+   n_Q_mol [shape=oval, style="dashed,filled", fillcolor=white, label="Q_mol\n[ fnHKY(RealPos<any>) ]"]
+   n_pi [shape=oval, style=filled, fillcolor=white, label="pi"]
+   n_0x59fe86973160 [shape=box, style=filled, fillcolor=white, label="[ 1.000, 1.000, 1.000, 1.000 ]"]
+   n_kappa [shape=oval, style=filled, fillcolor=white, label="kappa"]
+   n_0x59fe869743a0 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe869746e0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_expected_kappa [shape=record, style=filled, fillcolor=white, label="{expected_kappa|5}"]
+   n_kappa_offset [shape=record, style=filled, fillcolor=white, label="{kappa.offset|0}"]
+   n_rates_mol [shape=oval, style="dashed,filled", fillcolor=white, label="rates_mol\n[ fnDiscretizeGamma(RealPos<any>) ]"]
+   n_alpha_mol [shape=oval, style=filled, fillcolor=white, label="alpha_mol"]
+   n_0x59fe86976160 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe869764a0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_alpha_shape [shape=record, style=filled, fillcolor=white, label="{alpha_shape|0.25}"]
+   n_alpha_mol_offset [shape=record, style=filled, fillcolor=white, label="{alpha_mol.offset|0}"]
+   n_no_cat [shape=record, style=filled, fillcolor=white, label="{no_cat|5}"]
+   n_branch_rates_morpho [shape=oval, style=filled, fillcolor=white, label="branch_rates_morpho"]
+   n_0x59fe86977ca0 [shape=oval, style="dashed,filled", fillcolor=white, label="function\n[ div(RealPos<any>) ]"]
+   n_0x59fe86977fe0 [shape=box, style=filled, fillcolor=white, label="1"]
+   n_true_rate_morph [shape=record, style=filled, fillcolor=white, label="{true_rate_morph|0.1}"]
+   n_branch_rates_morpho_offset [shape=record, style=filled, fillcolor=white, label="{branch_rates_morpho.offset|0}"]
+   n_Q_morpho [shape=record, style=filled, fillcolor=white, label="{Q_morpho|...}"]
+   n_fbd_tree -> n_num_sa[style=dashed]
+   n_fbd_tree -> n_tmrca[style=dashed]
+   n_fbd_tree -> n_phy_seq
+   n_fbd_tree -> n_phy_morpho
+   n_origin_time -> n_fbd_tree
+   n_true_orig_time -> n_0x59fe8682c000[style=dashed]
+   n_true_orig_time -> n_origin_time
+   n_0x59fe8682c000 -> n_origin_time
+   n_0x59fe8682c300 -> n_0x59fe8682c000[style=dashed]
+   n_speciation_rate -> n_fbd_tree
+   n_0x59fe8682d470 -> n_speciation_rate
+   n_0x59fe8682d7b0 -> n_0x59fe8682d470[style=dashed]
+   n_true_spec -> n_0x59fe8682d470[style=dashed]
+   n_speciation_rate_offset -> n_speciation_rate
+   n_extinction_rate -> n_fbd_tree
+   n_0x59fe8682ee80 -> n_extinction_rate
+   n_0x59fe8682f1c0 -> n_0x59fe8682ee80[style=dashed]
+   n_true_ext -> n_0x59fe8682ee80[style=dashed]
+   n_extinction_rate_offset -> n_extinction_rate
+   n_psi -> n_fbd_tree
+   n_0x59fe86830a30 -> n_psi
+   n_0x59fe86830ce0 -> n_0x59fe86830a30[style=dashed]
+   n_guess_psi -> n_0x59fe86830a30[style=dashed]
+   n_psi_offset -> n_psi
+   n_r -> n_fbd_tree
+   n_rho -> n_fbd_tree
+   n_branch_rates_mol -> n_phy_seq
+   n_0x59fe86970630 -> n_branch_rates_mol
+   n_0x59fe86970970 -> n_0x59fe86970630[style=dashed]
+   n_true_rate_mol -> n_0x59fe86970630[style=dashed]
+   n_branch_rates_mol_offset -> n_branch_rates_mol
+   n_Q_mol -> n_phy_seq
+   n_pi -> n_Q_mol[style=dashed]
+   n_0x59fe86973160 -> n_pi
+   n_kappa -> n_Q_mol[style=dashed]
+   n_0x59fe869743a0 -> n_kappa
+   n_0x59fe869746e0 -> n_0x59fe869743a0[style=dashed]
+   n_expected_kappa -> n_0x59fe869743a0[style=dashed]
+   n_kappa_offset -> n_kappa
+   n_rates_mol -> n_phy_seq
+   n_alpha_mol -> n_rates_mol[style=dashed]
+   n_0x59fe86976160 -> n_alpha_mol
+   n_0x59fe869764a0 -> n_0x59fe86976160[style=dashed]
+   n_alpha_shape -> n_0x59fe86976160[style=dashed]
+   n_alpha_mol_offset -> n_alpha_mol
+   n_no_cat -> n_rates_mol[style=dashed]
+   n_branch_rates_morpho -> n_phy_morpho
+   n_0x59fe86977ca0 -> n_branch_rates_morpho
+   n_0x59fe86977fe0 -> n_0x59fe86977ca0[style=dashed]
+   n_true_rate_morph -> n_0x59fe86977ca0[style=dashed]
+   n_branch_rates_morpho_offset -> n_branch_rates_morpho
+   n_Q_morpho -> n_phy_morpho
+   {rank=same; n_phy_morpho; n_phy_seq;}
+   graph [bgcolor=lavenderblush2, pad=0.25]
+}

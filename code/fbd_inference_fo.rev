@@ -25,6 +25,7 @@ phy_morpho.clamp(morph)
 
 # collect model
 mymodel = model(phy_morpho)
+#mymodel.graph("fbd_fo.dot")
 
 # initialize monitors
 monitors = VectorMonitors()
