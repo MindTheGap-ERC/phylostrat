@@ -35,4 +35,17 @@ rule fbd_analysis_constant_rates_te:
         num = storage.yoda( expand(BASE_COLLECTION_STORAGE +"res_const_te_{{case}}_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
         trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "trees_const_te_{{case}}_{{id}}_{{nchar}}_run_{run}.log", run = NRUN))
     shell:
-        "bash code/inference_fbd_const_rate_te.sh {input.morph} {input.taxa} {input.mol} {params.numeric} {params.trees}"
+        "bash code/inference_fbd_te.sh {input.morph} {input.taxa} {input.mol} {params.numeric} {params.trees}"
+
+rule fbd_analysis_skyline_A_te:
+    params:
+        numeric = storage.yoda(BASE_COLLECTION_STORAGE + "res_skyline_A_te_{id}_{nchar}.log"),
+        trees = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}.log")
+    input:
+        char = storage.yoda(BASE_COLLECTION_SIM + "char_mat_inc_A_rho1_nchar{nchar}_{id}.nex"),
+        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_inc_A_rho1_{id}.tsv")
+    output:
+        numeric = storage.yoda(expand(BASE_COLLECTION_STORAGE + "res_skyline_A_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        trees = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN))
+    shell:
+        "bash code/inference_fbd_skyline_A_te.sh {input.morph} {input.taxa} {input.mol} {params.numeric} {params.trees}"

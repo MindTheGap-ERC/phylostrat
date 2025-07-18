@@ -1,3 +1,4 @@
+# fbd inference - total evidence constant rates
 INPUT_MORPH=$1
 INPUT_TAXA=$2
 INPUT_MOL=$3
