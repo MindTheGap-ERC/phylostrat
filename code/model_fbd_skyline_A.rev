@@ -1,54 +1,39 @@
 # FBD skyline model with skyline defined according to scenario A
 
-speciation_rate ~ dnExponential(1.0)
-moves.append( mvScale(speciation_rate, lambda=0.01, weight=1.0) )
-moves.append( mvScale(speciation_rate, lambda=0.1,  weight=1.0) )
-moves.append( mvScale(speciation_rate, lambda=1.0,  weight=1.0) )
-
-extinction_rate ~ dnExponential(1.0)
-moves.append( mvScale(extinction_rate, lambda=0.01, weight=1.0) )
-moves.append( mvScale(extinction_rate, lambda=0.1,  weight=1.0) )
-moves.append( mvScale(extinction_rate, lambda=1.0,  weight=1.0) )
-
-origin_time ~ dnUnif(2.0, 3.0)
-moves.append( mvSlide(origin_time, delta=0.01, weight=5.0) )
-moves.append( mvSlide(origin_time, delta=0.1,  weight=5.0) )
-moves.append( mvSlide(origin_time, delta=1.0,    weight=5.0) )
-
 timeline <- v(0.112, 0.623, 1.116, 1.629)  # based on scenario A
-psi[1] ~ dnExponential(1.0)
+# FBD model with constant sampling, origination, and extinction
+true_spec <- 1
+true_ext <- 0.3
+true_orig_time <- 2
+guess_psi <- 1
+
+speciation_rate ~ dnExponential(lambda = 1/true_spec)
+moves.append( mvScale(speciation_rate, weight=5.0) )
+
+extinction_rate ~ dnExponential(lambda = 1/true_ext)
+moves.append( mvScale(extinction_rate, weight=5.0) )
+
+origin_time ~ dnUnif(true_orig_time, true_orig_time + 0.5)
+moves.append( mvSlide(origin_time, weight=15.0) )
+
+psi[1] ~ dnExponential(lambda = 1/guess_psi)
 psi[2] <- 0.0001
-psi[3] ~ dnExponential(1.0)
+psi[3] ~ dnExponential(lambda = 1/guess_psi)
 psi[4] <- 0.0001
-psi[5] ~ dnExponential(1.0)
+psi[5] ~ dnExponential(lambda = 1/guess_psi)
 
-moves.append( mvScale(psi[1], lambda=0.01, weight=1.0) )
-moves.append( mvScale(psi[1], lambda=0.1,  weight=1.0) )
-moves.append( mvScale(psi[1], lambda=1,    weight=1.0) )
-moves.append( mvScale(psi[3], lambda=0.01, weight=1.0) )
-moves.append( mvScale(psi[3], lambda=0.1,  weight=1.0) )
-moves.append( mvScale(psi[3], lambda=1,    weight=1.0) )
-moves.append( mvScale(psi[5], lambda=0.01, weight=1.0) )
-moves.append( mvScale(psi[5], lambda=0.1,  weight=1.0) )
-moves.append( mvScale(psi[5], lambda=1,    weight=1.0) )
+moves.append( mvScale(psi[1], weight=3.0) )
+moves.append( mvScale(psi[3], weight=3.0) )
+moves.append( mvScale(psi[5], weight=3.0) )
 
-fbd_tree_skyline_A ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa, timeline = timeline)
+fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa, timeline = timeline)
 
-moves.append( mvFNPR(fbd_tree_skyline_A, weight=200.0) )
-moves.append( mvNNI(fbd_tree_skyline_A, weight = 100.0))
-moves.append( mvGPR(fbd_tree_skyline_A, weight = 100.0))
-
-moves.append( mvCollapseExpandFossilBranch(fbd_tree_skyline_A, origin_time, weight=300.0) )
-
-moves.append( mvNodeTimeSlideUniform(fbd_tree_skyline_A, weight=100.0) )
-moves.append( mvNodeTimeScale(fbd_tree_skyline_A, weight = 200.0))
-moves.append( mvRootTimeSlideUniform(fbd_tree_skyline_A, origin_time, weight=50.0) )
-
-moves.append( mvSubtreeScale(fbd_tree_skyline_A, weight = 100.0))
-moves.append( mvTreeScale(fbd_tree_skyline_A, origin_time, weight = 100.0))
-
-
-#moves.append( mvNarrow(fbd_tree_skyline_A, weight = 50.0))
-# moves.append( mvAddRemoveTip(fbd_tree_skyline_A, extant = FALSE, extinct = TRUE, sa = TRUE, weight = 5.0))
-# Adding this move throws an error: Problem while working with tree: Node index was never set.
-# in mymcmc.run()
+moves.append( mvFNPR(fbd_tree, weight=200.0) )
+moves.append( mvNNI(fbd_tree, weight = 100.0))
+moves.append( mvGPR(fbd_tree, weight = 100.0))
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=300.0) )
+moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=100.0) )
+moves.append( mvNodeTimeScale(fbd_tree, weight = 200.0))
+moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=50.0) )
+moves.append( mvSubtreeScale(fbd_tree, weight = 100.0))
+moves.append( mvTreeScale(fbd_tree, origin_time, weight = 100.0))
