@@ -1,0 +1,51 @@
+# total evidence fbd - constant rates
+
+# add missing taxa to have a joint taxon set that contains all tips
+morph.addMissingTaxa(taxa) # strictly not necessary bc of the model setup
+mol.addMissingTaxa(taxa)
+
+# initialize moves for MCMC
+moves = VectorMoves()
+
+## FBD model
+rho <- 1
+source("code/model_fbd_skyline_A.rev")
+
+# deterministic variable - no of sampled ancestors & time to most recent ancestor as sanity check
+num_sa := fbd_tree.numSampledAncestors()
+tmrca := tmrca(fbd_tree, clade(taxa))
+
+## morphological evolution
+source("code/model_morpho.rev")
+
+phy_morpho ~ dnPhyloCTMC(tree = fbd_tree, branchRates = branch_rates_morpho, Q = Q_morpho, type = "Standard", coding = "all")
+
+phy_morpho.clamp(morph)
+
+## HKY + G
+source("code/model_HKYG.rev")
+
+## strict molecular clock
+source("code/model_strict_mol_clock.rev")
+
+phy_seq ~ dnPhyloCTMC(tree = fbd_tree, Q = Q_mol, siteRates = rates_mol, branchRates = branch_rates_mol, type = "DNA")
+
+phy_seq.clamp(mol)
+
+# collect model components
+mymodel = model(phy_morpho, phy_seq)
+#mymodel.graph("fbd_skyline_A_te.dot")
+mymodel.ignoreData(phy_morpho)
+
+# monitors
+monitors = VectorMonitors()
+monitors.append( mnModel(filename=outfile, printgen=10) )
+monitors.append( mnScreen(printgen=1000, num_sa, origin_time, speciation_rate, tmrca) )
+monitors.append(mnFile(filename = treefile, printgen = 10, fbd_tree))
+
+# mcmc
+mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
+mymcmc.burnin(generations=20000, tuningInterval=15000)
+mymcmc.run(generations=100000)
+
+q()
