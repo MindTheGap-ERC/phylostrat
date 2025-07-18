@@ -1,4 +1,4 @@
-# strict molological clock
+# strict mol clock
 #obs_mean_mol ~ dnExponential(lambda = 1)
 
 #moves.append( mvScale(obs_mean_mol, lambda=0.01, weight=4.0) )
@@ -14,3 +14,5 @@
 #branch_rates_mol ~ dnLognormal(mean = obs_mean_mol, sd = sd_mol)
 
 branch_rates_mol ~ dnExponential(lambda = 10.0) # set to mean of true
+
+moves.append(mvScale(branch_rates_mol, weight = 15.0))
