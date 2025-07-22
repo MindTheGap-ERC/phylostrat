@@ -41,6 +41,7 @@ mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
 # set burn in and tuning interval
 mymcmc.burnin(generations=20000,tuningInterval=15000)
 # start mcmc run
+mymcmc.OperatorSummary()
 mymcmc.run(generations=100000)
-
+mymcmc.OperatorSummary()
 q()

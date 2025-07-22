@@ -42,9 +42,10 @@ monitors.append( mnModel(filename=outfile, printgen=10) )
 monitors.append( mnScreen(printgen=1000, num_sa, origin_time, speciation_rate, tmrca) )
 monitors.append( mnFile(filename = treefile, printgen = 10, fbd_tree))
 
-## mcmc
+# initialize mcmc
 mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
 mymcmc.burnin(generations=20000,tuningInterval=15000)
+mymcmc.operatorSummary()
 mymcmc.run(generations=100000)
-
+mymcmc.operatorSummary()
 q()
