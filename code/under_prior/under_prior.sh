@@ -7,8 +7,8 @@ bash code/under_prior/inference_fbd_te_nmorph.sh data/sim/char_mat_cont_rho1_nch
 bash code/under_prior/inference_fbd_skyline_A_te_nd.sh data/sim/char_mat_inc_A_rho1_nchar30_1.nex data/sim/fossils_inc_A_rho1_1.tsv data/sim/mol_data_1.nex output/under_prior/num_fbd_skyline_A_te_nd.log output/under_prior/trees_fbd_skyline_A_te_nd.log &
 bash code/under_prior/inference_fbd_skyline_A_te_nmol.sh data/sim/char_mat_inc_A_rho1_nchar30_1.nex data/sim/fossils_inc_A_rho1_1.tsv data/sim/mol_data_1.nex output/under_prior/num_fbd_skyline_A_te_nmol.log output/under_prior/trees_fbd_skyline_A_te_nmol.log &
 bash code/under_prior/inference_fbd_skyline_A_te_nmorph.sh data/sim/char_mat_inc_A_rho1_nchar30_1.nex data/sim/fossils_inc_A_rho1_1.tsv data/sim/mol_data_1.nex output/under_prior/num_fbd_skyline_A_te_nmorph.log output/under_prior/trees_skyline_A_fbd_te_nmorph.log &
-bash code/under_prior/inference_fbd_fo_nd.sh data/sim/char_mat_cont_rho0_nchar30_1.nex data/sim/fossils_cont_rho0_1.tsv output/under_prior/num_fbd_fo_nd.log output/under_prior/trees_fbd_fo_nd.log &
-bash code/under_prior/inference_fbd_skyline_A_fo_nd.sh data/sim/char_mat_inc_A_rho0_nchar30_1.nex data/sim/fossils_inc_A_rho0_1.tsv output/under_prior/num_fbd_skyline_A_fo_nd.log output/under_prior/trees_fbd_skyline_A_fo_nd.log &
+#bash code/under_prior/inference_fbd_fo_nd.sh data/sim/char_mat_cont_rho0_nchar30_1.nex data/sim/fossils_cont_rho0_1.tsv output/under_prior/num_fbd_fo_nd.log output/under_prior/trees_fbd_fo_nd.log &
+#bash code/under_prior/inference_fbd_skyline_A_fo_nd.sh data/sim/char_mat_inc_A_rho0_nchar30_1.nex data/sim/fossils_inc_A_rho0_1.tsv output/under_prior/num_fbd_skyline_A_fo_nd.log output/under_prior/trees_fbd_skyline_A_fo_nd.log &
 wait
 
 echo "finished all analyses"
