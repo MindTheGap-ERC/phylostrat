@@ -1,0 +1,93 @@
+morph <- readDiscreteCharacterData("data/sim/char_mat_cont_rho1_nchar300_1.nex") 
+taxa <- readTaxonData( "data/sim/fossils_cont_rho1_1.tsv")
+mol <- readDiscreteCharacterData("data/sim/mol_data_1.nex")
+outfile <- "output/debug/num_te.log"
+treefile <- "output/debug/trees_te.log"
+
+moves = VectorMoves()
+
+morph.addMissingTaxa(taxa)
+mol.addMissingTaxa(taxa)
+
+rho <- 1.0
+
+#timeline <- v(0.112, 0.623, 1.116, 1.629)  # based on scenario A
+true_spec <- 1.0
+true_ext <- 0.3
+#guess_psi <- 1.0
+
+#speciation_rate ~ dnExponential(lambda = 1/true_spec)
+#moves.append( mvScale(speciation_rate, weight=5.0) )
+speciation_rate <- true_spec
+
+#extinction_rate ~ dnExponential(lambda = 1/true_ext)
+#moves.append( mvScale(extinction_rate, weight=5.0) )
+extinction_rate <- true_ext
+
+# get oldest fossil
+#for (i in 1:taxa.size()){
+#    ages[i] <- taxa[i].getMaxAge()
+#}
+#max_age <- max(ages)
+#max_age <- 2.0
+origin_time  <- 2.0 #~ dnUniform(max_age, max_age + 2.0)
+#moves.append( mvSlide(origin_time, weight=15.0) )
+
+psi ~ dnExponential(lambda = 1.0)
+
+moves.append( mvScale(psi, weight=3.0) )
+
+fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
+
+#moves.append( mvFNPR(fbd_tree, weight=200.0) )
+#moves.append( mvNNI(fbd_tree, weight = 100.0))
+moves.append( mvGPR(fbd_tree, weight = 10.0))
+moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=3000.0) )
+moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=10.0) )
+moves.append( mvNodeTimeScale(fbd_tree, weight = 20.0))
+moves.append( mvRootTimeSlideUniform(fbd_tree, origin_time, weight=50.0) )
+moves.append( mvSubtreeScale(fbd_tree, weight = 10.0))
+moves.append( mvTreeScale(fbd_tree, origin_time, weight = 100.0))
+
+num_sa := fbd_tree.numSampledAncestors()
+tmrca := tmrca(fbd_tree, clade(taxa))
+
+# strict morphological clock
+
+#true_rate_morph <- 0.1
+branch_rates_morpho ~ dnExponential(lambda = 10.0) # 1/true_rate_morph
+moves.append( mvScale(branch_rates_morpho, weight = 16.0))
+
+# model of morphological evolution
+# Mk model  - no ascertaintment correction
+
+Q_morpho := fnJC(2)
+
+phy_morpho ~ dnPhyloCTMC(tree = fbd_tree, branchRates = branch_rates_morpho, Q = Q_morpho, type = "Standard", coding = "all")
+phy_morpho.clamp(morph)
+
+## HKY + G
+source("code/model_HKYG.rev")
+
+## strict molecular clock
+source("code/model_strict_mol_clock.rev")
+
+phy_seq ~ dnPhyloCTMC(tree = fbd_tree, Q = Q_mol, siteRates = rates_mol, branchRates = branch_rates_mol, type = "DNA")
+phy_seq.clamp(mol)
+
+mymodel = model(phy_morpho, phy_seq)
+#mymodel.graph("dag/fbd_te_debug.dot")
+
+# monitors
+monitors = VectorMonitors()
+monitors.append( mnModel(filename=outfile, printgen=10) )
+monitors.append( mnScreen(printgen=1000, num_sa, origin_time, speciation_rate, tmrca) )
+monitors.append( mnFile(filename = treefile, printgen = 10, fbd_tree))
+
+# initialize mcmc
+mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
+mymcmc.burnin(generations=2000,tuningInterval=1500)
+mymcmc.operatorSummary()
+mymcmc.run(generations=10000)
+mymcmc.operatorSummary()
+q()
