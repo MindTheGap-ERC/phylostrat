@@ -1,25 +1,19 @@
 # FBD model with constant sampling, origination, and extinction
-true_spec <- 1
-true_ext <- 0.3
-true_orig_time <- 2
-guess_psi <- 1
-
-speciation_rate ~ dnExponential(lambda = 1/true_spec)
+speciation_rate ~ dnExponential(lambda = 1.0) # set to true mean
 moves.append( mvScale(speciation_rate, weight=5.0) )
 
-extinction_rate ~ dnExponential(lambda = 1/true_ext)
+extinction_rate ~ dnExponential(lambda = 3.3) # set to true mean
 moves.append( mvScale(extinction_rate, weight=5.0) )
 
-origin_time ~ dnUnif(true_orig_time, true_orig_time + 0.5)
-moves.append( mvSlide(origin_time, weight=15.0) )
+origin_time ~ dnExponential(lambda = 1.0, offset = 2.0)
+moves.append( mvScale(origin_time, weight=15.0) )
 
-psi ~ dnExponential(lambda = 1/guess_psi)
-moves.append( mvScale(psi, weight=15.0) )
+psi ~ dnUniform(lower = 0.0001, upper = 10.0)
+moves.append( mvSlide(psi, weight=15.0) )
 
 fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa)
 
 moves.append( mvFNPR(fbd_tree, weight=200.0) )
-moves.append( mvNNI(fbd_tree, weight = 100.0))
 moves.append( mvGPR(fbd_tree, weight = 100.0))
 moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=300.0) )
 moves.append( mvNodeTimeSlideUniform(fbd_tree, weight=100.0) )
