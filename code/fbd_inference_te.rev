@@ -44,6 +44,7 @@ monitors.append( mnFile(filename = treefile, printgen = 10, fbd_tree))
 ## mcmc
 mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
 mymcmc.burnin(generations=20000,tuningInterval=15000)
+mymcmc.operatorSummary()
 mymcmc.run(generations=100000)
-
+mymcmc.operatorSummary()
 q()
