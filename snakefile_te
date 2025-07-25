@@ -8,7 +8,7 @@ NCHAR = ["30", "300", "1000"]
 NRUNS_NUM = 2
 NRUNS = str(NRUNS_NUM)
 NRUN = [str(i) for i in range(1, NRUNS_NUM + 1)]
-CASE = ["cont"]
+CASE = ["cont", "inc_A", "inc_B"]
 RHO = ["0", "1"]
 
 BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/simulation_data/"
