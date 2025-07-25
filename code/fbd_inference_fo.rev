@@ -30,9 +30,9 @@ mymodel = model(phy_morpho)
 # initialize monitors
 monitors = VectorMonitors()
 # save numeric variables
-monitors.append( mnModel(filename=outfile, printgen=10) )
+monitors.append( mnModel(filename=outfile, printgen=1) )
 # save tree
-monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
+monitors.append(mnFile(filename = treefile_name, printgen = 1, fbd_tree))
 # print to screen
 monitors.append( mnScreen(printgen=1000, num_sa, branch_rates_morpho, tclade, tree_length) )
 
