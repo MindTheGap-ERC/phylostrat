@@ -1,9 +1,9 @@
 # snakefile for the total evidence analysis
-NO_OF_REPLICAS = 50
+NO_OF_REPLICAS = 10
 #replica ID
-#ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
+ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 
-ID = ["1"]
+#ID = ["1"]
 NCHAR = ["30", "300", "1000"]
 NRUNS_NUM = 2
 NRUNS = str(NRUNS_NUM)
