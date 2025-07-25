@@ -1,4 +1,4 @@
-# total evidence fbd - constant rates
+# total evidence fbd - skyline model
 
 # add missing taxa to have a joint taxon set that contains all tips
 morph.addMissingTaxa(taxa) # strictly not necessary bc of the model setup
@@ -8,7 +8,7 @@ mol.addMissingTaxa(taxa)
 moves = VectorMoves()
 
 ## FBD model
-rho <- 1
+rho <- 1.0
 source("code/model_fbd_skyline_A.rev")
 
 # deterministic variable - no of sampled ancestors & time to most recent ancestor as sanity check
@@ -38,7 +38,7 @@ mymodel = model(phy_morpho, phy_seq)
 # monitors
 monitors = VectorMonitors()
 monitors.append( mnModel(filename=outfile, printgen=10) )
-monitors.append( mnScreen(printgen=1000, num_sa, origin_time, speciation_rate, tmrca) )
+monitors.append( mnScreen(printgen=1000, num_sa, speciation_rate, tmrca) )
 monitors.append(mnFile(filename = treefile, printgen = 10, fbd_tree))
 
 # mcmc
