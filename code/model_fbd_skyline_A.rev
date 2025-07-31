@@ -3,13 +3,16 @@
 timeline <- v(0.112, 0.623, 1.116, 1.629)  # based on scenario A
 
 speciation_rate ~ dnExponential(lambda = 1.0) # set to true mean
-moves.append( mvScale(speciation_rate, weight=5.0) )
+moves.append( mvScale(speciation_rate, weight=5.0, lambda = 1.0) )
+moves.append( mvScale(speciation_rate, weight=5.0, lambda = 5.0) )
 
 extinction_rate ~ dnExponential(lambda = 3.3) # set to true mean
-moves.append( mvScale(extinction_rate, weight=5.0) )
+moves.append( mvScale(extinction_rate, weight=5.0, lambda = 1.0) )
+moves.append( mvScale(extinction_rate, weight=5.0, lambda = 5.0) )
 
-origin_time ~ dnExponential(lambda = 1.0, offset = 2.0)
-moves.append( mvScale(origin_time, weight=15.0) )
+#origin_time ~ dnExponential(lambda = 1.0, offset = 2.0)
+#moves.append( mvScale(origin_time, weight=15.0) )
+origin_time <- 2.0
 
 psi[1] ~ dnUniform(lower = 0.0001, upper = 10.0)
 psi[2] <- 0.00001
@@ -17,9 +20,15 @@ psi[3] ~ dnUniform(lower = 0.0001, upper = 10.0)
 psi[4] <- 0.00001
 psi[5] ~ dnUniform(lower = 0.0001, upper = 10.0)
 
-moves.append( mvSlide(psi[1], weight=3.0) )
-moves.append( mvSlide(psi[3], weight=3.0) )
-moves.append( mvSlide(psi[5], weight=3.0) )
+moves.append( mvSlide(psi[1], weight=5.0, delta = 0.1) )
+moves.append( mvSlide(psi[1], weight=5.0, delta = 1.0) )
+moves.append( mvSlide(psi[1], weight=5.0, delta = 10.0) )
+moves.append( mvSlide(psi[3], weight=5.0, delta = 0.1) )
+moves.append( mvSlide(psi[3], weight=5.0, delta = 1.0) )
+moves.append( mvSlide(psi[3], weight=5.0, delta = 10.0) )
+moves.append( mvSlide(psi[5], weight=5.0, delta = 0.1) )
+moves.append( mvSlide(psi[5], weight=5.0, delta = 1.0) )
+moves.append( mvSlide(psi[5], weight=5.0, delta = 10.0) )
 
 fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa, psiTimeline = timeline)
 
