@@ -42,8 +42,8 @@ monitors.append( mnScreen(printgen=1000, num_sa, speciation_rate, tmrca) )
 monitors.append(mnFile(filename = treefile, printgen = 1, fbd_tree))
 
 # mcmc
-mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
-mymcmc.burnin(generations=20000, tuningInterval=15000)
+mymcmc = mcmcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000, tuneHeat = TRUE)
+mymcmc.burnin(generations=20000, tuningInterval=15000, verbose = TRUE)
 mymcmc.operatorSummary()
 mymcmc.run(generations=100000)
 mymcmc.operatorSummary()
