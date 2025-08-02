@@ -15,17 +15,27 @@ moves.append( mvScale(extinction_rate, weight=5.0, lambda = 5.0) )
 origin_time <- 2.0
 
 psi[1] ~ dnExponential(lambda = 0.25)
-psi[2] <- 0.00001
+psi[2] ~ dnExponential(lambda = 0.25)
 psi[3] ~ dnExponential(lambda = 0.25)
-psi[4] <- 0.00001
+psi[4] ~ dnExponential(lambda = 0.25)
 psi[5] ~ dnExponential(lambda = 0.25)
 
 moves.append( mvScale( psi[1], weight = 5.0, lambda = 0.1) )
 moves.append( mvScale( psi[1], weight = 5.0, lambda = 1.0) )
 moves.append( mvScale( psi[1], weight = 5.0, lambda = 10.0) )
+
+moves.append( mvScale( psi[2], weight = 5.0, lambda = 0.1) )
+moves.append( mvScale( psi[2], weight = 5.0, lambda = 1.0) )
+moves.append( mvScale( psi[2], weight = 5.0, lambda = 10.0) )
+
 moves.append( mvScale( psi[3], weight = 5.0, lambda = 0.1) )
 moves.append( mvScale( psi[3], weight = 5.0, lambda = 1.0) )
 moves.append( mvScale( psi[3], weight = 5.0, lambda = 10.0) )
+
+moves.append( mvScale( psi[4], weight = 5.0, lambda = 0.1) )
+moves.append( mvScale( psi[4], weight = 5.0, lambda = 1.0) )
+moves.append( mvScale( psi[4], weight = 5.0, lambda = 10.0) )
+
 moves.append( mvScale( psi[5], weight = 5.0, lambda = 0.1) )
 moves.append( mvScale( psi[5], weight = 5.0, lambda = 1.0) )
 moves.append( mvScale( psi[5], weight = 5.0, lambda = 10.0) )

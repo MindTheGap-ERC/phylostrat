@@ -10,4 +10,5 @@ bash code/inference_fbd_te.sh data/sim/char_mat_cont_rho1_nchar30_1.nex data/sim
 bash code/inference_fbd_te.sh data/sim/char_mat_inc_A_rho1_nchar30_1.nex data/sim/fossils_inc_A_rho1_1.tsv data/sim/mol_data_1.nex output/num_test_te_inc_A.log output/tree_test_te_inc_A.log &
 bash code/inference_fbd_te.sh data/sim/char_mat_inc_B_rho1_nchar30_1.nex data/sim/fossils_inc_B_rho1_1.tsv data/sim/mol_data_1.nex output/num_test_te_inc_B.log output/tree_test_te_inc_B.log &
 bash code/inference_fbd_skyline_A_te.sh data/sim/char_mat_inc_A_rho1_nchar30_1.nex data/sim/fossils_inc_A_rho1_1.tsv data/sim/mol_data_1.nex output/num_test_te_skyline_A.log output/tree_test_te_skyline_A.log &
+bash code/inference_fbd_skyline_A_full_te.sh data/sim/char_mat_inc_A_rho1_nchar30_1.nex data/sim/fossils_inc_A_rho1_1.tsv data/sim/mol_data_1.nex output/num_test_te_skyline_A_full.log output/tree_test_te_skyline_A_full.log &
 wait

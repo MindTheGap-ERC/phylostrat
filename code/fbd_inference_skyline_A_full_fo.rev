@@ -4,7 +4,7 @@ moves = VectorMoves()
 
 # skyline FBD model
 rho <- 0
-source("code/model_fbd_skyline_A.rev")
+source("code/model_fbd_skyline_A_full.rev")
 
 # model of morphological evolution
 source("code/model_morpho.rev")
