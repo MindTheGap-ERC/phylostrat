@@ -3,7 +3,7 @@
 moves = VectorMoves()
 
 ## FBD model with continuous sampling, extinction, and origination
-rho <- 0
+rho <- 0.0
 source("code/model_fbd_const.rev")
 
 ## other parameters traced
@@ -30,14 +30,14 @@ mymodel = model(phy_morpho)
 # initialize monitors
 monitors = VectorMonitors()
 # save numeric variables
-monitors.append( mnModel(filename=outfile, printgen=1) )
+monitors.append( mnModel(filename=outfile, printgen=10) )
 # save tree
-monitors.append(mnFile(filename = treefile_name, printgen = 1, fbd_tree))
+monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
 # print to screen
 monitors.append( mnScreen(printgen=1000, num_sa, branch_rates_morpho, tclade, tree_length) )
 
 # initialize mcmc
-mymcmc = mcmcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000, tuneHeat = TRUE)
+mymcmc = mcmc(mymodel, monitors, moves, nruns = 2, ntries = 10000)
 mymcmc.burnin(generations=20000,tuningInterval=15000, verbose = TRUE)
 # start mcmc run
 mymcmc.operatorSummary()
