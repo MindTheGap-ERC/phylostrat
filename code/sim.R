@@ -39,7 +39,7 @@ adm_B_6km = admtools::tp_to_adm(t = t[sel],
                                 T_unit = "Myr",
                                 L_unit = "m")
 #### Constants ####
-n_chars = c(30, 300, 1000) # number of characters sampled per fossil
+n_chars = c(100, 300, 1000) # number of characters sampled per fossil
 runs = 50 # no of runs 
 path = "data/sim/" # path to store outputs
 t_max = admtools::max_time(adm_A_2km) # total duration of simulation
@@ -47,18 +47,16 @@ n_sim = 1 # number of trees simulated
 lambda = 1 # origination rate
 mu = 0.3 # extinction rate
 rate_sampling_true = 100 # rate of fossil recovery per lineage
-rate_bin_evol = 1 # rate of evolution for the binary characters
 hiat_min = 0.5 # minimum duration of hiatus (Myr) to be considered in the skyline model
 n_pres_fossils = 30 # number of preserved fossils after stratigraphic effects
 length_alignment = 2000
 mod = "-mHKY -t5 -a0.25 -g5" # HKY model, 5 categories for the gamma distribution. alpha shape parameter set to 0.25, transition to transversion ratio is 5
-# parameters for the strict morphological clock
-sd_morph = 0.1 # standard deviation (log scale) for strict morph. clock
-obs_mean_morph = 0.1 # observed mean of the lognormal distribution for strict morph. clock
+morph_rate = 0.1 # clock rate of strict morphological clock
 
 # parameters for the strict molecular clock
-sd_mol = 0.1 # standard deviation (log scale) for the strict molecular clock
-obs_mean_mol = 0.1 # observed mean of the lognormal distribution for the strict molecular clock 
+#sd_mol = 0.1 # standard deviation (log scale) for the strict molecular clock
+#obs_mean_mol = 0.1 # observed mean of the lognormal distribution for the strict molecular clock
+clock_rate_mol = 0.1
 
 #### set seed ####
 seed = 4
@@ -119,9 +117,6 @@ for (id in seq_len(runs)){
     ## tree with fossils also sampled at the present
     tree_fp_complete = FossilSim::sampled.tree.from.combined(tree = tree_sa_complete$tree,
                                                              rho = 1)
-    # save tree with all fossils as sanity check
-    ape::write.nexus(tree_fp_complete,
-                     file = paste0(path, "tree_all_fossils_",id,".nex"))
     # identify tips that are recent
     h = tree_fp_complete$root.edge + ape::node.depth.edgelength(tree_fp_complete)
     recent_tips = tree_fp_complete$tip.label[h > t_max - 100 * .Machine$double.eps]
@@ -129,6 +124,9 @@ for (id in seq_len(runs)){
     if (length(recent_tips) != n_recent){
       stop("error in no of recent tips")
     }
+    # save tree with all fossils as sanity check
+    ape::write.nexus(tree_fp_complete,
+                     file = paste0(path, "tree_all_fossils_",id,".nex"))
     
     fossils_full = tree_sa_complete$fossils # get fossils with tip names
     
@@ -235,20 +233,16 @@ for (id in seq_len(runs)){
   
     
     #### Simulate character matrices ####
-    # strict morphological clock with clock rate following a lognormal distribution with mean 1
-    mu_clock_morph = log(obs_mean_morph) - sd_morph^2/2
-    clock_rate_morph = rlnorm(1, meanlog = mu_clock_morph, sdlog = sd_morph)
-    
+    # strict morphological clock
     tree_w_rate_morph = tree_fp_complete
-    tree_w_rate_morph$edge.length = tree_w_rate_morph$edge.length * clock_rate_morph
-    sim_bin_char = function(tree, rate, nchar){
+    tree_w_rate_morph$edge.length = tree_w_rate_morph$edge.length * morph_rate
+    sim_bin_char = function(tree, nchar){
       #' @title simulate discrete traits along tree
       #' 
       #' @param tree tree
-      #' @param rate rate for Q matrix
       #' @param nchar number of characters to simulate
       #' 
-      par = matrix(data = c(-rate, rate, rate, -rate), 
+      par = matrix(data = c(-1, 1, 1, -1), 
                    nrow = 2, 
                    ncol = 2)
       char_mat = geiger::sim.char(phy = tree,
@@ -261,7 +255,6 @@ for (id in seq_len(runs)){
     
     # simulate full morph character matrix
     char_mat_full = sim_bin_char(tree = tree_w_rate_morph,
-                                 rate = rate_bin_evol, 
                                  nchar = max(n_chars))
     for (n_char in n_chars){
     ## subset character matrix
@@ -288,8 +281,8 @@ for (id in seq_len(runs)){
     }
     
     #### simulate molecular data ####
-    mu_clock_mol = log(obs_mean_mol) - sd_mol^2/2
-    clock_rate_mol = rlnorm(1, meanlog = mu_clock_mol, sdlog = sd_mol)
+    #mu_clock_mol = log(obs_mean_mol) - sd_mol^2/2
+    #clock_rate_mol = 0.1 #rlnorm(1, meanlog = mu_clock_mol, sdlog = sd_mol)
     
     tree_w_rate_mol = tree_fp_complete
     tree_w_rate_mol$edge.length = tree_w_rate_mol$edge.length * clock_rate_mol
