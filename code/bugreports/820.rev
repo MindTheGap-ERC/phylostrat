@@ -1,0 +1,11 @@
+seed(42)
+taxa <- readTaxonData("data/sim/te/fossils_1_nchar100_cont_rho1.csv")
+init_tree = readTrees("data/sim/te/tree_1_nchar100_cont_rho1.nex")[1]
+fbd_tree ~ dnFBDP(origin=2.0, lambda=1.0, mu=0.3, psi=5.0, rho=1.0, taxa=taxa)
+fbd_tree.taxa()[1] # taxon t9_2
+fbd_tree.taxa()[1].getAge() # 1.099357
+
+fbd_tree.setValue(init_tree)
+
+fbd_tree.taxa()[24] # taxon order changed, select t9_2
+fbd_tree.taxa()[24].getAge() # 1.099357 age was not adjusted
