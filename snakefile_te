@@ -2,6 +2,7 @@
 NO_OF_REPLICAS = 10
 #replica ID
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
+ID = ["1"]
 
 #ID = ["1"]
 NCHAR = ["100", "300", "1000"]
@@ -9,10 +10,10 @@ NRUNS_NUM = 2
 NRUNS = str(NRUNS_NUM)
 NRUN = [str(i) for i in range(1, NRUNS_NUM + 1)]
 CASE = ["cont", "inc_A", "inc_B"]
-RHO = ["0", "1"]
 
-BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/simulation_data/"
-BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/te_phylo/"
+
+BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim/te/"
+BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/output/te/"
 
 storage yoda:
     provider="irods",
@@ -20,51 +21,96 @@ storage yoda:
 
 rule all:
     input:
-        numeric_cont = storage.yoda(expand(BASE_COLLECTION_STORAGE + "res_const_te_{case}_{id}_{nchar}_run_{run}.log", id = ID, nchar = NCHAR, case = CASE, run = NRUN)),
-        trees_cont = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_const_te_{case}_{id}_{nchar}_run_{run}.log", id = ID, nchar = NCHAR, case = CASE, run = NRUN)),
-        trees_skyline = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}_run_{run}.log", id = ID, nchar = NCHAR, run = NRUN)),
-        numeric_skyline = storage.yoda(expand(BASE_COLLECTION_STORAGE + "res_skyline_A_te_{id}_{nchar}_run_{run}.log", id = ID, nchar = NCHAR, run = NRUN)),
-        trees_skyline_full = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}_run_{run}.log", id = ID, nchar = NCHAR, run = NRUN)),
-        numeric_skyline_full = storage.yoda(expand(BASE_COLLECTION_STORAGE + "res_skyline_A_full_te_{id}_{nchar}_run_{run}.log", id = ID, nchar = NCHAR, run = NRUN))
+        numeric_skyline_A_full = storage.yoda(expand(BASE_COLLECTION_STORAGE + "num_skyline_A_full_te_{id}_{nchar}_run_{run}.log", run = NRUN, id = ID, nchar = NCHAR)),
+        trees_skyline_A_full = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}_run_{run}.log", run = NRUN, id = ID, nchar = NCHAR)),
+        map_skyline_A_full = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}_MAP.tre", id = ID, nchar = NCHAR)),
+        maps_skyline_A_full = storage.yoda(expand( BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}_run_{run}_MAP.tre", run = NRUN, id = ID, nchar = NCHAR)),
+        numeric_skyline_A = storage.yoda(expand(BASE_COLLECTION_STORAGE + "num_skyline_A_te_{id}_{nchar}_run_{run}.log", run = NRUN, id = ID, nchar = NCHAR)),
+        trees_skyline_A = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}_run_{run}.log", run = NRUN, id = ID, nchar = NCHAR)),
+        map_skyline_A = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}_MAP.tre", id = ID, nchar = NCHAR)),
+        maps_skyline_A = storage.yoda(expand( BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}_run_{run}_MAP.tre", run = NRUN, id = ID, nchar = NCHAR)),
+        numeric_cont = storage.yoda(expand(BASE_COLLECTION_STORAGE + "num_{case}_te_{id}_{nchar}_run_{run}.log", run = NRUN, id = ID, nchar = NCHAR, case = CASE)),
+        trees_cont = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_{case}_te_{id}_{nchar}_run_{run}.log", run = NRUN, id = ID, nchar = NCHAR, case = CASE)),
+        map_cont = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_{case}_te_{id}_{nchar}_MAP.tre", id = ID, nchar = NCHAR, case = CASE)),
+        maps_cont = storage.yoda(expand( BASE_COLLECTION_STORAGE + "trees_{case}_te_{id}_{nchar}_run_{run}_MAP.tre", run = NRUN, id = ID, nchar = NCHAR, case = CASE))
 
-rule fbd_analysis_constant_rates_te:
+
+rule fbd_analysis_te:
     params:
-        numeric = storage.yoda( BASE_COLLECTION_STORAGE + "res_const_te_{case}_{id}_{nchar}.log"),
-        trees = storage.yoda( BASE_COLLECTION_STORAGE + "trees_const_te_{case}_{id}_{nchar}.log")
+        numeric = storage.yoda(BASE_COLLECTION_STORAGE + "num_{case}_te_{id}_{nchar}"),
+        trees = storage.yoda(BASE_COLLECTION_STORAGE + "trees_{case}_te_{id}_{nchar}")
     input:
-        morph = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{case}_rho1_nchar{nchar}_{id}.nex"),
-        taxa = storage.yoda(BASE_COLLECTION_SIM + "fossils_{case}_rho1_{id}.tsv"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_data_{id}.nex")
+        morph = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}_rho1.nex"),
+        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}_rho1.csv"),
+        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}_rho1.nex"),
+        start_tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_{case}_rho1.nex")
     output:
-        num = storage.yoda( expand(BASE_COLLECTION_STORAGE +"res_const_te_{{case}}_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
-        trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "trees_const_te_{{case}}_{{id}}_{{nchar}}_run_{run}.log", run = NRUN))
+        numeric = storage.yoda(expand(BASE_COLLECTION_STORAGE + "num_{{case}}_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        trees = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_{{case}}_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        map = storage.yoda(BASE_COLLECTION_STORAGE + "trees_{case}_te_{id}_{nchar}_MAP.tre"),
+        maps = storage.yoda(expand( BASE_COLLECTION_STORAGE + "trees_{{case}}_te_{{id}}_{{nchar}}_run_{run}_MAP.tre", run = NRUN))
     shell:
-        "bash code/inference_fbd_te.sh {input.morph} {input.taxa} {input.mol} {params.numeric} {params.trees}"
+        "bash code/te/inference_fbd_te.sh {input.morph} {input.fossils} {input.mol} {params.numeric} {params.trees} {input.start_tree}"
+
 
 rule fbd_analysis_skyline_A_te:
     params:
-        numeric = storage.yoda(BASE_COLLECTION_STORAGE + "res_skyline_A_te_{id}_{nchar}.log"),
-        trees = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}.log")
+        numeric = storage.yoda(BASE_COLLECTION_STORAGE + "num_skyline_A_te_{id}_{nchar}"),
+        trees = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}")
     input:
-        morph = storage.yoda(BASE_COLLECTION_SIM + "char_mat_inc_A_rho1_nchar{nchar}_{id}.nex"),
-        taxa = storage.yoda(BASE_COLLECTION_SIM + "fossils_inc_A_rho1_{id}.tsv"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_data_{id}.nex")
+        morph = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_inc_A_rho1.nex"),
+        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_inc_A_rho1.csv"),
+        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_inc_A_rho1.nex"),
+        start_tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_inc_A_rho1.nex")
     output:
-        numeric = storage.yoda(expand(BASE_COLLECTION_STORAGE + "res_skyline_A_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
-        trees = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN))
+        numeric = storage.yoda(expand(BASE_COLLECTION_STORAGE + "num_skyline_A_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        trees = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        map = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{id}_{nchar}_MAP.tre"),
+        maps = storage.yoda(expand( BASE_COLLECTION_STORAGE + "trees_skyline_A_te_{{id}}_{{nchar}}_run_{run}_MAP.tre", run = NRUN))
     shell:
-        "bash code/inference_fbd_skyline_A_te.sh {input.morph} {input.taxa} {input.mol} {params.numeric} {params.trees}"
+        "bash code/te/inference_fbd_skyline_A_te.sh {input.morph} {input.fossils} {input.mol} {params.numeric} {params.trees} {input.start_tree}"
 
 rule fbd_analysis_skyline_A_full_te:
     params:
-        numeric = storage.yoda(BASE_COLLECTION_STORAGE + "res_skyline_A_full_te_{id}_{nchar}.log"),
-        trees = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}.log")
+        numeric = storage.yoda(BASE_COLLECTION_STORAGE + "num_skyline_A_full_te_{id}_{nchar}"),
+        trees = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}")
     input:
-        morph = storage.yoda(BASE_COLLECTION_SIM + "char_mat_inc_A_rho1_nchar{nchar}_{id}.nex"),
-        taxa = storage.yoda(BASE_COLLECTION_SIM + "fossils_inc_A_rho1_{id}.tsv"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_data_{id}.nex")
+        morph = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_inc_A_rho1.nex"),
+        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_inc_A_rho1.csv"),
+        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_inc_A_rho1.nex"),
+        start_tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_inc_A_rho1.nex")
     output:
-        numeric = storage.yoda(expand(BASE_COLLECTION_STORAGE + "res_skyline_A_full_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
-        trees = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN))
+        numeric = storage.yoda(expand(BASE_COLLECTION_STORAGE + "num_skyline_A_full_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        trees = storage.yoda(expand(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{{id}}_{{nchar}}_run_{run}.log", run = NRUN)),
+        map = storage.yoda(BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{id}_{nchar}_MAP.tre"),
+        maps = storage.yoda(expand( BASE_COLLECTION_STORAGE + "trees_skyline_A_full_te_{{id}}_{{nchar}}_run_{run}_MAP.tre", run = NRUN))
     shell:
-        "bash code/inference_fbd_skyline_A_full_te.sh {input.morph} {input.taxa} {input.mol} {params.numeric} {params.trees}"
+        "bash code/te/inference_fbd_skyline_A_full_te.sh {input.morph} {input.fossils} {input.mol} {params.numeric} {params.trees} {input.start_tree}"
+
+rule simulate_data_locally:
+    output:
+        expand("data/sim/te/char_mat_{id}_nchar{nchar}_{case}_rho1.nex", id = ID, nchar = NCHAR, case = CASE),
+        expand("data/sim/te/fossils_{id}_nchar{nchar}_{case}_rho1.csv", id = ID, nchar = NCHAR, case = CASE),
+        expand("data/sim/te/mol_dat_{id}_nchar{nchar}_{case}_rho1.nex", id = ID, nchar = NCHAR, case = CASE),
+        expand("data/sim/te/tree_{id}_nchar{nchar}_{case}_rho1.nex", id = ID, nchar = NCHAR, case = CASE)
+    shell:
+        "Rscript code/te/sim_te.R"
+
+rule move_data_to_yoda:
+    output:
+        char_mat = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}_rho1.nex"),
+        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}_rho1.csv"),
+        mol_dat = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}_rho1.nex"),
+        tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_{case}_rho1.nex")
+    input:
+        char_mat = "data/sim/te/char_mat_{id}_nchar{nchar}_{case}_rho1.nex",
+        fossils =  "data/sim/te/fossils_{id}_nchar{nchar}_{case}_rho1.csv",
+        mol_dat = "data/sim/te/mol_dat_{id}_nchar{nchar}_{case}_rho1.nex",
+        tree = "data/sim/te/tree_{id}_nchar{nchar}_{case}_rho1.nex"
+    shell:
+        """
+        cp {input.char_mat} {output.char_mat}
+        cp {input.fossils} {output.fossils}
+        cp {input.mol_dat} {output.mol_dat}
+        cp {input.tree} {output.tree}
+        """
