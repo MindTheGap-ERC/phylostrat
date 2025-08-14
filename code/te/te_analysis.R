@@ -180,7 +180,7 @@ ggsave("figs/te/ex_skyline_full.png", plot = p_skyline_full_ex)
 
 save(df_skyline_full, file = "data/df_skyline_full.RData")
 
-## combine data sets
+#### combine data sets ####
 load("data/df_skyline_full.RData")
 load("data/df_skyline.RData")
 load("data/df_cont.RData")
@@ -209,17 +209,67 @@ p2
 
 ggsave("figs/te/or_combined.png", plot = p2)
 ggsave("figs/te/ex_combined.png", plot = p1)
+library(dplyr)
 
+dff = filter(df, case == "cont" | case == "skyline_A")
 
-df4 = data.frame(psi = c(df_skyline_full$psi1, df_skyline_full$psi2, df_skyline_full$psi3, df_skyline_full$psi4, df_skyline_full$psi5),
-                 int =  c(rep("1", length(df_skyline_full$psi1)),
-                          rep("2", length(df_skyline_full$psi1)),
-                          rep("3", length(df_skyline_full$psi1)),
-                          rep("4", length(df_skyline_full$psi1)),
-                          rep("5", length(df_skyline_full$psi1))))
+pp1 = dff |> ggplot(aes(x = nchar, y = ex_re, fill = case)) + 
+  geom_boxplot(position = position_dodge(width = 0.5)) +
+  labs(title = "Extinction Rate", x = "# Characters", y = "Relative Error Extinction Rate", fill = "Inference") +
+  scale_fill_hue(labels = c("Continuous", "Skyline"))
+pp1
 
-p3 = df4 |> ggplot(aes(x = int, y = psi)) +
+pp2 = dff |> ggplot(aes(x = nchar, y = or_re, fill = case)) + 
+  geom_boxplot(position = position_dodge(width = 0.5)) +
+  labs(title = "Speciation Rate", x = "# Characters", y = "Relative Error Speciation Rate", fill = "Inference") +
+  scale_fill_hue(labels = c("Continuous", "Skyline"))
+pp2
+library(ggpubr)
+fig = ggarrange(pp1, pp2, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
+fig
+ggsave("figs/te/or_ex_cont_vs_skyline.png", plot = fig)
+#### Sampling
+df4 = data.frame(psi = c(df_skyline_full$psi1, 
+                         df_skyline_full$psi2, 
+                         df_skyline_full$psi3, 
+                         df_skyline_full$psi4,
+                         df_skyline_full$psi5),
+                 `sampling interval` =  c(rep("1", length(df_skyline_full$psi1)),
+                                          rep("2", length(df_skyline_full$psi2)),
+                                          rep("3", length(df_skyline_full$psi3)),
+                                          rep("4", length(df_skyline_full$psi4)),
+                                          rep("5", length(df_skyline_full$psi5))),
+                 `type` =  c(rep("pres", length(df_skyline_full$psi1)),
+                                          rep("gap", length(df_skyline_full$psi2)),
+                                          rep("pres", length(df_skyline_full$psi3)),
+                                          rep("gap", length(df_skyline_full$psi4)),
+                                          rep("pres", length(df_skyline_full$psi5))))
+
+p3 = df4 |> ggplot(aes(x = `sampling.interval`, y = psi, fill = type)) +
   geom_boxplot() +
-  xlab("Interval")
+  xlab("Sampling Interval") +
+  ylab("Mean Posterior Sampling Rate [Fossils/Myr]") +
+  ylim(c(0, 25)) +
+  guides(fill = "none")
+p3
 
 ggsave("figs/te/psi_intervals.png", plot = p3)
+
+#### compare different sampling regimes ####
+
+p_ex = df_cont |>
+  ggplot(aes(x = nchar, y = ex_re, fill = case)) +
+  geom_boxplot(position = position_dodge(width = 0.5)) +
+  labs(title = "Extinction Rate", x = "# Characters", y = "Relative Error Extinction Rate", fill = "Sampling") +
+  scale_fill_hue(labels = c("Continuous", "Few Long Gaps", "Many Short Gaps"))
+p_ex
+p_or = df_cont |>
+  ggplot(aes(x = nchar, y = or_re, fill = case)) +
+  geom_boxplot(position = position_dodge(width = 0.5)) +
+  labs(title = "Speciation Rate", x = "# Characters", y = "Relative Error Speciation Rate", fill = "Sampling") +
+  scale_fill_hue(labels = c("Continuous", "Few Long Gaps", "Many Short Gaps"))
+p_or
+fig = ggarrange(p_ex, p_or, ncol = 2, nrow = 1, common.legend = TRUE, legend = "bottom")
+fig
+
+ggsave("figs/te/sampling_comparison.png", plot = fig)
