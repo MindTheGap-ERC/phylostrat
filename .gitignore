@@ -16,6 +16,7 @@ docs
 
 /data/osf/R_outputs/*
 /data/osf/matlab_outputs/*
+/data/*.h5 # binary files 
 
 history.txt
 

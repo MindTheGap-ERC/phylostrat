@@ -1,0 +1,31 @@
+[[locations]]
+label = "1"
+x = [2850.0, "m"]
+initial_topography = [-9.5, "m"]
+y = [7350.0, "m"]
+[[locations]]
+label = "2"
+x = [5850.0, "m"]
+initial_topography = [-19.5, "m"]
+y = [7350.0, "m"]
+[[locations]]
+label = "3"
+x = [8850.0, "m"]
+initial_topography = [-29.5, "m"]
+y = [7350.0, "m"]
+[[locations]]
+label = "4"
+x = [11850.0, "m"]
+initial_topography = [-39.5, "m"]
+y = [7350.0, "m"]
+
+[global]
+tag = "sinusoid"
+time_steps = 5000
+subsidence_rate = [50.0, "m Myr^-1"]
+delta_t = [0.0002, "Myr"]
+
+[files]
+age_depth_model = "data/sinusoid_adm.csv"
+metadata = "data/sinusoid_metadata.toml"
+stratigraphic_column = "data/sinusoid_sc.csv"
