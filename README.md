@@ -32,6 +32,33 @@ The repository contains multiple types of analyses:
 * skyline FBD inference with sampling during destructive intervals set to 0, suffix `skyline_A`
 * skyline FBD inference with all sampling parameters estimates, suffix `skyline_A_full`
 
+### Simulate a stratigraphic platform
+
+In Julia's package mode, initialize the project:
+
+```julia
+Pkg> activate .
+Pkg> instantiate
+```
+This may take some time when ran for the first time.
+
+Then run the desired stratigraphic model, e.g.:
+```julia
+include("code/strat_architectures/sinusoid_run.jl")
+```
+
+this will write a HDF5 file and assocated `CSV`s into `data`.
+
+To plot a slice through a platform, import the plot function:
+```julia
+include("code/strat_architectures/plot_section.jl")
+```
+
+and you can call it for different files. It will save a .png plot into `data`:
+```julia
+Plot_ck.plot_section("data/", "sinusoid.h5")
+```
+
 ## Repository structure
 
 * code
