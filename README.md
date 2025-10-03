@@ -54,11 +54,6 @@ To plot a slice through a platform, import the plot function:
 include("code/strat_architectures/plot_section.jl")
 ```
 
-and you can call it for different files. It will save a .png plot into `data`:
-```julia
-Plot_ck.plot_section("data/", "sinusoid.h5")
-```
-
 ## Repository structure
 
 * code
