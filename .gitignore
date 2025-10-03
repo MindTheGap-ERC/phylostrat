@@ -36,3 +36,4 @@ history.txt
 # data files
 *.RData
 *.tre
+*.h5
