@@ -14,3 +14,6 @@ using CarboKitten.Export: read_slice
     end
 
 end
+
+
+Plot_ck.plot_section("data/", "sinusoid.h5")
