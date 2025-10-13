@@ -13,7 +13,12 @@ using CarboKitten.Export: read_slice
         save("data/$(file).png", fig)
     end
 
+    function make_summary()
+        fig = summary_plot("data/sinusoid.h5")
+        save("data/summary.png", fig)
+    end
 end
 
 
 Plot_ck.plot_section("data/", "sinusoid.h5")
+Plot_ck.make_summary()
