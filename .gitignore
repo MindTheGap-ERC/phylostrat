@@ -37,3 +37,7 @@ history.txt
 *.RData
 *.tre
 *.h5
+
+*.toml
+!Manifest.toml
+!Project.toml
