@@ -12,7 +12,7 @@ set.seed(42)
 n_chars = c(30, 100, 300, 1000) # number of characters sampled per fossil
 t_max = 5 # duration of simulation in Myr
 lambda = 0.8 # origination rate
-mu = 0.2 # extinction rate
+mu = 0.6 # extinction rate
 clock_rate_morph = 0.05 # morph. clock rate (strict clock)
 clock_rate_mol = 0.005 # mol clock rate (strict clock)
 sampling_rate = 50 # total sampling rate for fossils
@@ -149,7 +149,7 @@ for (id in ids){
     ape::write.nexus.data(char_mat,
                           file = char_mat_name,
                           format = "standard")
-    plot(tree_fp_rho1)
+    #plot(tree_fp_rho1)
     
     ## molecular alignment
     opts = paste0(mod, " -l", length_alignment)

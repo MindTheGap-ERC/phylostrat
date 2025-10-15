@@ -5,11 +5,11 @@ moves.append( mvScale(speciation_rate, weight=5.0, lambda = 1.0) )
 moves.append( mvScale(speciation_rate, weight=5.0, lambda = 5.0) )
 speciation_rate.setValue(0.8)
 
-extinction_rate ~ dnExponential(lambda = 5.0) # set to true mean
+extinction_rate ~ dnExponential(lambda = 1.7) # set to true mean
 moves.append( mvScale(extinction_rate, weight=5.0, lambda = 0.1) )
 moves.append( mvScale(extinction_rate, weight=5.0, lambda = 1.0) )
 moves.append( mvScale(extinction_rate, weight=5.0, lambda = 5.0) )
-extinction_rate.setValue(0.2)
+extinction_rate.setValue(0.6)
 
 origin_time ~ dnExponential(lambda = 1.0, offset = 5.0)
 moves.append( mvScale(origin_time, weight=15.0, lambda = 0.1) )

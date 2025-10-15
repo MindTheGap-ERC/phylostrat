@@ -19,7 +19,7 @@ mol.addMissingTaxa(taxa)
 
 moves = VectorMoves()
 
-rho <- 1
+rho <- 1.0
 
 source("code/model_fbd_const.rev")
 source("code/model_morpho.rev")
@@ -33,19 +33,19 @@ phy_seq ~ dnPhyloCTMC(tree = fbd_tree, Q = Q_mol, siteRates = rates_mol, branchR
 phy_seq.clamp(mol)
 
 my_model = model(phy_morpho)
-my_model.graph("dags/fbd_base.dot")
+#my_model.graph("dags/fbd_base.dot")
 
 # initialize monitors
 monitors = VectorMonitors()
 monitors.append( mnModel(filename=outfile_name, printgen=10) )
 monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
-monitors.append( mnScreen(printgen=10, origin_time, speciation_rate, extinction_rate) )
+monitors.append( mnScreen(printgen=1000, origin_time, speciation_rate, extinction_rate) )
 
 # initialize mcmc
 mymcmc = mcmc(my_model, monitors, moves, nruns = 2, ntries = 10000)
-#mymcmc.burnin(generations=2000,tuningInterval=1500, verbose = TRUE)
+#mymcmc.burnin(generations=20000,tuningInterval=15000, verbose = TRUE)
 mymcmc.operatorSummary()
-mymcmc.run(generations=10000)
+mymcmc.run(generations=100000)
 mymcmc.operatorSummary()
 
 # generate MAP trees
