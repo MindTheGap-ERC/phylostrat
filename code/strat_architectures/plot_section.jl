@@ -7,18 +7,13 @@ using GLMakie
 using CarboKitten.Visualization
 using CarboKitten.Export: read_slice
 
-    function plot_section(path::String, file::String)
-        header, profile = read_slice(path * file, :profile)
-        fig = sediment_profile(header, profile)
-        save("data/$(file).png", fig)
-    end
-
-    function make_summary()
-        fig = summary_plot("data/sinusoid.h5")
-        save("data/summary.png", fig)
-    end
+function make_summary_plots()
+    fig = summary_plot("data/sinusoid.h5")
+    save("figs/sinusoid.png", fig)
+    fig = summary_plot("data/miller_2020.h5")
+    save("figs/miller.png", fig)
 end
 
+end
 
-Plot_ck.plot_section("data/", "sinusoid.h5")
-Plot_ck.make_summary()
+Plot_ck.make_summary_plots()

@@ -1,12 +1,22 @@
-# Run a simple ALCAP model
-module Sinusoid
+module Miller
 
 using CarboKitten
 using Unitful
 using CarboKitten.Export: read_slice, data_export, CSV
 using DataFrames
+using CarboKitten.DataSets: miller_2020
+using Interpolations
+using StatsBase
 
-const TAG = "sinusoid"
+const TAG = "miller_2020"
+
+function sea_level()
+    df = miller_2020()
+    sort!(df, [:time])
+    return linear_interpolation(
+        df.time,
+        df.sealevel)
+end
 
 const FACIES = [
     ALCAP.Facies(
@@ -32,23 +42,18 @@ const FACIES = [
         diffusion_coefficient=12.5u"m/yr")
 ]
 
-
-const PERIOD1 = 2.5u"Myr"
-const PERIOD2 = 0.1u"Myr"
-const AMPLITUDE1 = 50.0u"m"
-const AMPLITUDE2 = 10.0u"m"
-
 const INPUT = ALCAP.Input(
     tag="$TAG",
     box=Box{Coast}(grid_size=(180, 50), phys_scale=150.0u"m"),
     time=TimeProperties(
         Δt=0.0001u"Myr",
-        steps=50000),
+        steps=50000,
+        t0=-5.0001u"Myr"),
     ca_interval=1,
     initial_topography=(x, y) -> -x / 300.0,
     output=Dict(
             :profile => OutputSpec(slice = (:, 50), write_interval = 10)),
-    sea_level=t -> AMPLITUDE1 * cos(2π * t / PERIOD1) + AMPLITUDE2 * sin(2π * t / PERIOD2),
+    sea_level=sea_level(),
     subsidence_rate=30.0u"m/Myr",
     disintegration_rate=50.0u"m/Myr",
     insolation=400.0u"W/m^2",
@@ -74,5 +79,5 @@ const INPUT = ALCAP.Input(
 
 end
 
-Sinusoid.main()
-Sinusoid.export_files()
+Miller.main()
+Miller.export_files()
