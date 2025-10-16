@@ -8,9 +8,9 @@ using CarboKitten.Visualization
 using CarboKitten.Export: read_slice
 
 function make_summary_plots()
-    fig = summary_plot("data/sinusoid.h5")
+    fig = summary_plot("data/strat/sinusoid.h5")
     save("figs/sinusoid.png", fig)
-    fig = summary_plot("data/miller_2020.h5")
+    fig = summary_plot("data/strat/miller_2020.h5")
     save("figs/miller.png", fig)
 end
 

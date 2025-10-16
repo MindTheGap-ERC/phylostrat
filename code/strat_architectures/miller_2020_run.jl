@@ -62,17 +62,17 @@ const INPUT = ALCAP.Input(
     facies=FACIES)
 
     function main()
-        run_model(Model{ALCAP}, INPUT, "data/$(TAG).h5")
+        run_model(Model{ALCAP}, INPUT, "data/strat/$(TAG).h5")
     end
 
     function export_files()
-        header, profile = read_slice("data/$(TAG).h5", :profile)
+        header, profile = read_slice("data/strat/$(TAG).h5", :profile)
         columns = [profile[i] for i in [20, 40, 60, 80, 100, 120, 140, 160]]
         data_export(
             CSV(
-                :stratigraphic_column => "data/$(TAG)_sc.csv",
-                :age_depth_model      => "data/$(TAG)_adm.csv",
-                :metadata => "data/$(TAG)_metadata.toml"),
+                :stratigraphic_column => "data/strat/$(TAG)_sc.csv",
+                :age_depth_model      => "data/strat/$(TAG)_adm.csv",
+                :metadata => "data/strat/$(TAG)_metadata.toml"),
             header,
             columns)
     end
