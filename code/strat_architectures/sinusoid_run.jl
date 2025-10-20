@@ -64,7 +64,7 @@ const INPUT = ALCAP.Input(
 
     function export_files()
         header, profile = read_slice("data/strat/$(TAG).h5", :profile)
-        columns = [profile[i] for i in [20, 40, 60, 80, 100, 120, 140, 160]]
+        columns = [profile[i] for i in [21, 41, 61, 81, 101 121, 141, 161]]
         data_export(
             CSV(
                 :stratigraphic_column => "data/strat/$(TAG)_sc.csv",
