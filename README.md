@@ -15,46 +15,37 @@ Orcid: [0000-0003-1559-1838](https://orcid.org/0000-0003-1559-1838)
 
 Requires R, BASH, Julia, and RevBayes (https://revbayes.github.io/) as `rb`.
 
-### Generate simulation data
+### Generate stratigraphic scenarios ###
 
-To simulate the data, run
+In `Julia`, do
 
 ```
-Rscript code/sim.R
+] activate .
+] instantiate
 ```
 
-in BASH. This will download approx. 190 Mb of data from OSF if needed, and then generate all simulation data under `data/sim/`. This will run a few minutes and produce approx 50 Mb of data.
+Then leave Pkg mode, and run
 
-The repository contains multiple types of analyses:
-* fossil only, suffix `fo`
-* total evidence, suffix `te`
-* constant rate FBD analyses, suffix `const` or none
-* skyline FBD inference with sampling during destructive intervals set to 0, suffix `skyline_A`
-* skyline FBD inference with all sampling parameters estimates, suffix `skyline_A_full`
-
-### Simulate a stratigraphic platform
-
-In Julia's package mode, initialize the project:
-
-```julia
-Pkg> activate .
-Pkg> instantiate
 ```
-This may take some time when ran for the first time.
-
-Then run the desired stratigraphic model, e.g.:
-```julia
 include("code/strat_architectures/sinusoid_run.jl")
 include("code/strat_architectures/miller_2020_run.jl")
-```
-
-this will write a HDF5 file and associated `CSV`s into `data/strat/`.
-
-To generate summary plots for both platforms in `figs/`, run:
-
-```julia
 include("code/strat_architectures/plot_section.jl")
 ```
+
+which will generate all stratigraphic scenarios, exported data as .csv, and produce figures in `figs/`
+
+### Generate trees and fossils
+
+To run the simulation scripts generating trees & fossils, use
+
+
+```
+Rscript code/sim_<suffix>.R
+```
+
+in BASH, where the suffix is either `base` (constant rate FBD), `strat` (FBD with fossils removed according to the stratigraphic simulations), `gap_est` and `gap_prior` for more simulations under the sinusoid scenario.
+
+
 
 ## Repository structure
 
