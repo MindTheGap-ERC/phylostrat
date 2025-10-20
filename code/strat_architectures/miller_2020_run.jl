@@ -7,6 +7,8 @@ using DataFrames
 using CarboKitten.DataSets: miller_2020
 using Interpolations
 using StatsBase
+using Random
+
 
 const TAG = "miller_2020"
 
@@ -62,6 +64,7 @@ const INPUT = ALCAP.Input(
     facies=FACIES)
 
     function main()
+        Random.seed!(42)
         run_model(Model{ALCAP}, INPUT, "data/strat/$(TAG).h5")
     end
 
@@ -72,7 +75,9 @@ const INPUT = ALCAP.Input(
             CSV(
                 :stratigraphic_column => "data/strat/$(TAG)_sc.csv",
                 :age_depth_model      => "data/strat/$(TAG)_adm.csv",
-                :metadata => "data/strat/$(TAG)_metadata.toml"),
+                :metadata => "data/strat/$(TAG)_metadata.toml",
+                :water_depth => "data/strat/$(TAG)_wd.csv",
+                :sediment_accumulation_curve => "data/strat/$(TAG)_sac.csv"),
             header,
             columns)
     end

@@ -5,6 +5,7 @@ using CarboKitten
 using Unitful
 using CarboKitten.Export: read_slice, data_export, CSV
 using DataFrames
+using Random
 
 const TAG = "sinusoid"
 
@@ -57,6 +58,7 @@ const INPUT = ALCAP.Input(
     facies=FACIES)
 
     function main()
+        Random.seed!(42)
         run_model(Model{ALCAP}, INPUT, "data/strat/$(TAG).h5")
     end
 
@@ -67,7 +69,9 @@ const INPUT = ALCAP.Input(
             CSV(
                 :stratigraphic_column => "data/strat/$(TAG)_sc.csv",
                 :age_depth_model      => "data/strat/$(TAG)_adm.csv",
-                :metadata => "data/strat/$(TAG)_metadata.toml"),
+                :metadata => "data/strat/$(TAG)_metadata.toml",
+                :water_depth => "data/strat/$(TAG)_wd.csv",
+                :sediment_accumulation_curve => "data/strat/$(TAG)_sac.csv"),
             header,
             columns)
     end
