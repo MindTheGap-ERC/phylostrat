@@ -1,16 +1,5 @@
-#### Import constants & libraries ####
-source("code/constants.R")
-set.seed(42)
-
-# set up infrastructure
-path = "data/sim/fbd_base/" # path to store outputs
-# create output directory if it does not exist
-if (!dir.exists(path)){
-  dir.create(path, recursive = TRUE)
-}
-
-#### Auxiliary functions ####
-source("code/utils.R")
+# simulation for the miller case
+case = "sinusoid"
 
 n_succ = 0
 n_fail = 0
@@ -38,9 +27,18 @@ for (id in ids){
     tree_original_name = paste0(path,"original_tree_", id , "_nchar", n_char, "_", case,  ".nex")
     ape::write.nexus(tree_complete,
                      file= tree_original_name)
+    
+    if(case == "sinusoid"){adm = adm_sinusoid}
+    if(case == "miller"){adm = adm_miller}
+    pres = identity
+    ctc = get_collection_prob(adm)
+    
     # full fossil record
     fossils_full_base = FossilSim::sim.fossils.poisson(rate = sampling_rate,
-                                                       tree = tree_complete) |> 
+                                                       tree = tree_complete) |>
+      admtools::rev_dir(ref = t_max) |> 
+      StratPal::apply_taphonomy(pres_potential = pres, ctc =  ctc) |>
+      admtools::rev_dir(ref = t_max) |>
       subsample_fossils(n = n_fossils)
     
     fossils_orig_filename = paste0(path,"original_fossils_", id , "_nchar", n_char, "_", case,  ".csv")
@@ -64,14 +62,14 @@ for (id in ids){
     }
     
     # save full fossil record
-    fossil_name = paste0(path,"fossils_", id , "_nchar", n_char, ".csv")
+    fossil_name = paste0(path,"fossils_", id , "_nchar", n_char, "_", case,  ".csv")
     fossils_full |>
       get_fossil_ages(extant_taxa = extant_tips)|>
       write.table(file = fossil_name,
                   quote = FALSE,
                   row.names = FALSE)
     
-    tree_name = paste0(path,"tree_", id , "_nchar", n_char, ".nex")
+    tree_name = paste0(path,"tree_", id , "_nchar", n_char, "_", case,  ".nex")
     ape::write.nexus(tree_fp_rho1,
                      file= tree_name)
     
@@ -79,7 +77,7 @@ for (id in ids){
     tree_w_rate_morph$edge.length = tree_w_rate_morph$edge.length * clock_rate_morph
     char_mat = sim_bin_char(tree = tree_w_rate_morph,
                             nchar = n_char)
-    char_mat_name = paste0(path,"char_mat_", id , "_nchar", n_char, ".nex")
+    char_mat_name = paste0(path,"char_mat_", id , "_nchar", n_char, "_", case,  ".nex")
     ape::write.nexus.data(char_mat,
                           file = char_mat_name,
                           format = "standard")
@@ -92,9 +90,10 @@ for (id in ids){
     tree_w_rate_mol$edge.lenth = tree_w_rate_mol$edge_length * clock_rate_mol
     mol = sim_mol_char(tree = tree_w_rate_mol, extant_tips = extant_tips, opts = opts)
     ape::write.nexus.data(mol,
-                          file = paste0(path, "mol_dat_", id, "_nchar", n_char, ".nex"))
+                          file = paste0(path, "mol_dat_", id, "_nchar", n_char, "_", case,  ".nex"))
   }
 }
+
 
 cat(paste0(n_succ, " successful trees\n"))
 cat(paste0(n_fail, " failed trees\n"))
