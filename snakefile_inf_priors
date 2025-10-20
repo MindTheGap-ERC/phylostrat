@@ -1,0 +1,63 @@
+RUN = ["1", "2"]
+NCHAR = [ "30", "100", "300", "1000"]
+NO_OF_REPLICAS = 10
+ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
+
+BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/rb_fbd_benchmark/data/sim/fbd_gap_prior/"
+BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/rb_fbd_benchmark/output/fbd_gap_prior/"
+
+storage yoda:
+    provider="irods",
+    max_requests_per_second="1000"
+
+rule all:
+    input: 
+        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR)),
+        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR)),
+        map_tree = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_MAP.tre", id = ID, nchar = NCHAR)),
+        map_trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_run_{run}_MAP.tre", run = RUN, id = ID, nchar = NCHAR))
+
+rule fbd_inference_base:
+    params:
+        numeric = storage.yoda( BASE_COLLECTION_STORAGE + "num_{id}_nchar{nchar}"),
+        tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}")
+    input:
+        char_mat = storage.yoda( BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}.nex"),
+        fossils = storage.yoda( BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}.csv"),
+        tree = storage.yoda( BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}.nex"),
+        mol = storage.yoda( BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}.nex")
+    output:
+        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{{id}}_nchar{{nchar}}_run_{run}.log", run = RUN)),
+        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{{id}}_nchar{{nchar}}_run_{run}.log", run = RUN)),
+        map_tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_MAP.tre"),
+        map_trees = storage.yoda(expand( BASE_COLLECTION_STORAGE + "tree_{{id}}_nchar{{nchar}}_run_{run}_MAP.tre", run = RUN))
+    shell:
+        "bash code/inference_fbd_base.sh {input.char_mat} {input.fossils} {input.tree}  {params.numeric} {params.tree} {input.mol}"
+
+rule simulate_data_locally_fbd_base:
+    output:
+        trees = expand("data/sim/fbd_base/tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        char_mat = expand("data/sim/fbd_base/char_mat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        fossils = expand("data/sim/fbd_base/fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
+        mol = expand("data/sim/fbd_base/mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR)
+    shell:
+        "Rscript code/sim_base.R"
+
+rule copy_data_to_yoda:
+    input:
+        char_mat = "data/sim/fbd_base/char_mat_{id}_nchar{nchar}.nex",
+        fossils = "data/sim/fbd_base/fossils_{id}_nchar{nchar}.csv",
+        tree = "data/sim/fbd_base/tree_{id}_nchar{nchar}.nex",
+        mol = "data/sim/fbd_base/mol_dat_{id}_nchar{nchar}.nex"
+    output:
+        char_mat = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}.nex"),
+        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}.csv"),
+        tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}.nex"),
+        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}.nex")
+    shell:
+        """
+        cp {input.char_mat} {output.char_mat}
+        cp {input.fossils} {output.fossils}
+        cp {input.tree} {output.tree}
+        cp {input.mol} {output.mol}
+        """
