@@ -1,2 +1,2 @@
-#ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_base" "data/sim/" --overwrite
-#ibridges download "irods://nluu11p/home/research-mindthegap/rb_fbd_benchmark/output/fbd_base" "output/" --overwrite
+ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_base" "data/sim/" --overwrite
+ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/output/fbd_base" "output/" --overwrite

@@ -3,8 +3,8 @@ NCHAR = [ "30", "100", "300", "1000"]
 NO_OF_REPLICAS = 10
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 
-BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/rb_fbd_benchmark/data/sim/fbd_base/"
-BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/rb_fbd_benchmark/output/fbd_base/"
+BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_base/"
+BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/output/fbd_base/"
 
 storage yoda:
     provider="irods",
