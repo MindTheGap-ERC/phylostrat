@@ -1,5 +1,4 @@
-#### Stratigraphic context ####
-miller_data = read.csv("data/strat/miller_2020_adm.csv")
-sinusoid_data = read.csv("data/strat/sinusoid_adm.csv")
-adm_miller = tp_to_adm(t = miller_data$time..Myr.- min(miller_data$time..Myr.), h = miller_data$adm_3..m.)
-adm_sinusoid = tp_to_adm(t = sinusoid_data$time..Myr., h = sinusoid_data$adm_1..m.)
+df = read.csv("data/strat/selected_adms.csv")
+
+adm_miller = admtools::tp_to_adm(t = df$t, h = df$miller, T_unit = "Myr", L_unit = "m")
+adm_sinusoid = admtools::tp_to_adm(t = df$t, h = df$sinusoid, T_unit = "Myr", L_unit = "m")

@@ -1,19 +1,34 @@
-miller = read.csv("data/strat/miller_2020_adm.csv")
-sinusoid = read.csv("data/strat/sinusoid_adm.csv")
-plot(miller$time..Myr., miller$adm_2..m.)
-library(admtools)
-adm = tp_to_adm(t = miller$time..Myr., h = miller$adm_3..m.)
+#### Stratigraphic context ####
+source("code/constants.R")
+miller_data = read.csv("data/strat/miller_2020_adm.csv")
+sinusoid_data = read.csv("data/strat/sinusoid_adm.csv")
+adm_miller = tp_to_adm(t = miller_data$time..Myr.- min(miller_data$time..Myr.), h = miller_data$adm_1..m.)
+adm_sinusoid = tp_to_adm(t = sinusoid_data$time..Myr., h = sinusoid_data$adm_1..m.)
 
-plot(adm, col_destr = NULL )
+plot(adm_miller, lty_destr = 0)
+plot(adm_sinusoid, lty_destr = 0)
 
-adm_2 = tp_to_adm(t = sinusoid$time..Myr., h = sinusoid$adm_1..m.)
+get_hiat_list(adm_sinusoid)
+get_hiat_duration(adm_sinusoid)
 
-plot(adm_2, col_destr = NULL)
+h_list = get_hiat_list(adm_sinusoid)
+t = c()
+for (i in seq_along(h_list) ){
+  if (h_list[[i]]["end"] - h_list[[i]]["start"]> 0.5){
+    t = c(t, h_list[[i]]["start"], h_list[[i]]["end"])
+  }
+}
 
-get_incompleteness(adm)
-get_incompleteness(adm_2)
+timeline = t_max - rev(t) |> unname()
+#timeline
+
+#cat("timeline is", timeline)
 
 
-sin_sac = read.csv("data/strat/sinusoid_sc.csv")
 
-plot(sin_sac$time..Myr., sin_sac$sc_1_f1..m.)
+df = data.frame(t = sinusoid_data$time..Myr., sinusoid = sinusoid_data$adm_1..m., miller = miller_data$adm_1..m.)
+
+plot(df$t, df$sinusoid)
+plot(df$t, df$miller)
+
+write.csv(df, "data/strat/selected_adms.csv")
