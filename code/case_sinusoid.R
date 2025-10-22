@@ -87,7 +87,7 @@ for (id in ids){
     opts = paste0(mod, " -l", length_alignment)
     
     tree_w_rate_mol = tree_fp_rho1
-    tree_w_rate_mol$edge.lenth = tree_w_rate_mol$edge_length * clock_rate_mol
+    tree_w_rate_mol$edge.length = tree_w_rate_mol$edge_length * clock_rate_mol
     mol = sim_mol_char(tree = tree_w_rate_mol, extant_tips = extant_tips, opts = opts)
     ape::write.nexus.data(mol,
                           file = paste0(path, "mol_dat_", id, "_nchar", n_char, "_", case,  ".nex"))
