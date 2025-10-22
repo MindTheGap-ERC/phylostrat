@@ -24,17 +24,20 @@ subsample_fossils = function(fossils, n){
   return(fossils[ind,])
 }
 
-sim_bin_char = function(tree, nchar){
+sim_bin_char = function(tree, nchar, clock_rate){
   #' @title simulate discrete traits along tree
   #' 
   #' @param tree tree
   #' @param rate rate for Q matrix
   #' @param nchar number of characters to simulate
   #' 
+  tree_w_rate_morph = tree
+  tree_w_rate_morph$edge.length = tree_w_rate_morph$edge.length * clock_rate
+  tree_w_rate_morph$root.edge = tree_w_rate_morph$root.edge * clock_rate
   par = matrix(data = c(-1, 1, 1, -1), 
                nrow = 2, 
                ncol = 2)
-  char_mat = geiger::sim.char(phy = tree,
+  char_mat = geiger::sim.char(phy = tree_w_rate_morph,
                               par = par,
                               model = "discrete",
                               nsim = nchar)
@@ -42,9 +45,12 @@ sim_bin_char = function(tree, nchar){
   return(char_mat)
 }
 
-sim_mol_char = function(tree, extant_tips, opts){
+sim_mol_char = function(tree, extant_tips, opts, clock_rate){
   #' @title simulate molecular partition for extant tips
   #' 
+  tree_w_rate_mol = tree
+  tree_w_rate_mol$edge.length = tree_w_rate_mol$edge.length * clock_rate
+  tree_w_rate_mol$root.edge = tree_w_rate_mol$root.edge * clock_rate
   a = phyclust::seqgen(opts = opts, rooted.tree = tree_w_rate_mol) |>
     strsplit(" +")
   l = list()

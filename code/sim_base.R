@@ -75,10 +75,9 @@ for (id in ids){
     ape::write.nexus(tree_fp_rho1,
                      file= tree_name)
     
-    tree_w_rate_morph = tree_fp_rho1
-    tree_w_rate_morph$edge.length = tree_w_rate_morph$edge.length * clock_rate_morph
-    char_mat = sim_bin_char(tree = tree_w_rate_morph,
-                            nchar = n_char)
+    char_mat = sim_bin_char(tree = tree_fp_rho1,
+                            nchar = n_char,
+                            clock_rate = clock_rate_morph)
     char_mat_name = paste0(path,"char_mat_", id , "_nchar", n_char, ".nex")
     ape::write.nexus.data(char_mat,
                           file = char_mat_name,
@@ -86,11 +85,10 @@ for (id in ids){
     #plot(tree_fp_rho1)
     
     ## molecular alignment
-    opts = paste0(mod, " -l", length_alignment)
-    
-    tree_w_rate_mol = tree_fp_rho1
-    tree_w_rate_mol$edge.length = tree_w_rate_mol$edge.length * clock_rate_mol
-    mol = sim_mol_char(tree = tree_w_rate_mol, extant_tips = extant_tips, opts = opts)
+    mol = sim_mol_char(tree = tree_fp_rho1,
+                       extant_tips = extant_tips,
+                       opts = opts,
+                       clock_rate = clock_rate_mol)
     ape::write.nexus.data(mol,
                           file = paste0(path, "mol_dat_", id, "_nchar", n_char, ".nex"))
   }
