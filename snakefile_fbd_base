@@ -39,7 +39,9 @@ rule simulate_data_locally_fbd_base:
         trees = expand("data/sim/fbd_base/tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
         char_mat = expand("data/sim/fbd_base/char_mat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
         fossils = expand("data/sim/fbd_base/fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
-        mol = expand("data/sim/fbd_base/mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR)
+        mol = expand("data/sim/fbd_base/mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        or_trees = expand("data/sim/fbd_base/original_tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        or_fossils = expand("data/sim/fbd_base/original_fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
     shell:
         "Rscript code/sim_base.R"
 
@@ -48,16 +50,22 @@ rule copy_data_to_yoda:
         char_mat = "data/sim/fbd_base/char_mat_{id}_nchar{nchar}.nex",
         fossils = "data/sim/fbd_base/fossils_{id}_nchar{nchar}.csv",
         tree = "data/sim/fbd_base/tree_{id}_nchar{nchar}.nex",
-        mol = "data/sim/fbd_base/mol_dat_{id}_nchar{nchar}.nex"
+        mol = "data/sim/fbd_base/mol_dat_{id}_nchar{nchar}.nex",
+        or_tree = "data/sim/fbd_base/original_tree_{id}_nchar{nchar}.nex",
+        or_fossils = "data/sim/fbd_base/original_fossils_{id}_nchar{nchar}.csv"
     output:
         char_mat = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}.nex"),
         fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}.csv"),
         tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}.nex"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}.nex")
+        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}.nex"),
+        or_tree = storage.yoda(BASE_COLLECTION_SIM + "original_tree_{id}_nchar{nchar}.nex"),
+        or_fossils = storage.yoda(BASE_COLLECTION_SIM + "original_fossils_{id}_nchar{nchar}.csv")
     shell:
         """
         cp {input.char_mat} {output.char_mat}
         cp {input.fossils} {output.fossils}
         cp {input.tree} {output.tree}
         cp {input.mol} {output.mol}
+        cp {input.or_tree} {output.or_tree}
+        cp {input.or_fossils} {output.or_fossils}
         """
