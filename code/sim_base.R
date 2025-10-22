@@ -35,7 +35,7 @@ for (id in ids){
     }
     
     # save original sim tree without modifications bc I don't trust myself
-    tree_original_name = paste0(path,"original_tree_", id , "_nchar", n_char, "_", case,  ".nex")
+    tree_original_name = paste0(path,"original_tree_", id , "_nchar", n_char, ".nex")
     ape::write.nexus(tree_complete,
                      file= tree_original_name)
     # full fossil record
@@ -43,7 +43,7 @@ for (id in ids){
                                                        tree = tree_complete) |> 
       subsample_fossils(n = n_fossils)
     
-    fossils_orig_filename = paste0(path,"original_fossils_", id , "_nchar", n_char, "_", case,  ".csv")
+    fossils_orig_filename = paste0(path,"original_fossils_", id , "_nchar", n_char,  ".csv")
     write.csv(fossils_full_base,
               file = fossils_orig_filename)
     
