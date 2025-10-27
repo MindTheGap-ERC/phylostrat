@@ -1,9 +1,9 @@
 # strict mol clock
-branch_rates_mol ~ dnExponential(lambda = 200.0) # set to true mean
+branch_rates_mol ~ dnExponential(lambda = 40.0) # set to true mean
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 0.01))
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 0.1))
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 1.0))
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 10.0))
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 100.0))
 
-branch_rates_mol.setValue(0.005)
+branch_rates_mol.setValue(0.025)
