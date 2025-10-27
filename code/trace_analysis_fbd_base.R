@@ -93,31 +93,31 @@ p3 = df |> ggplot(aes(x = nchar, y = or_time_rel)) +
   labs(title = "Origin Time", x = "# Characters", y = "Relative error")
 p3
 
-p5 = df |> ggplot(aes(x = nchar, y = br_rate_rel)) +
+p4 = df |> ggplot(aes(x = nchar, y = br_rate_rel)) +
   geom_boxplot() +
   labs(title = "Branch Rate Morph", x = "# Characters", y = "Relative error")
-p5
-p6 = df |> ggplot(aes(x = nchar, y = rf_distance)) +
+p4
+p5 = df |> ggplot(aes(x = nchar, y = rf_distance)) +
   geom_boxplot() + 
   labs(title = "RF distance", x = "# Characters", y = "RF distance")
-p6
+p5
 
-p7 = df |> ggplot(aes(x = nchar, y = br_rate_mol_rel))+
+p6 = df |> ggplot(aes(x = nchar, y = br_rate_mol_rel))+
   geom_boxplot() + 
   labs(title = "Mol clock rate", x = "# Characters", y = "rel error Mol clock rate")
-p7
+p6
 
-p8 = df |> ggplot(aes(x = nchar, y = kappa_rel))+
+p7 = df |> ggplot(aes(x = nchar, y = kappa_rel))+
   geom_boxplot() +
   labs(title = "kappa", x = "# characters", y = "relative error")
-p8
+p7
 
-p9 = df |> ggplot(aes(x = nchar, y = alpha_rel))+
+p8 = df |> ggplot(aes(x = nchar, y = alpha_rel))+
   geom_boxplot() +
   labs(title = "alpha", x = "# characters", y = "relative error")
-p9
+p8
 
-fig = ggarrange(p1, p2, p3, p5, p6, p7, p8, p9, ncol = 3, nrow = 3)
+fig = ggarrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 3, nrow = 3)
 fig
 ggsave("figs/fbd_base/fbd_base_summary.png", plot = fig)
 
