@@ -48,7 +48,8 @@ const INPUT = ALCAP.Input(
     ca_interval=1,
     initial_topography=(x, y) -> -x / 300.0,
     output=Dict(
-            :profile => OutputSpec(slice = (:, 50), write_interval = 10)),
+            :profile => OutputSpec(slice = (:, 25), write_interval = 10),
+            :topography => OutputSpec(slice = (:, :), write_interval = 10)),
     sea_level=t -> AMPLITUDE1 * cos(2π * t / PERIOD1) + AMPLITUDE2 * sin(2π * t / PERIOD2),
     subsidence_rate=30.0u"m/Myr",
     disintegration_rate=50.0u"m/Myr",

@@ -11,6 +11,7 @@ docs
 *.nex
 *.tsv
 *.csv
+!data/strat/selected_adms.csv
 *.txt
 *.Rdata
 

@@ -5,6 +5,13 @@ sinusoid_data = read.csv("data/strat/sinusoid_adm.csv")
 adm_miller = tp_to_adm(t = miller_data$time..Myr.- min(miller_data$time..Myr.), h = miller_data$adm_1..m.)
 adm_sinusoid = tp_to_adm(t = sinusoid_data$time..Myr., h = sinusoid_data$adm_1..m.)
 
+df = data.frame(t = sinusoid_data$time..Myr., sinusoid = sinusoid_data$adm_1..m., miller = miller_data$adm_1..m.)
+
+plot(df$t, df$sinusoid)
+plot(df$t, df$miller)
+
+write.csv(df, "data/strat/selected_adms.csv")
+
 plot(adm_miller, lty_destr = 0)
 plot(adm_sinusoid, lty_destr = 0)
 
@@ -26,9 +33,4 @@ timeline = t_max - rev(t) |> unname()
 
 
 
-df = data.frame(t = sinusoid_data$time..Myr., sinusoid = sinusoid_data$adm_1..m., miller = miller_data$adm_1..m.)
 
-plot(df$t, df$sinusoid)
-plot(df$t, df$miller)
-
-write.csv(df, "data/strat/selected_adms.csv")

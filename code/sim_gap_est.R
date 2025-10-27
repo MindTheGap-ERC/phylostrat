@@ -13,7 +13,6 @@ set.seed(45)
 source("code/utils.R")
 
 #### Stratigraphic context ####
-sinusoid_data = read.csv("data/strat/sinusoid_adm.csv")
-adm_sinusoid = tp_to_adm(t = sinusoid_data$time..Myr., h = sinusoid_data$adm_1..m.)
+source("code/strat_scenarios.R")
 
 source("code/case_sinusoid.R")
