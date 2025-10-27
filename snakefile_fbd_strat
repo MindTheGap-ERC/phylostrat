@@ -18,7 +18,7 @@ rule all:
         map_tree = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_MAP.tre", id = ID, nchar = NCHAR, case = CASES)),
         map_trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_run_{run}_MAP.tre", run = RUN, id = ID, nchar = NCHAR, case = CASES))
 
-rule fbd_inference_base:
+rule fbd_inference_strat:
     params:
         numeric = storage.yoda( BASE_COLLECTION_STORAGE + "num_{id}_nchar{nchar}_{case}"),
         tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}")
