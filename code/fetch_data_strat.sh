@@ -1,0 +1,2 @@
+ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_strat" "data/sim/" --overwrite
+ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/output/fbd_strat" "output/" --overwrite
