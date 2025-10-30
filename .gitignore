@@ -42,3 +42,5 @@ history.txt
 *.toml
 !Manifest.toml
 !Project.toml
+
+*.state
