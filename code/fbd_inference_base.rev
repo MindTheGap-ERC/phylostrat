@@ -42,10 +42,16 @@ monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
 monitors.append( mnScreen(printgen=1000, origin_time, speciation_rate, extinction_rate) )
 
 # initialize mcmc
+
+
 mymcmc = mcmc(my_model, monitors, moves, nruns = 2, ntries = 10000)
-#mymcmc.burnin(generations=20000,tuningInterval=15000, verbose = TRUE)
+stopping_rules[1] = srMaxIteration(100000)
+if (fileExists(outfile + "_run_1.state")){
+    mymcmc.initializeFromCheckpoint(outfile + ".state")
+}
+mymcmc.burnin(generations=20000,tuningInterval=15000, verbose = TRUE)
 mymcmc.operatorSummary()
-mymcmc.run(generations=100000)
+mymcmc.run(rule = stopping_rules, checkpointInterval = 10000, checkpointFile = outfile + ".state")
 mymcmc.operatorSummary()
 
 # generate MAP trees
