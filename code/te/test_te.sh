@@ -1,7 +1,0 @@
-ID=4
-bash code/te/inference_fbd_te.sh data/sim/te/char_mat_${ID}_nchar100_cont_rho1.nex data/sim/te/fossils_${ID}_nchar100_cont_rho1.csv data/sim/te/mol_dat_${ID}_nchar100_cont_rho1.nex output/te/num_test_te_cont output/te/tree_test_te_cont data/sim/te/tree_${ID}_nchar100_cont_rho1.nex &
-bash code/te/inference_fbd_te.sh data/sim/te/char_mat_${ID}_nchar100_inc_A_rho1.nex data/sim/te/fossils_${ID}_nchar100_inc_A_rho1.csv data/sim/te/mol_dat_${ID}_nchar100_inc_A_rho1.nex output/te/num_test_te_inc_A output/te/tree_test_te_inc_A data/sim/te/tree_${ID}_nchar100_inc_A_rho1.nex &
-bash code/te/inference_fbd_te.sh data/sim/te/char_mat_${ID}_nchar100_inc_B_rho1.nex data/sim/te/fossils_${ID}_nchar100_inc_B_rho1.csv data/sim/te/mol_dat_${ID}_nchar100_inc_B_rho1.nex output/te/num_test_te_inc_B output/te/tree_test_te_inc_B data/sim/te/tree_${ID}_nchar100_inc_B_rho1.nex &
-bash code/te/inference_fbd_skyline_A_te.sh data/sim/te/char_mat_${ID}_nchar100_inc_A_rho1.nex data/sim/te/fossils_${ID}_nchar100_inc_A_rho1.csv data/sim/te/mol_dat_${ID}_nchar100_inc_A_rho1.nex output/te/num_test_te_inc_A1 output/te/tree_test_te_inc_A1 data/sim/te/tree_${ID}_nchar100_inc_A_rho1.nex &
-bash code/te/inference_fbd_skyline_A_full_te.sh data/sim/te/char_mat_${ID}_nchar100_inc_A_rho1.nex data/sim/te/fossils_${ID}_nchar100_inc_A_rho1.csv data/sim/te/mol_dat_${ID}_nchar100_inc_A_rho1.nex output/te/num_test_te_inc_A2 output/te/tree_test_te_inc_A2 data/sim/te/tree_${ID}_nchar100_inc_A_rho1.nex &
-wait
