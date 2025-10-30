@@ -1,15 +1,10 @@
-
-RUN = ["1", "2"]
 NCHAR = [ "30", "100", "300", "1000"]
-NO_OF_REPLICAS = 20
+NO_OF_REPLICAS = 50
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
-SUFFIX = ["strat", "gap_est", "gap_prior", "base"]
 CASES = ["sinusoid", "miller"]
 STRAT_CASE = ["sinusoid"]
 ANALYSIS_CASE = ["gap_est", "gap_prior"]
-
 BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/"
-
 
 storage yoda:
     provider="irods",
