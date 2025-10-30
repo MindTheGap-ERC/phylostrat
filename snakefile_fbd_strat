@@ -4,8 +4,8 @@ NO_OF_REPLICAS = 20
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 CASES = ["miller", "sinusoid"]
 
-BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_strat/"
-BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/output/fbd_strat/"
+BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/fbd_strat/"
+BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/rb_output/fbd_strat/"
 
 storage yoda:
     provider="irods",
@@ -34,39 +34,3 @@ rule fbd_inference_strat:
         map_trees = storage.yoda(expand( BASE_COLLECTION_STORAGE + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}_MAP.tre", run = RUN))
     shell:
         "bash code/inference_fbd_base.sh {input.char_mat} {input.fossils} {input.tree}  {params.numeric} {params.tree} {input.mol}"
-
-rule simulate_data_locally_fbd_strat:
-    output:
-        trees = expand("data/sim/fbd_strat/tree_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        char_mat = expand("data/sim/fbd_strat/char_mat_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        fossils = expand("data/sim/fbd_strat/fossils_{id}_nchar{nchar}_{case}.csv", id = ID, nchar = NCHAR, case = CASES),
-        mol = expand("data/sim/fbd_strat/mol_dat_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        or_tree = expand("data/sim/fbd_strat/original_tree_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        or_fossils = expand("data/sim/fbd_strat/original_fossils_{id}_nchar{nchar}_{case}.csv", id = ID, nchar = NCHAR, case = CASES)
-    shell:
-        "Rscript code/sim_strat.R"
-
-rule copy_data_to_yoda:
-    input:
-        char_mat = "data/sim/fbd_strat/char_mat_{id}_nchar{nchar}_{case}.nex",
-        fossils = "data/sim/fbd_strat/fossils_{id}_nchar{nchar}_{case}.csv",
-        tree = "data/sim/fbd_strat/tree_{id}_nchar{nchar}_{case}.nex",
-        mol = "data/sim/fbd_strat/mol_dat_{id}_nchar{nchar}_{case}.nex",
-        or_tree = "data/sim/fbd_strat/original_tree_{id}_nchar{nchar}_{case}.nex",
-        or_fossils = "data/sim/fbd_strat/original_fossils_{id}_nchar{nchar}_{case}.csv",
-    output:
-        char_mat = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex"),
-        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}.csv"),
-        tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_{case}.nex"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex"),
-        or_tree = storage.yoda(BASE_COLLECTION_SIM + "original_tree_{id}_nchar{nchar}_{case}.nex"),
-        or_fossils = storage.yoda(BASE_COLLECTION_SIM + "original_fossils_{id}_nchar{nchar}_{case}.csv")
-    shell:
-        """
-        cp {input.char_mat} {output.char_mat}
-        cp {input.fossils} {output.fossils}
-        cp {input.tree} {output.tree}
-        cp {input.mol} {output.mol}
-        cp {input.or_tree} {output.or_tree}
-        cp {input.or_fossils} {output.or_fossils}
-        """
