@@ -1,7 +1,7 @@
 #### Import constants & libraries ####
 source("code/constants.R")
 
-path = "data/sim/fbd_gap_est/" # path to store outputs
+path = "sim_data/fbd_gap_est/" # path to store outputs
 # create output directory if it does not exist
 if (!dir.exists(path)){
   dir.create(path, recursive = TRUE)
