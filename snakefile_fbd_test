@@ -2,10 +2,9 @@ RUN = ["1", "2"]
 NCHAR = [ "30", "100", "300", "1000"]
 NO_OF_REPLICAS = 10
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
-ANALYSIS_CASE = "test"
 
-BASE_COLLECTION_SIM = f"irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_{ANALYSIS_CASE}/"
-BASE_COLLECTION_STORAGE = f"irods://nluu11p/home/research-mindthegap/phylostrat/output/fbd_{ANALYSIS_CASE}/"
+BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/fbd_test/"
+BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/rb_output/fbd_test/"
 
 storage yoda:
     provider="irods",
@@ -18,7 +17,7 @@ rule all:
         map_tree = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_MAP.tre", id = ID, nchar = NCHAR)),
         map_trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_run_{run}_MAP.tre", run = RUN, id = ID, nchar = NCHAR))
 
-rule fbd_inference_base:
+rule fbd_inference_test:
     params:
         numeric = storage.yoda( BASE_COLLECTION_STORAGE + "num_{id}_nchar{nchar}"),
         tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}")
@@ -34,39 +33,3 @@ rule fbd_inference_base:
         map_trees = storage.yoda(expand( BASE_COLLECTION_STORAGE + "tree_{{id}}_nchar{{nchar}}_run_{run}_MAP.tre", run = RUN))
     shell:
         "bash code/inference_fbd_base.sh {input.char_mat} {input.fossils} {input.tree}  {params.numeric} {params.tree} {input.mol}"
-
-rule simulate_data_locally_fbd_base:
-    output:
-        trees = expand("data/sim/fbd_{analysis_case}/tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR, analysis_case = ANALYSIS_CASE),
-        char_mat = expand("data/sim/fbd_{analysis_case}/char_mat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR, analysis_case = ANALYSIS_CASE),
-        fossils = expand("data/sim/fbd_{analysis_case}/fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR, analysis_case = ANALYSIS_CASE),
-        mol = expand("data/sim/fbd_{analysis_case}/mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR, analysis_case = ANALYSIS_CASE),
-        or_trees = expand("data/sim/fbd_{analysis_case}/original_tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR, analysis_case = ANALYSIS_CASE),
-        or_fossils = expand("data/sim/fbd_{analysis_case}/original_fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR, analysis_case = ANALYSIS_CASE),
-    shell:
-        "Rscript code/sim_test.R"
-
-rule copy_data_to_yoda:
-    input:
-        char_mat = expand("data/sim/fbd_{analysis_case}/char_mat_{{id}}_nchar{{nchar}}.nex", analysis_case = ANALYSIS_CASE),
-        fossils = expand("data/sim/fbd_{analysis_case}/fossils_{{id}}_nchar{{nchar}}.csv", analysis_case = ANALYSIS_CASE),
-        tree = expand("data/sim/fbd_{analysis_case}/tree_{{id}}_nchar{{nchar}}.nex", analysis_case = ANALYSIS_CASE),
-        mol = expand("data/sim/fbd_{analysis_case}/mol_dat_{{id}}_nchar{{nchar}}.nex", analysis_case = ANALYSIS_CASE),
-        or_tree = expand("data/sim/fbd_{analysis_case}/original_tree_{{id}}_nchar{{nchar}}.nex", analysis_case = ANALYSIS_CASE),
-        or_fossils = expand("data/sim/fbd_{analysis_case}/original_fossils_{{id}}_nchar{{nchar}}.csv", analysis_case = ANALYSIS_CASE)
-    output:
-        char_mat = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}.nex"),
-        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}.csv"),
-        tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}.nex"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}.nex"),
-        or_tree = storage.yoda(BASE_COLLECTION_SIM + "original_tree_{id}_nchar{nchar}.nex"),
-        or_fossils = storage.yoda(BASE_COLLECTION_SIM + "original_fossils_{id}_nchar{nchar}.csv")
-    shell:
-        """
-        cp {input.char_mat} {output.char_mat}
-        cp {input.fossils} {output.fossils}
-        cp {input.tree} {output.tree}
-        cp {input.mol} {output.mol}
-        cp {input.or_tree} {output.or_tree}
-        cp {input.or_fossils} {output.or_fossils}
-        """
