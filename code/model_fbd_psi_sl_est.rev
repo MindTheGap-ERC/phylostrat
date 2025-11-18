@@ -28,7 +28,7 @@ for(i in 1:(timeline.size()+1)){
 
 fbd_tree ~ dnFBDP(origin=origin_time, lambda=speciation_rate, mu=extinction_rate, psi=psi, rho=rho, taxa=taxa, timeline = timeline)
 
-fbd_tree.setValue(init_tree)
+#fbd_tree.setValue(init_tree)
 moves.append( mvFNPR(fbd_tree, weight=200.0) )
 moves.append( mvGPR(fbd_tree, weight = 100.0))
 moves.append( mvCollapseExpandFossilBranch(fbd_tree, origin_time, weight=500.0) )

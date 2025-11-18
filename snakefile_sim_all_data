@@ -90,7 +90,7 @@ rule simulate_data_locally_fbd_test:
         or_trees = expand("sim_data/fbd_test/original_tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
         or_fossils = expand("sim_data/fbd_test/original_fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
     shell:
-        "Rscript code/sim_base.R"
+        "Rscript code/sim_test.R"
 
 rule copy_data_to_yoda_base:
     input:

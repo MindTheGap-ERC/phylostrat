@@ -1,11 +1,12 @@
 RUN = ["1", "2"]
-NCHAR = [ "30", "100", "300", "1000"]
-NO_OF_REPLICAS = 20
+NCHAR = ["30"] #[ "30", "100", "300", "1000"]
+NO_OF_REPLICAS = 1
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 CASES = ["sinusoid"]
 
 BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/fbd_gap_est/"
 BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/rb_output/fbd_gap_est/"
+DATA_LOCAL = "rb_output/fbd_gap_est/"
 
 storage yoda:
     provider="irods",
@@ -14,23 +15,37 @@ storage yoda:
 rule all:
     input: 
         num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES)),
-        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES)),
-        map_tree = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_MAP.tre", id = ID, nchar = NCHAR, case = CASES)),
-        map_trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_run_{run}_MAP.tre", run = RUN, id = ID, nchar = NCHAR, case = CASES))
+        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES))
 
 rule fbd_inference_gap_est:
     params:
-        numeric = storage.yoda( BASE_COLLECTION_STORAGE + "num_{id}_nchar{nchar}_{case}"),
-        tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}")
+        numeric = ( DATA_LOCAL + "num_{id}_nchar{nchar}_{case}"),
+        tree = ( DATA_LOCAL + "tree_{id}_nchar{nchar}_{case}")
     input:
         char_mat = storage.yoda( BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex"),
         fossils = storage.yoda( BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}.csv"),
-        tree = storage.yoda( BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_{case}.nex"),
         mol = storage.yoda( BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex")
     output:
-        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)),
-        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)),
-        map_tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_MAP.tre"),
-        map_trees = storage.yoda(expand( BASE_COLLECTION_STORAGE + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}_MAP.tre", run = RUN))
+        num = expand( DATA_LOCAL   + "num_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN),
+        trees =  expand( DATA_LOCAL   + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)
     shell:
-        "bash code/inference_fbd_gap_est.sh {input.char_mat} {input.fossils} {input.tree}  {params.numeric} {params.tree} {input.mol}"
+        "bash code/inference_fbd_gap_est.sh {input.char_mat} {input.fossils} {params.numeric} {params.tree} {input.mol}"
+
+rule copy_data_to_yoda_gap_est:
+    input:
+        num1 = (DATA_LOCAL   + "num_{id}_nchar{nchar}_{case}_run_1.log"),
+        num2 = (DATA_LOCAL   + "num_{id}_nchar{nchar}_{case}_run_2.log"),
+        trees1 = (DATA_LOCAL   + "tree_{id}_nchar{nchar}_{case}_run_1.log"),
+        trees2 = (DATA_LOCAL   + "tree_{id}_nchar{nchar}_{case}_run_2.log"),
+    output:
+        num1 = storage.yoda(BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_1.log"),
+        num2 = storage.yoda(BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_2.log"),
+        trees1 = storage.yoda(BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_1.log"),
+        trees2 = storage.yoda(BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_2.log"),
+    shell:
+        """
+        cp {input.num1} {output.num1}
+        cp {input.trees1} {output.trees1}
+        cp {input.num2} {output.num2}
+        cp {input.trees2} {output.trees2}
+        """

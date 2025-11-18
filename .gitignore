@@ -44,3 +44,5 @@ history.txt
 !Project.toml
 
 *.state
+
+*.html
