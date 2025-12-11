@@ -1,12 +1,11 @@
 RUN = ["1", "2"]
 NCHAR = ["30"] #[ "30", "100", "300", "1000"]
-NO_OF_REPLICAS = 1
+NO_OF_REPLICAS = 10
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
-CASES = ["sinusoid"]
+STRAT_CASE = ["sinusoid"]
 
-BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/fbd_gap_est/"
-BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/rb_output/fbd_gap_est/"
-DATA_LOCAL = "rb_output/fbd_gap_est/"
+DATA_LOCAL_RES = "data/fbd_gap_est/rb_output/"
+DATA_LOCAL_SIM = "data/fbd_gap_est/sim/"
 
 storage yoda:
     provider="irods",
@@ -14,38 +13,31 @@ storage yoda:
 
 rule all:
     input: 
-        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES)),
-        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES))
+        num = expand( DATA_LOCAL_RES   + "num_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = STRAT_CASE),
+        trees = expand( DATA_LOCAL_RES   + "tree_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = STRAT_CASE)
 
 rule fbd_inference_gap_est:
     params:
-        numeric = ( DATA_LOCAL + "num_{id}_nchar{nchar}_{case}"),
-        tree = ( DATA_LOCAL + "tree_{id}_nchar{nchar}_{case}")
+        numeric = ( DATA_LOCAL_RES + "num_{id}_nchar{nchar}_{case}"),
+        tree = ( DATA_LOCAL_RES + "tree_{id}_nchar{nchar}_{case}")
     input:
-        char_mat = storage.yoda( BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex"),
-        fossils = storage.yoda( BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}.csv"),
-        mol = storage.yoda( BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex")
+        char_mat =  DATA_LOCAL_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex",
+        fossils =  DATA_LOCAL_SIM + "fossils_{id}_nchar{nchar}_{case}.csv",
+        mol =  DATA_LOCAL_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex"
     output:
-        num = expand( DATA_LOCAL   + "num_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN),
-        trees =  expand( DATA_LOCAL   + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)
+        num = expand( DATA_LOCAL_RES   + "num_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN),
+        trees =  expand( DATA_LOCAL_RES   + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)
     shell:
         "bash code/inference_fbd_gap_est.sh {input.char_mat} {input.fossils} {params.numeric} {params.tree} {input.mol}"
 
-rule copy_data_to_yoda_gap_est:
-    input:
-        num1 = (DATA_LOCAL   + "num_{id}_nchar{nchar}_{case}_run_1.log"),
-        num2 = (DATA_LOCAL   + "num_{id}_nchar{nchar}_{case}_run_2.log"),
-        trees1 = (DATA_LOCAL   + "tree_{id}_nchar{nchar}_{case}_run_1.log"),
-        trees2 = (DATA_LOCAL   + "tree_{id}_nchar{nchar}_{case}_run_2.log"),
+rule simulate_data_fbd_gap_est:
     output:
-        num1 = storage.yoda(BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_1.log"),
-        num2 = storage.yoda(BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_2.log"),
-        trees1 = storage.yoda(BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_1.log"),
-        trees2 = storage.yoda(BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_2.log"),
+        trees = expand(DATA_LOCAL_SIM + "tree_{id}_nchar{nchar}_{strat_case}.nex", id = ID, nchar = NCHAR, strat_case = STRAT_CASE),
+        char_mat = expand(DATA_LOCAL_SIM + "char_mat_{id}_nchar{nchar}_{strat_case}.nex", id = ID, nchar = NCHAR, strat_case = STRAT_CASE),
+        fossils = expand(DATA_LOCAL_SIM + "fossils_{id}_nchar{nchar}_{strat_case}.csv", id = ID, nchar = NCHAR, strat_case = STRAT_CASE),
+        mol = expand(DATA_LOCAL_SIM + "mol_dat_{id}_nchar{nchar}_{strat_case}.nex", id = ID, nchar = NCHAR, strat_case = STRAT_CASE),
+        or_tree = expand(DATA_LOCAL_SIM + "original_tree_{id}_nchar{nchar}_{strat_case}.nex", id = ID, nchar = NCHAR, strat_case = STRAT_CASE),
+        or_fossils = expand(DATA_LOCAL_SIM + "original_fossils_{id}_nchar{nchar}_{strat_case}.csv", id = ID, nchar = NCHAR, strat_case = STRAT_CASE)
     shell:
-        """
-        cp {input.num1} {output.num1}
-        cp {input.trees1} {output.trees1}
-        cp {input.num2} {output.num2}
-        cp {input.trees2} {output.trees2}
-        """
+        "Rscript code/sim_gap_est.R"
+

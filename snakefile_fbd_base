@@ -31,11 +31,11 @@ rule fbd_inference_base:
 
 rule simulate_data_fbd_base:
     output:
-        trees = expand("data/fbd_base/sim/tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
-        char_mat = expand("data/fbd_base/sim/char_mat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
-        fossils = expand("data/fbd_base/sim/fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
-        mol = expand("data/fbd_base/sim/mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
-        or_trees = expand("data/fbd_base/sim/original_tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
-        or_fossils = expand("data/fbd_base/sim/original_fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
+        trees = expand(DATA_LOCAL_SIM  + "tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        char_mat = expand(DATA_LOCAL_SIM  + "char_mat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        fossils = expand(DATA_LOCAL_SIM  + "fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
+        mol = expand(DATA_LOCAL_SIM  + "mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        or_trees = expand(DATA_LOCAL_SIM  + "original_tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        or_fossils = expand(DATA_LOCAL_SIM  + "original_fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
     shell:
         "Rscript code/sim_base.R"
