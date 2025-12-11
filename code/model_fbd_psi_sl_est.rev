@@ -17,7 +17,7 @@ moves.append( mvScale(origin_time, weight=15.0, lambda = 1.0) )
 moves.append( mvScale(origin_time, weight=15.0, lambda = 5.0) )
 origin_time.setValue(5.0)
 
-timeline <- v(0.992, 1.755, 3.398, 4.269)
+timeline <- v(0.810, 2.372, 3.394, 4.574)
 
 for(i in 1:(timeline.size()+1)){
     psi[i] ~ dnExponential(lambda = 0.25)

@@ -30,7 +30,3 @@ timeline = t_max - rev(t) |> unname()
 #timeline
 
 #cat("timeline is", timeline)
-
-
-
-
