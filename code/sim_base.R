@@ -3,7 +3,7 @@ source("code/constants.R")
 set.seed(42)
 
 # set up infrastructure
-path = "sim_data/fbd_base/" # path to store outputs
+path = "data/fbd_base/sim/" # path to store outputs
 # create output directory if it does not exist
 if (!dir.exists(path)){
   dir.create(path, recursive = TRUE)
