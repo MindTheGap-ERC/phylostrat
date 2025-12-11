@@ -1,11 +1,10 @@
 RUN = ["1", "2"]
 NCHAR =  ["30"] #[ "30", "100", "300", "1000"]
-NO_OF_REPLICAS = 1
+NO_OF_REPLICAS = 10
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 
-BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/fbd_base/"
-BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/rb_output/fbd_base/"
-DATA_LOCAL = "rb_output/fbd_base/"
+DATA_LOCAL_RES = "data/fbd_base/rb_output/"
+DATA_LOCAL_SIM = "data/fbd_base/sim/"
 
 storage yoda:
     provider="irods",
@@ -13,48 +12,30 @@ storage yoda:
 
 rule all:
     input: 
-        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR)),
-        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR)),
-        #map_tree = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_MAP.tre", id = ID, nchar = NCHAR)),
-        #map_trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_run_{run}_MAP.tre", run = RUN, id = ID, nchar = NCHAR))
-
+        num = expand( DATA_LOCAL_RES   + "num_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR),
+        trees = expand( DATA_LOCAL_RES   + "tree_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR)
+        
 rule fbd_inference_base:
     params:
-        numeric = ( DATA_LOCAL + "num_{id}_nchar{nchar}"),
-        tree = ( DATA_LOCAL + "tree_{id}_nchar{nchar}")
+        numeric = ( DATA_LOCAL_RES + "num_{id}_nchar{nchar}"),
+        tree = ( DATA_LOCAL_RES + "tree_{id}_nchar{nchar}")
     input:
-        char_mat = storage.yoda( BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}.nex"),
-        fossils = storage.yoda( BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}.csv"),
-        mol = storage.yoda( BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}.nex")
+        char_mat = DATA_LOCAL_SIM + "char_mat_{id}_nchar{nchar}.nex",
+        fossils = DATA_LOCAL_SIM + "fossils_{id}_nchar{nchar}.csv",
+        mol = DATA_LOCAL_SIM + "mol_dat_{id}_nchar{nchar}.nex"
     output:
-        num = expand( DATA_LOCAL   + "num_{{id}}_nchar{{nchar}}_run_{run}.log", run = RUN),
-        trees = expand( DATA_LOCAL   + "tree_{{id}}_nchar{{nchar}}_run_{run}.log", run = RUN),
-        #map_tree = (DATA_LOCAL + "tree_{id}_nchar{nchar}_MAP.tre"),
-        #map_trees = expand( DATA_LOCAL + "tree_{{id}}_nchar{{nchar}}_run_{run}_MAP.tre", run = RUN)
+        num = expand( DATA_LOCAL_RES   + "num_{{id}}_nchar{{nchar}}_run_{run}.log", run = RUN),
+        trees = expand( DATA_LOCAL_RES   + "tree_{{id}}_nchar{{nchar}}_run_{run}.log", run = RUN)
     shell:
         "bash code/inference_fbd_base.sh {input.char_mat} {input.fossils} {params.numeric} {params.tree} {input.mol}"
 
-rule copy_data_to_yoda_base:
-    input:
-        num1 = (DATA_LOCAL   + "num_{id}_nchar{nchar}_run_1.log"),
-        num2 = (DATA_LOCAL   + "num_{id}_nchar{nchar}_run_2.log"),
-        trees1 = (DATA_LOCAL   + "tree_{id}_nchar{nchar}_run_1.log"),
-        trees2 = (DATA_LOCAL   + "tree_{id}_nchar{nchar}_run_2.log"),
-        #map_trees1 = (DATA_LOCAL + "tree_{id}_nchar{nchar}_run_1_MAP.tre"),
-        #map_trees2 = (DATA_LOCAL + "tree_{id}_nchar{nchar}_run_2_MAP.tre"),
-        #map_tree = (DATA_LOCAL + "tree_{id}_nchar{nchar}_MAP.tre")        
+rule simulate_data_fbd_base:
     output:
-        num1 = storage.yoda(BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_run_1.log"),
-        num2 = storage.yoda(BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_run_2.log"),
-        trees1 = storage.yoda(BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_run_1.log"),
-        trees2 = storage.yoda(BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_run_2.log"),
-        #map_trees1 = storage.yoda(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_run_1_MAP.tre"),
-        #map_trees2 = storage.yoda(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_run_2_MAP.tre"),
-        #map_tree = storage.yoda(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_MAP.tre")
+        trees = expand("data/fbd_base/sim/tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        char_mat = expand("data/fbd_base/sim/char_mat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        fossils = expand("data/fbd_base/sim/fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
+        mol = expand("data/fbd_base/sim/mol_dat_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        or_trees = expand("data/fbd_base/sim/original_tree_{id}_nchar{nchar}.nex", id = ID, nchar = NCHAR),
+        or_fossils = expand("data/fbd_base/sim/original_fossils_{id}_nchar{nchar}.csv", id = ID, nchar = NCHAR),
     shell:
-        """
-        cp {input.num1} {output.num1}
-        cp {input.trees1} {output.trees1}
-        cp {input.num2} {output.num2}
-        cp {input.trees2} {output.trees2}
-        """
+        "Rscript code/sim_base.R"
