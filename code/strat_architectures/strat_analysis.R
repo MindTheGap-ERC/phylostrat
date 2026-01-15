@@ -30,3 +30,38 @@ timeline = t_max - rev(t) |> unname()
 #timeline
 
 #cat("timeline is", timeline)
+
+wd_data = read.csv("data/strat/sinusoid_wd.csv")
+plot(x = wd_data$time..Myr., 
+     y = pmax(wd_data$wd_6..m., 0), 
+     type = "l",
+     xlab = "Time [Myr]",
+     ylab = "Water depth [m]",
+     main = "Water depth",
+     lwd = 4)
+
+library(StratPal)
+f = snd_niche(40, 10)
+g = approxfun(wd_data$time..Myr., pmax(wd_data$wd_6..m., 0))
+t = wd_data$time..Myr.
+plot(t, f(g(t)),
+     type = "l",
+     xlab = "Time [Myr]",
+     ylab = "Collection probability",
+     main = "Collection probability",
+     lwd = 4)
+
+plot(adm_sinusoid, lty_destr = 0, lwd_acc = 4)
+mtext("Time [Myr]", side = 1, line = 2.7)
+mtext("Stratigraphic Height [m]", side = 2, line = 2.7)
+title(main = "Age-depth model 2 km from shore")
+
+avg_sed = max_height(adm_sinusoid)/ max_time(adm_sinusoid)
+adm_const = tp_to_adm(t = c(0, max_time(adm_sinusoid)), h = c(0, max_height(adm_sinusoid)))
+heights = seq(0, max_height(adm_sinusoid))
+plot(heights, strat_to_time(heights, adm_sinusoid) - strat_to_time(heights, adm_const),
+     xlab = "Stratigraphic height [m]",
+     ylab = "Age error [Myr]",
+     type = "l",
+     main = "Age Error",
+     lwd = 4)
