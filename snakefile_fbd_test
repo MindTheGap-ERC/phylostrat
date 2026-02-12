@@ -6,10 +6,6 @@ ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 DATA_LOCAL_RES = "data/fbd_test/rb_output/"
 DATA_LOCAL_SIM = "data/fbd_test/sim/"
 
-storage yoda:
-    provider="irods",
-    max_requests_per_second="1000"
-
 rule all:
     input: 
         num = expand( DATA_LOCAL_RES   + "num_{id}_nchar{nchar}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR),
