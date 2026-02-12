@@ -7,10 +7,6 @@ STRAT_CASE = ["sinusoid"]
 DATA_LOCAL_RES = "data/fbd_gap_prior/rb_output/"
 DATA_LOCAL_SIM = "data/fbd_gap_prior/sim/"
 
-storage yoda:
-    provider="irods",
-    max_requests_per_second="1000"
-
 rule all:
     input: 
         num = expand( DATA_LOCAL_RES   + "num_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = STRAT_CASE),
