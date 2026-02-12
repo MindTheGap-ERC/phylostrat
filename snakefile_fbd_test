@@ -1,5 +1,5 @@
 RUN = ["1", "2"]
-NCHAR =  ["30"] #[ "30", "100", "300", "1000"]
+NCHAR =  [ "30", "100", "300", "1000"]
 NO_OF_REPLICAS = 10
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 
