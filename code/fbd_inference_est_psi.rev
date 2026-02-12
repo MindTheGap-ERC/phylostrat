@@ -37,8 +37,8 @@ my_model = model(phy_morpho)
 
 # initialize monitors
 monitors = VectorMonitors()
-monitors.append( mnModel(filename=outfile_name, printgen=100) )
-monitors.append(mnFile(filename = treefile_name, printgen = 100, fbd_tree))
+monitors.append( mnModel(filename=outfile_name, printgen=10) )
+monitors.append(mnFile(filename = treefile_name, printgen = 10, fbd_tree))
 monitors.append( mnScreen(printgen=1000, origin_time, speciation_rate, extinction_rate, branch_rates_mol, branch_rates_morpho, psi) )
 
 # initialize mcmc
