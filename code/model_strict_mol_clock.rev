@@ -6,4 +6,4 @@ moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 1.0))
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 10.0))
 moves.append( mvScale(branch_rates_mol, weight = 5.0, lambda = 100.0))
 
-branch_rates_mol.setValue(0.005)
+#branch_rates_mol.setValue(0.005)

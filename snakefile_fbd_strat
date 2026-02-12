@@ -1,72 +1,39 @@
 RUN = ["1", "2"]
-NCHAR = [ "30", "100", "300", "1000"]
-NO_OF_REPLICAS = 20
+NCHAR =["30"] #[ "30", "100", "300", "1000"]
+NO_OF_REPLICAS = 5
 ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
 CASES = ["miller", "sinusoid"]
 
-BASE_COLLECTION_SIM = "irods://nluu11p/home/research-mindthegap/phylostrat/data/sim/fbd_strat/"
-BASE_COLLECTION_STORAGE = "irods://nluu11p/home/research-mindthegap/phylostrat/output/fbd_strat/"
+DATA_LOCAL_RES = "data/fbd_strat/rb_output/"
+DATA_LOCAL_SIM = "data/fbd_strat/sim/"
 
-storage yoda:
-    provider="irods",
-    max_requests_per_second="1000"
 
 rule all:
     input: 
-        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES)),
-        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES)),
-        map_tree = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_MAP.tre", id = ID, nchar = NCHAR, case = CASES)),
-        map_trees = storage.yoda( expand(BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_run_{run}_MAP.tre", run = RUN, id = ID, nchar = NCHAR, case = CASES))
+        num = expand( DATA_LOCAL_RES   + "num_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES),
+        trees = expand( DATA_LOCAL_RES   + "tree_{id}_nchar{nchar}_{case}_run_{run}.log", run = RUN, id = ID, nchar = NCHAR, case = CASES)
 
 rule fbd_inference_strat:
     params:
-        numeric = storage.yoda( BASE_COLLECTION_STORAGE + "num_{id}_nchar{nchar}_{case}"),
-        tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}")
+        numeric = ( DATA_LOCAL_RES + "num_{id}_nchar{nchar}_{case}"),
+        tree = ( DATA_LOCAL_RES + "tree_{id}_nchar{nchar}_{case}")
     input:
-        char_mat = storage.yoda( BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex"),
-        fossils = storage.yoda( BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}.csv"),
-        tree = storage.yoda( BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_{case}.nex"),
-        mol = storage.yoda( BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex")
+        char_mat =  DATA_LOCAL_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex",
+        fossils =  DATA_LOCAL_SIM + "fossils_{id}_nchar{nchar}_{case}.csv",
+        mol =  DATA_LOCAL_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex"
     output:
-        num = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "num_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)),
-        trees = storage.yoda( expand( BASE_COLLECTION_STORAGE   + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)),
-        map_tree = storage.yoda( BASE_COLLECTION_STORAGE + "tree_{id}_nchar{nchar}_{case}_MAP.tre"),
-        map_trees = storage.yoda(expand( BASE_COLLECTION_STORAGE + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}_MAP.tre", run = RUN))
+        num =  expand( DATA_LOCAL_RES   + "num_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN),
+        trees =  expand( DATA_LOCAL_RES + "tree_{{id}}_nchar{{nchar}}_{{case}}_run_{run}.log", run = RUN)
     shell:
-        "bash code/inference_fbd_base.sh {input.char_mat} {input.fossils} {input.tree}  {params.numeric} {params.tree} {input.mol}"
+        "bash code/inference_fbd_base.sh {input.char_mat} {input.fossils} {params.numeric} {params.tree} {input.mol}"
 
-rule simulate_data_locally_fbd_strat:
+rule simulate_data_fbd_strat:
     output:
-        trees = expand("data/sim/fbd_strat/tree_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        char_mat = expand("data/sim/fbd_strat/char_mat_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        fossils = expand("data/sim/fbd_strat/fossils_{id}_nchar{nchar}_{case}.csv", id = ID, nchar = NCHAR, case = CASES),
-        mol = expand("data/sim/fbd_strat/mol_dat_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        or_tree = expand("data/sim/fbd_strat/original_tree_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
-        or_fossils = expand("data/sim/fbd_strat/original_fossils_{id}_nchar{nchar}_{case}.csv", id = ID, nchar = NCHAR, case = CASES)
+        trees = expand(DATA_LOCAL_SIM +  "tree_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
+        char_mat = expand(DATA_LOCAL_SIM +  "char_mat_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
+        fossils = expand(DATA_LOCAL_SIM +  "fossils_{id}_nchar{nchar}_{case}.csv", id = ID, nchar = NCHAR, case = CASES),
+        mol = expand(DATA_LOCAL_SIM +  "mol_dat_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
+        or_tree = expand(DATA_LOCAL_SIM +  "original_tree_{id}_nchar{nchar}_{case}.nex", id = ID, nchar = NCHAR, case = CASES),
+        or_fossils = expand(DATA_LOCAL_SIM +  "original_fossils_{id}_nchar{nchar}_{case}.csv", id = ID, nchar = NCHAR, case = CASES)
     shell:
         "Rscript code/sim_strat.R"
-
-rule copy_data_to_yoda:
-    input:
-        char_mat = "data/sim/fbd_strat/char_mat_{id}_nchar{nchar}_{case}.nex",
-        fossils = "data/sim/fbd_strat/fossils_{id}_nchar{nchar}_{case}.csv",
-        tree = "data/sim/fbd_strat/tree_{id}_nchar{nchar}_{case}.nex",
-        mol = "data/sim/fbd_strat/mol_dat_{id}_nchar{nchar}_{case}.nex",
-        or_tree = "data/sim/fbd_strat/original_tree_{id}_nchar{nchar}_{case}.nex",
-        or_fossils = "data/sim/fbd_strat/original_fossils_{id}_nchar{nchar}_{case}.csv",
-    output:
-        char_mat = storage.yoda(BASE_COLLECTION_SIM + "char_mat_{id}_nchar{nchar}_{case}.nex"),
-        fossils = storage.yoda(BASE_COLLECTION_SIM + "fossils_{id}_nchar{nchar}_{case}.csv"),
-        tree = storage.yoda(BASE_COLLECTION_SIM + "tree_{id}_nchar{nchar}_{case}.nex"),
-        mol = storage.yoda(BASE_COLLECTION_SIM + "mol_dat_{id}_nchar{nchar}_{case}.nex"),
-        or_tree = storage.yoda(BASE_COLLECTION_SIM + "original_tree_{id}_nchar{nchar}_{case}.nex"),
-        or_fossils = storage.yoda(BASE_COLLECTION_SIM + "original_fossils_{id}_nchar{nchar}_{case}.csv")
-    shell:
-        """
-        cp {input.char_mat} {output.char_mat}
-        cp {input.fossils} {output.fossils}
-        cp {input.tree} {output.tree}
-        cp {input.mol} {output.mol}
-        cp {input.or_tree} {output.or_tree}
-        cp {input.or_fossils} {output.or_fossils}
-        """
