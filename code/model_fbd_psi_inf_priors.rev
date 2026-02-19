@@ -17,7 +17,7 @@ moves.append( mvScale(origin_time, weight=15.0, lambda = 1.0) )
 moves.append( mvScale(origin_time, weight=15.0, lambda = 5.0) )
 #origin_time.setValue(5.0)
 
-timeline <- v(0.810, 2.372, 3.394, 4.574)
+timeline <- v(0.809, 2.372, 3.394, 4.575)
 
 psi[1] ~ dnExponential(lambda = 0.2)
 psi[2] <- 0.00001

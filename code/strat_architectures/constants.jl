@@ -31,7 +31,7 @@ const MAIN_SL_SINUSOID = t -> AMPLITUDE1 * cos(2π * t / PERIOD1) + AMPLITUDE2 *
 const INIT_TOPO = (x, y) -> -x / 300.0
 
 const PHYS_SCALE = 150u"m"
-const GRID_SIZE_Y = 50
+const GRID_SIZE_Y = 30
 const GRID_SIZE_X = 230
 
 const DELTA_T = 0.0001u"Myr"
