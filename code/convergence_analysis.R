@@ -120,3 +120,7 @@ for (nchar in nchars){
   }
 }
 
+df$ID = seq_along(df$Posterior)
+df$ID
+df3$ID = max(df$ID) + seq_along(df3$Posterior)
+df_total = merge(df, df3, by = 'ID', all = TRUE)
