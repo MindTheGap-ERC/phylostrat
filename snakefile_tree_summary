@@ -1,0 +1,89 @@
+import os
+
+RUN = ["1", "2"]
+NCHAR =  [ "30", "100", "300", "1000"]
+NO_OF_REPLICAS = 40
+ID = [str(i) for i in range(1, NO_OF_REPLICAS + 1)]
+CASE = ["miller", "sinusoid"]
+
+DATA_LOCAL_RES = "data/fbd_base/rb_output/"
+DATA_LOCAL_STRAT = "data/fbd_strat/rb_output/"
+DATA_LOCAL_GAP_EST = "data/fbd_gap_est/rb_output/"
+DATA_LOCAL_GAP_PRIOR = "data/fbd_gap_prior/rb_output/"
+
+
+def existing_logs(wc):
+    files = [
+        DATA_LOCAL_RES + f"tree_{wc.id}_nchar{wc.nchar}_run_{run}.log"
+        for run in RUN
+    ]
+    return [f for f in files if os.path.exists(f)]
+
+def existing_logs_strat(wc):
+    files = [
+        DATA_LOCAL_STRAT + f"tree_{wc.id}_nchar{wc.nchar}_{wc.case}_run_{run}.log"
+        for run in RUN
+    ]
+    return [f for f in files if os.path.exists(f)]
+
+def existing_logs_gap_est(wc):
+    files = [
+        DATA_LOCAL_GAP_EST + f"tree_{wc.id}_nchar{wc.nchar}_sinusiod_run_{run}.log"
+        for run in RUN
+    ]
+    return [f for f in files if os.path.exists(f)]
+
+def existing_logs_gap_prior(wc):
+    files = [
+        DATA_LOCAL_GAP_PRIOR + f"tree_{wc.id}_nchar{wc.nchar}_sinusoid_run_{run}.log"
+        for run in RUN
+    ]
+    return [f for f in files if os.path.exists(f)]
+
+
+rule all:
+    input:
+        trees = expand(DATA_LOCAL_RES + "tree_{id}_nchar{nchar}_MAP.tre", id = ID, nchar = NCHAR)
+        #trees_strat = expand(DATA_LOCAL_STRAT + "tree_{id}_nchar{nchar}_{case}_MAP.tre", id = ID, nchar = NCHAR, case = CASE),
+        #trees_gap_est = expand(DATA_LOCAL_GAP_EST + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre", id = ID, nchar = NCHAR),
+        #trees_gap_prior = expand(DATA_LOCAL_GAP_PRIOR + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre", id = ID, nchar = NCHAR)
+
+rule map_base:
+    params:
+        tree_name = DATA_LOCAL_RES + "tree_{id}_nchar{nchar}"
+    output:
+        map = DATA_LOCAL_RES + "tree_{id}_nchar{nchar}_MAP.tre"
+    input:
+        trees =  existing_logs
+    shell:
+        "bash code/summary_tree.sh {params.tree_name}"  
+
+rule map_strat:
+    params:
+        tree_name = DATA_LOCAL_STRAT + "tree_{id}_nchar{nchar}_{case}"
+    output:
+        map = DATA_LOCAL_STRAT + "tree_{id}_nchar{nchar}_{case}_MAP.tre"
+    input:
+        trees =  existing_logs_strat
+    shell:
+        "bash code/summary_tree.sh {params.tree_name}"   
+
+rule map_gap_est:
+    params:
+        tree_name = DATA_LOCAL_GAP_EST + "tree_{id}_nchar{nchar}_sinusoid"
+    output:
+        map = DATA_LOCAL_GAP_EST + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre"
+    input:
+        trees =  existing_logs_gap_est
+    shell:
+        "bash code/summary_tree.sh {params.tree_name}" 
+
+rule map_gap_prior:
+    params:
+        tree_name = DATA_LOCAL_GAP_PRIOR + "tree_{id}_nchar{nchar}_sinusoid"
+    output:
+        map = DATA_LOCAL_GAP_PRIOR + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre"
+    input:
+        trees =  existing_logs_gap_prior
+    shell:
+        "bash code/summary_tree.sh {params.tree_name}"   

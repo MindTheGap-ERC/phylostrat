@@ -1,0 +1,1 @@
+bash code/summary_tree.sh data/fbd_gap_est/rb_output/tree_20_nchar300_sinusoid
