@@ -43,10 +43,10 @@ def existing_logs_gap_prior(wc):
 
 rule all:
     input:
-        trees = expand(DATA_LOCAL_RES + "tree_{id}_nchar{nchar}_MAP.tre", id = ID, nchar = NCHAR)
-        #trees_strat = expand(DATA_LOCAL_STRAT + "tree_{id}_nchar{nchar}_{case}_MAP.tre", id = ID, nchar = NCHAR, case = CASE),
-        #trees_gap_est = expand(DATA_LOCAL_GAP_EST + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre", id = ID, nchar = NCHAR),
-        #trees_gap_prior = expand(DATA_LOCAL_GAP_PRIOR + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre", id = ID, nchar = NCHAR)
+        trees = expand(DATA_LOCAL_RES + "tree_{id}_nchar{nchar}_MAP.tre", id = ID, nchar = NCHAR),
+        trees_strat = expand(DATA_LOCAL_STRAT + "tree_{id}_nchar{nchar}_{case}_MAP.tre", id = ID, nchar = NCHAR, case = CASE),
+        trees_gap_est = expand(DATA_LOCAL_GAP_EST + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre", id = ID, nchar = NCHAR),
+        trees_gap_prior = expand(DATA_LOCAL_GAP_PRIOR + "tree_{id}_nchar{nchar}_sinusoid_MAP.tre", id = ID, nchar = NCHAR)
 
 rule map_base:
     params:
