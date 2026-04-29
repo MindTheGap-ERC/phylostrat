@@ -210,6 +210,8 @@ for (id1 in ids){
   }
 }
 
+save(df_converged, file = "converged_runs.RData")
+
 # proportion of converged
 df_converged |>
   group_by(nchars, analysis) |>
