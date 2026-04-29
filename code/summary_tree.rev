@@ -3,12 +3,12 @@
 
 tree2 = treefile + "_run_1.log"
 tree1 = treefile + "_run_2.log"
-tree_trace1 = readTreeTrace(tree1)
-map_tree1 =  mapTree(tree_trace1)
-write(map_tree1, file = treefile  + "_run_1_MAP.tre")
-tree_trace2 = readTreeTrace(tree2)
-map_tree2 =  mapTree(tree_trace2)
-write(map_tree2, file = treefile  + "_run_2_MAP.tre")
+#tree_trace1 = readTreeTrace(tree1)
+#map_tree1 =  mapTree(tree_trace1)
+#write(map_tree1, file = treefile  + "_run_1_MAP.tre")
+#tree_trace2 = readTreeTrace(tree2)
+#map_tree2 =  mapTree(tree_trace2)
+#write(map_tree2, file = treefile  + "_run_2_MAP.tre")
 combined_tree_trace = readTreeTrace(v(tree1, tree2))
 map_tree = mapTree(combined_tree_trace)
 write(map_tree, file = treefile + "_MAP.tre")
