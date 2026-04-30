@@ -57,6 +57,10 @@ plot_base_vs_strat = function(){
 
 p = plot_base_vs_strat()
 p
+ggsave(filename = "figs/param_com_model_violations.png",
+       plot = plot_base_vs_strat())
+
+
 plot_sampling_strategies_comp = function(){
   selection = c("strat_miller", "gap_est", "gap_prior")
   p1 = df |> 
@@ -97,6 +101,9 @@ plot_sampling_strategies_comp = function(){
 }
 p = plot_sampling_strategies_comp()
 p
+
+ggsave(filename = "figs/param_comp_sampling_strategies.png",
+       plot = plot_sampling_strategies_comp())
 
 plot_coverage_freq_sampling = function(){
   selection = c("base", "strat_miller", "strat_sinusoid")
