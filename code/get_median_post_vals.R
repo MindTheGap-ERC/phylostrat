@@ -40,12 +40,14 @@ get_median_posterior_vals = function(){
           
           comb_trace = RevGadgets::readTrace(path = c(file_run1, file_run2), burnin = burnin) |> 
             RevGadgets::combineTraces()
-          df_temp = as.data.frame(lapply(comb_trace$combined, median))
-          df_temp$id = id
-          df_temp$nchar = nchar
-          df_temp$analysis = analysis
-          
-          df_median = rbindlist(list(df_median, df_temp), fill = TRUE)
+          df_temp = as.data.frame(lapply(comb_trace$combined, function(x) quantile(x, p = c(0.05, 0.5, 0.95))))
+          df_te = c(t(df_temp))
+          names(df_te) = paste(rep(colnames(df_temp), times = nrow(df_temp)),rep(rownames(df_temp), each = ncol(df_temp)), sep = "_")
+          df_te = df_te[order(names(df_te))]
+          df_te["id"] = id
+          df_te["nchar"] = nchar
+          df_te["analysis"] = analysis
+          df_median = data.table::rbindlist(list(df_median, as.data.frame(as.list(df_te))), fill = TRUE)
         }
       }
     }
