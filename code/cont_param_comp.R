@@ -192,3 +192,35 @@ p = plot_coverage_freq_sampling_strategies()
 p
 ggsave(filename = "figs/coverage_freq_sampling_info.png",
        plot = plot_coverage_freq_sampling_strategies())
+
+# doodles for comparing the ranges
+d = df |>
+  select(analysis, id, nchar, speciation_rate_5., speciation_rate_95., speciation_rate_50.) |>
+  mutate(across(c(speciation_rate_5., speciation_rate_95., speciation_rate_50.), as.numeric)) |>
+  mutate(span = speciation_rate_95. - speciation_rate_5.) |>
+  group_by(analysis, nchar) |>
+  mutate(order = row_number(span)) |>
+  ungroup() |>
+  group_by(analysis, nchar) |>
+  arrange(order, .by_group = TRUE) |>
+  ungroup() |>
+  mutate(x = row_number())
+
+d  |>
+  ggplot(aes(x = x, y = speciation_rate_50. ,color = nchar, group = nchar)) +
+  geom_pointrange(aes(
+                      ymin = speciation_rate_5.,
+                     ymax = speciation_rate_95.),
+                  position = position_dodge(width = 0.6)) +
+  geom_hline(yintercept = lambda)
+
+
+dd = df |>
+  select(analysis, id, nchar, speciation_rate_50., extinction_rate_50.) |>
+  mutate(across(c(speciation_rate_50., extinction_rate_50.), as.numeric)) |>
+  mutate(across(c(nchar, analysis), as.factor)) |>
+  ggplot(aes(x = speciation_rate_50., y = extinction_rate_50., color = analysis, group = analysis)) +
+  geom_point() +
+  annotate("point", x = lambda, y = mu, size = 5, color = "black")
+  
+dd
