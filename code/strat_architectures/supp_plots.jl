@@ -11,24 +11,24 @@ const na = [CartesianIndex()]
 
 elevation(h::Header, d::DataSlice) =
     let bl = h.initial_topography[d.slice..., na],
-        sr = h.axes.t[end] * h.subsidence_rate
+        sr = (h.axes.t[end] - h.axes.t[1]) * h.subsidence_rate
 
-        bl .+ d.sediment_thickness .- sr
+        bl .+ d.sediment_thickness[:, 2:end] .- sr
     end
 
 water_depth(header::Header, data::DataSlice) =
     let h = elevation(header, data),
         wi = data.write_interval,
-        s = header.subsidence_rate .* (header.axes.t[1:wi:end] .- header.axes.t[end]),
-        l = header.sea_level[1:wi:end]
+        s = header.subsidence_rate .* (header.axes.t[wi:wi:end] .- header.axes.t[end]),
+        l = header.sea_level[wi:wi:end]
 
         h .- (s.+l)[na, :]
     end
 
 const Rate = typeof(1.0u"m/Myr")
 
-function dominant_facies!(ax::Axis, header::Header, data::DataSlice;
-    smooth_size::NTuple{2,Int}=(3,11),
+function my_dominant_facies!(ax::Axis, header::Header, data::DataSlice;
+    smooth_size::NTuple{2,Int}=(1,1),
     colors=Makie.wong_colors())
     n_facies = size(data.production)[1]
     colormax(d) = getindex.(argmax(d; dims=1)[1, :, :], 1)
@@ -37,9 +37,9 @@ function dominant_facies!(ax::Axis, header::Header, data::DataSlice;
 
     dominant_facies = colormax(data.deposition)
     blur = convolution(Shelf, ones(Float64, smooth_size...) ./ *(smooth_size...))
-    wd = zeros(Float64, length(header.axes.x), length(header.axes.t[1:wi:end]))
-    blur(water_depth(header, data) / u"m", wd)
-
+    #wd = zeros(Float64, length(header.axes.x), length(header.axes.t[wi:wi:end]))
+    #blur(water_depth(header, data) / u"m", wd)
+    wd = water_depth(header, data) |> in_units_of(u"m")
     ax.ylabel = "time [Myr]"
     ax.xlabel = "position [km]"
 
@@ -47,10 +47,11 @@ function dominant_facies!(ax::Axis, header::Header, data::DataSlice;
     dominant_facies[ wd .> 0] .= missing
 
     xkm = header.axes.x |> in_units_of(u"km")
-    tmyr = header.axes.t[1:wi:end] |> in_units_of(u"Myr")
+    tmyr = header.axes.t[wi:wi:end] |> in_units_of(u"Myr")
     ft = heatmap!(ax, xkm, tmyr, dominant_facies;
         colormap=cgrad(colors[1:n_facies], n_facies, categorical=true),
-        colorrange=(0.5, n_facies + 0.5))
+        colorrange=(0.5, n_facies + 0.5),
+        nan_color = :transparent)
     #contourf!(ax, xkm, tmyr, wd;
     #    levels=[0.0, 10000.0], colormap=Reverse(:grays))
     #contour!(ax, xkm, tmyr, wd;
@@ -62,6 +63,6 @@ end
     header, data = read_slice("data/strat/sinusoid.h5", :profile)
     ax = Axis(fig[1, 1])
 
-    dominant_facies!(ax, header, data)
+    my_dominant_facies!(ax, header, data)
 
     save("figs/dom_facies.png", fig)
