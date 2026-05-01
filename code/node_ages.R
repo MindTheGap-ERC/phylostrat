@@ -5,18 +5,10 @@ library(ggpubr)
 library(paleotree)
 library(dispRity)
 library(treeio)
+library(dplyr)
 
 source("code/constants.R")
-id = 12
-nchar = 1000
-map_path = paste0("output/fbd_base/", "tree_", id, "_nchar", nchar, "_MAP.tre")
-truth_path = paste0("data/sim/fbd_base/tree_", id, "_nchar", nchar , ".nex")
 
-truth = ape::read.nexus(truth_path)
-map = treeio::read.beast.newick(map_path) 
-
-plot(map@phylo)
-plot(truth)
 
 get_divergence_times = function(map, ref){
   tol = 10^-5
@@ -58,7 +50,7 @@ get_divergence_times = function(map, ref){
   df$covered = df$true_age >= df$min_age & df$true_age <= df$max_age
   return(df)
 }
-df = get_divergence_times(map, truth)
+
 
 get_div_statistics = function(df){
   mean_prec = c((df$max_age - df$min_age)/df$true_age) |> mean()
@@ -88,14 +80,9 @@ get_extant_tip_labels = function(tree, tol = 10^-5){
   return(tree$tip.label[dateNodes(tree) < tol])
 }
 
-l = get_sa_prob(map, truth)
 
-all(names(l[[1]]) %in% names(l[[2]]))
+mean_sa_cov_freq = function(l) {sapply(names(l[[1]]), function(x) abs(l[[2]][x] - l[[1]][x]) < 0.05) |> mean()}
 
-mean_sa_cov_freq = function(l) {sapply(names(l[[1]]), function(x) l[[2]][x] - l[[1]][x] < 0.05) |> mean()}
-mean_sa_cov_freq(l)
-
-rf_dist = phangorn::RF.dist(map@phylo, truth, rooted = TRUE, normalize = TRUE)
 
 tree_params = function(map, truth){
   df = get_divergence_times(map = map,
@@ -110,88 +97,214 @@ tree_params = function(map, truth){
   return(x)
 }
 
-tree_params(map, truth)
-map@data$age_0.95_HPD[[3]]
-map@info
+id = 12
+nchar = 1000
+map_path = paste0("output/fbd_base/", "tree_", id, "_nchar", nchar, "_MAP.tre")
+truth_path = paste0("data/sim/fbd_base/tree_", id, "_nchar", nchar , ".nex")
 
-map@data$index
+truth = ape::read.nexus(truth_path)
+map = treeio::read.beast.newick(map_path) 
 
-tnd = dateNodes(map@phylo)[3]
-map@data$age_
-
-plot(truth)
 plot(map@phylo)
+plot(truth)
 
-dateNodes(map@phylo)
+tree_params(map, truth)
 
-a = tree.age(map@phylo)
-sort(a$ages)
-
-plot(truth, show.node.label = TRUE) 
-
-plot(drop.tip(truth, "t39_1"))
-?drop.tip
-truth$edge.length
+load("converged_runs.RData")
 
 
-tree = truth@phylo
+ids = c(1:40)
+nchars= c(30, 100, 300, 1000)
+analyses = c("base", "strat_miller", "strat_sinusoid", "gap_est", "gap_prior")
 
-ages = dateNodes(tree)
-
-
-
-
-#### Determine correct identification of SAs
-
-
-
-extant_tips = get_extant_tip_labels(ref)
-not_extant = ref$tip.label[! ref$tip.label %in% extant_tips ]
-
-not_extant_node = which(map@phylo$tip.label %in% not_extant)
-sas = map@data$sampled_ancestor[map@data$node %in% not_extant_node]
-
-true_foss = c("t19_1", "t25_1", "t32_3")
-map@data$sampled_ancestor[map@data$node %in% which(map@phylo$tip.label %in% true_foss)]
-
-
-
-
-
-
-
-
-tr = l[[2]][order(names(l[[2]]))]
-obs = l[[1]][order(names(l[[1]]))]
-
-sum(abs(tr - obs) <= 0.05) / length(tr)
-
-df$min_adjusted = df$min_age - df$true_age
-df$max_adjusted = df$max_age - df$true_age
-
-plot(NULL,
-     xlim = c(0, 12),
-     ylim = c(-1, 1))
-for (i in seq_along(df$tip1)){
-  lines(x = c(i,i), y = c(df$min_adjusted[i], df$max_adjusted[i]))
+get_tree_statistics = function(){
+  df_stat = data.frame()
+  
+  for (id in ids){
+    print(id)
+    for (nchar in nchars){
+      for (analysis in analyses){
+        if (df_converged$converged[df_converged$nchars == nchar & df_converged$id == id & df_converged$analysis == analysis]){
+          if (analysis == "base"){
+            path = "data/fbd_base/"
+            map_path = paste0(path, "rb_output/",  "tree_", id, "_nchar", nchar, "_MAP.tre")
+            truth_path = paste0(path, "sim/tree_", id, "_nchar", nchar , ".nex")
+          }
+          if (analysis == "strat_miller"){
+            path = "data/fbd_strat/"
+            map_path = paste0(path, "rb_output/",  "tree_", id, "_nchar", nchar, "_miller_MAP.tre")
+            truth_path = paste0(path, "sim/tree_", id, "_nchar", nchar , "_miller.nex")
+          }
+          if (analysis == "strat_sinusoid"){
+            path = "data/fbd_strat/"
+            map_path = paste0(path, "rb_output/",  "tree_", id, "_nchar", nchar, "_sinusoid_MAP.tre")
+            truth_path = paste0(path, "sim/tree_", id, "_nchar", nchar , "_sinusoid.nex")
+          }
+          if (analysis == "gap_est"){
+            path = "data/fbd_gap_est/"
+            map_path = paste0(path, "rb_output/",  "tree_", id, "_nchar", nchar, "_sinusoid_MAP.tre")
+            truth_path = paste0(path, "sim/tree_", id, "_nchar", nchar , "_sinusoid.nex")
+          }
+          if (analysis == "gap_prior"){
+            path = "data/fbd_gap_prior/"
+            map_path = paste0(path, "rb_output/",  "tree_", id, "_nchar", nchar, "_sinusoid_MAP.tre")
+            truth_path = paste0(path, "sim/tree_", id, "_nchar", nchar , "_sinusoid.nex")
+          }
+          if (!all(file.exists(map_path, truth_path))){stop()}
+          
+          truth = ape::read.nexus(truth_path)
+          map = suppressWarnings(treeio::read.beast.newick(map_path)) 
+          
+          df_te = tree_params(map, truth) |> as.list() |> as.data.frame()
+          df_te$id = id
+          df_te$nchar = nchar
+          df_te$analysis = analysis
+          
+          df_stat = data.table::rbindlist(list(df_stat, df_te))
+        }
+      }
+    }
+  }
+  return(df_stat)
 }
-lines(c(0, 12), c(0,0))
 
-remove_sa = function(x){
-  is_sa = x$edge.length == 0 #& truth$edge[,2] > Ntip(truth)
-  sa_nodes = x$edge[is_sa, 2]
-  phy_no_sa =  drop.tip(x, sa_nodes)
+df_stat = get_tree_statistics()
+
+
+scen_model_violation = c("base", "strat_miller", "strat_sinusoid")
+scen_sampling_strategy = c("strat_sinusoid", "gap_est", "gap_prior")
+
+plot_tree_stats_model_violation = function(){
+  p1 = df_stat |>
+    filter(!is.na(rf_dist)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_model_violation) |>
+    ggplot(aes(x = nchar, y = rf_dist, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    labs(title = "RF distance MAP - truth")
+  
+  p2 = df_stat |>
+    filter(!is.na(mean_prec_div_times)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_model_violation) |>
+    ggplot(aes(x = nchar, y = mean_prec_div_times, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    ylim(0,2) +
+    labs(title = "Mean precision divergence time")
+  
+  p3 = df_stat |>
+    filter(!is.na(cov_freq_div_times)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_model_violation) |>
+    ggplot(aes(x = nchar, y = cov_freq_div_times, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    labs(title = "coverage frequency divergence times")
+  
+  p4 = df_stat |>
+    filter(!is.na(mean_sa_cov_freq)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_model_violation) |>
+    ggplot(aes(x = nchar, y = mean_sa_cov_freq, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    ylim(0,1) + 
+    labs(title = "mean SA coverage frequency")
+  
+  p = ggpubr::ggarrange(p1, p2, p3, p4, ncol = 2, nrow = 2, common.legend = TRUE)
 }
 
-plot(map@phylo |> remove_sa())
-plot(truth |> remove_sa())
+p = plot_tree_stats_model_violation()
+p
+ggsave(filename = "figs/tree_statistics_model_violation.png",
+       plot = plot_tree_stats_model_violation())
 
-map@phylo |> remove_sa() |> tree.age()
-truth |> remove_sa() |> tree.age()
+plot_tree_stats_sampling_strategy = function(){
+  p1 = df_stat |>
+    filter(!is.na(rf_dist)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_sampling_strategy) |>
+    ggplot(aes(x = nchar, y = rf_dist, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    labs(title = "RF distance MAP - truth")
+  
+  p2 = df_stat |>
+    filter(!is.na(mean_prec_div_times)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_sampling_strategy) |>
+    ggplot(aes(x = nchar, y = mean_prec_div_times, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    ylim(0,2) +
+    labs(title = "Mean precision divergence time")
+  
+  p3 = df_stat |>
+    filter(!is.na(cov_freq_div_times)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_sampling_strategy) |>
+    ggplot(aes(x = nchar, y = cov_freq_div_times, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    labs(title = "coverage frequency divergence times")
+  
+  p4 = df_stat |>
+    filter(!is.na(mean_sa_cov_freq)) |>
+    mutate(across(c(nchar, analysis), factor)) |>
+    filter(analysis %in% scen_sampling_strategy) |>
+    ggplot(aes(x = nchar, y = mean_sa_cov_freq, color = analysis)) +
+    geom_violin(aes(fill = analysis),
+                position = position_dodge(width = 0.9),
+                alpha = 0.4) +
+    geom_jitter(position = position_jitterdodge(dodge.width = 0.9,
+                                                jitter.width = 0.2,
+                                                jitter.height = 0.01),
+                alpha = 0.6) +
+    ylim(0,1) + 
+    labs(title = "mean SA coverage frequency")
+  
+  p = ggpubr::ggarrange(p1, p2, p3, p4, ncol = 2, nrow = 2, common.legend = TRUE)
+}
 
-map@phylo |> remove_sa() |> dateNodes()
+p = plot_tree_stats_sampling_strategy()
+p
 
-df
-mean(df$max_age - df$min_age)
-
-rf_dist = phangorn::RF.dist(map@phylo, truth, rooted = TRUE, normalize = TRUE)
+ggsave(filename = "figs/tree_statistics_sampling_strategy.png",
+       plot = plot_tree_stats_sampling_strategy())
