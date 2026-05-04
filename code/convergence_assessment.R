@@ -1,8 +1,11 @@
+library(dplyr)
+
 ids = seq(1,40)
 nchars = c(30, 100, 300, 1000)
 analyses = c("base", "strat_miller", "strat_sinusoid", "gap_est", "gap_prior")
 
 check_file_existence = function(){
+  # checks if all required files exist and writes results into df
 
   cases = c("miller", "sinusoid")
   runs = c(1,2)
@@ -25,14 +28,15 @@ check_file_existence = function(){
         tree1 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_run_", runs[2], ".log")
         log2 = paste0(path, "/rb_output/", "num_", id, "_nchar", nchar,  "_", case, "_run_", runs[1], ".log")
         tree2 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_run_", runs[2], ".log")
-        
+        tree_map = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_MAP.tre")
+         
         df2 = data.frame(
           id = id,
           nchar = nchar,
           analysis = paste0("strat_",case),
           complete = all(file.exists(tree_sim, tree_original, original_fossils,
                                      mol_dat, fossils, char_mat,
-                                     log1, log2,  tree1, tree2))
+                                     log1, log2,  tree1, tree2, tree_map))
         )
         df = rbind(df, df2)
       }
@@ -52,6 +56,7 @@ check_file_existence = function(){
       tree1 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,   "_run_", runs[2], ".log")
       log2 = paste0(path, "/rb_output/", "num_", id, "_nchar", nchar,  "_run_", runs[1], ".log")
       tree2 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,   "_run_", runs[2], ".log")
+      tree_map = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,   "_MAP.tre")
       
       df2 = data.frame(
         id = id,
@@ -59,7 +64,7 @@ check_file_existence = function(){
         analysis = paste0("base"),
         complete = all(file.exists(tree_sim, tree_original, original_fossils,
                                    mol_dat, fossils, char_mat,
-                                   log1, log2,  tree1, tree2))
+                                   log1, log2,  tree1, tree2, tree_map))
       )
       df = rbind(df, df2)
     }
@@ -80,6 +85,8 @@ check_file_existence = function(){
         tree1 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_run_", runs[2], ".log")
         log2 = paste0(path, "/rb_output/", "num_", id, "_nchar", nchar,  "_", case, "_run_", runs[1], ".log")
         tree2 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_run_", runs[2], ".log")
+        tree_map = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_MAP.tre")
+        
         
         df2 = data.frame(
           id = id,
@@ -87,7 +94,7 @@ check_file_existence = function(){
           analysis = paste0("gap_est"),
           complete = all(file.exists(tree_sim, tree_original, original_fossils,
                                      mol_dat, fossils, char_mat,
-                                     log1, log2,  tree1, tree2))
+                                     log1, log2,  tree1, tree2, tree_map))
         )
         df = rbind(df, df2)
       }
@@ -109,6 +116,7 @@ check_file_existence = function(){
         tree1 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_run_", runs[2], ".log")
         log2 = paste0(path, "/rb_output/", "num_", id, "_nchar", nchar,  "_", case, "_run_", runs[1], ".log")
         tree2 = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_run_", runs[2], ".log")
+        tree_map = paste0(path, "/rb_output/", "tree_", id, "_nchar", nchar,  "_", case, "_MAP.tre")
         
         df2 = data.frame(
           id = id,
@@ -116,7 +124,7 @@ check_file_existence = function(){
           analysis = paste0("gap_prior"),
           complete = all(file.exists(tree_sim, tree_original, original_fossils,
                                      mol_dat, fossils, char_mat,
-                                     log1, log2,  tree1, tree2))
+                                     log1, log2,  tree1, tree2, tree_map))
         )
         df = rbind(df, df2)
       }
@@ -125,9 +133,12 @@ check_file_existence = function(){
   return(df)  
 }
 
+# check for existence of all files
 df_existence = check_file_existence()
 
+# determine ESS of all continuos parameters, skipping non-existing files
 get_ess = function(id, nchar, analysis, burnin = 0){
+  # calculate ess given an id, nchar, an analysis type
   if (analysis == "base"){
     path = "data/fbd_base/"
     file_run1 = paste0(path,"rb_output/num_", id, "_nchar", nchar,"_run_1.log")
@@ -154,15 +165,15 @@ get_ess = function(id, nchar, analysis, burnin = 0){
     file_run2 = paste0(path,"rb_output/num_", id, "_nchar", nchar,"_sinusoid_run_2.log")
   }
   tr1 = RevGadgets::readTrace(path = file_run1, burnin = burnin)
-  ess1 = as.mcmc(tr1[[1]]) |> effectiveSize() |> t() |> as.data.frame()
+  ess1 = coda::as.mcmc(tr1[[1]]) |> coda::effectiveSize() |> t() |> as.data.frame()
   tr2 = RevGadgets::readTrace(path = file_run2, burnin = burnin)
-  ess2 = as.mcmc(tr2[[1]]) |> effectiveSize() |> t() |> as.data.frame()
+  ess2 = coda::as.mcmc(tr2[[1]]) |> coda::effectiveSize() |> t() |> as.data.frame()
   
   comb_trace = RevGadgets::readTrace(path = c(file_run1, file_run2), burnin = burnin) |> 
     RevGadgets::combineTraces()
   
-  ess_full = as.mcmc(comb_trace$combined) |> effectiveSize() |> t() |> as.data.frame()
-  ess_df = rbindlist(list(ess1, ess2, ess_full), fill = TRUE)
+  ess_full = coda::as.mcmc(comb_trace$combined) |> coda::effectiveSize() |> t() |> as.data.frame()
+  ess_df = data.table::rbindlist(list(ess1, ess2, ess_full), fill = TRUE)
   ess_df$run = c("1", "2", "comb")
   ess_df$id = rep(id, 3)
   ess_df$nchar = rep(nchar, 3)
@@ -171,13 +182,14 @@ get_ess = function(id, nchar, analysis, burnin = 0){
 }
 
 get_ess_of_existing_files = function(){
+  # calculate ESS of all files that exist
   df_ess = data.frame()
   for (id in ids){
     print(id)
     for (nchar in nchars){
       for (analysis in analyses){
         if (df_existence$complete[df_existence$id == id & df_existence$nchar == nchar & df_existence$analysis == analysis]){
-          df_ess = rbindlist(list(df_ess, get_ess(id, nchar, analysis)), fill = TRUE)
+          df_ess = data.table::rbindlist(list(df_ess, get_ess(id, nchar, analysis)), fill = TRUE)
         }
       }
     }
@@ -187,45 +199,37 @@ get_ess_of_existing_files = function(){
 
 df_ess = get_ess_of_existing_files()
 
-save(df_ess, file = "ess.RData")
-
-
-ess_threshold = 200
-df_converged = expand.grid(nchars = nchars, id = ids, analysis = analyses, run_successful = NA, converged = NA)
-for (id1 in ids){
-  for (nchar1 in nchars){
-    for (analysis1 in analyses){
-      run_success = df_existence$complete[df_existence$nchar == nchar1 & df_existence$id == id1 & df_existence$analysis == analysis1]
-      df_converged$run_successful[df_converged$nchars == nchar1 & df_converged$id == id1 & df_converged$analysis == analysis1] =  run_success
-      df_converged$converged[df_converged$nchars == nchar1 & df_converged$id == id1 & df_converged$analysis == analysis1] = run_success
-      if (run_success){
-        df = df_ess |>
-          filter(analysis == analysis1 & nchar == nchar1 & id == id1) |> 
-          select(where(~any(.x > 0.001 & !is.na(.x)))) |>
-          select(-run, -id, -nchar, -analysis)
-        converged = all(df> ess_threshold)
-        df_converged$converged[df_converged$nchars == nchar1 & df_converged$id == id1 & df_converged$analysis == analysis1] = converged
+has_converged = function(){
+  # check ess against ess threshold
+  ess_threshold = 200
+  df_converged = expand.grid(nchars = nchars, id = ids, analysis = analyses, run_successful = NA, converged = NA)
+  for (id1 in ids){
+    for (nchar1 in nchars){
+      for (analysis1 in analyses){
+        run_success = df_existence$complete[df_existence$nchar == nchar1 & df_existence$id == id1 & df_existence$analysis == analysis1]
+        df_converged$run_successful[df_converged$nchars == nchar1 & df_converged$id == id1 & df_converged$analysis == analysis1] =  run_success
+        df_converged$converged[df_converged$nchars == nchar1 & df_converged$id == id1 & df_converged$analysis == analysis1] = run_success
+        if (run_success){
+          df = df_ess |>
+            filter(analysis == analysis1 & nchar == nchar1 & id == id1) |> 
+            select(where(~any(.x > 0.001 & !is.na(.x)))) |>
+            select(-run, -id, -nchar, -analysis)
+          converged = all(df> ess_threshold)
+          df_converged$converged[df_converged$nchars == nchar1 & df_converged$id == id1 & df_converged$analysis == analysis1] = converged
+        }
       }
     }
   }
+  return(df_converged)
 }
 
-save(df_converged, file = "converged_runs.RData")
+df_converged = has_converged()
+
+save(df_existence, df_ess, df_converged,
+     file = "data/convergence_assessment.RData")
+
 
 # proportion of converged
 df_converged |>
   group_by(nchars, analysis) |>
   summarise(n_converged = mean(converged))
-
-# 
-# name = "data/fbd_base/rb_output/tree_29_nchar300_run_2.log"
-# file.copy("data/fbd_base/rb_output/tree_29_nchar300_run_2.log", "data/fbd_base/rb_output/tree_29_nchar300_run_2.trees")
-# a = rwty::load.trees("data/fbd_base/rb_output/tree_29_nchar300_run_2.trees", format = "revbayes")
-# a
-# 
-# essSplitFreq(a$trees)
-# plotEssSplits(a)
-# 
-# aa = checkConvergence(listname)
-# 
-# aa = checkConvergence(list_files = c("data/fbd_base/rb_output/tree_29_nchar300_run_2.trees"))
