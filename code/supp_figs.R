@@ -40,7 +40,7 @@ ggsave(filename = "figs/post_analysis/converged_runs.png",
 
 
 #### Tree figures ####
-df_stat$analysis = factor(df$analysis,
+df_stat$analysis = factor(df_stat$analysis,
                           levels = c("base", "strat_miller", "strat_sinusoid", "gap_est", "gap_prior"),
                           ordered = TRUE)
 
@@ -90,7 +90,7 @@ plot_tree_stats_model_violation = function(){
     ylim(0,3)
   
   p3 = df_stat |>
-    filter(!is.na(cov_freq_div_times)) |>
+    filter(!is.na(cov_freq_div_times) & !is.nan(cov_freq_div_times)) |>
     mutate(across(c(nchar, analysis), factor)) |>
     filter(analysis %in% scen_model_violation) |>
     ggplot(aes(x = nchar, y = cov_freq_div_times, color = analysis, fill = analysis)) +
@@ -189,7 +189,7 @@ plot_tree_stats_sampling_strategy = function(){
     ylim(0,3)
   
   p3 = df_stat |>
-    filter(!is.na(cov_freq_div_times)) |>
+    filter(!is.na(cov_freq_div_times) & !is.nan(cov_freq_div_times)) |>
     mutate(across(c(nchar, analysis), factor)) |>
     filter(analysis %in% scen_sampling_strategy) |>
     ggplot(aes(x = nchar, y = cov_freq_div_times, color = analysis, fill = analysis)) +
