@@ -90,10 +90,10 @@ plot_tree_stats_model_violation = function(){
     ylim(0,3)
   
   p3 = df_stat |>
-    filter(!is.na(cov_freq_div_times) & !is.nan(cov_freq_div_times)) |>
+    filter(!is.na(cov_freq_counted) & !is.nan(cov_freq_counted)) |>
     mutate(across(c(nchar, analysis), factor)) |>
     filter(analysis %in% scen_model_violation) |>
-    ggplot(aes(x = nchar, y = cov_freq_div_times, color = analysis, fill = analysis)) +
+    ggplot(aes(x = nchar, y = cov_freq_counted, color = analysis, fill = analysis)) +
     scale_fill_discrete(labels = scen_axis_labels[scen_model_violation]) +
     scale_color_discrete(labels = scen_axis_labels[scen_model_violation]) +
     geom_violin(aes(fill = analysis),
@@ -189,10 +189,10 @@ plot_tree_stats_sampling_strategy = function(){
     ylim(0,3)
   
   p3 = df_stat |>
-    filter(!is.na(cov_freq_div_times) & !is.nan(cov_freq_div_times)) |>
+    filter(!is.na(cov_freq_counted) & !is.nan(cov_freq_counted)) |>
     mutate(across(c(nchar, analysis), factor)) |>
     filter(analysis %in% scen_sampling_strategy) |>
-    ggplot(aes(x = nchar, y = cov_freq_div_times, color = analysis, fill = analysis)) +
+    ggplot(aes(x = nchar, y = cov_freq_counted, color = analysis, fill = analysis)) +
     scale_fill_discrete(labels = scen_axis_labels[scen_sampling_strategy]) +
     scale_color_discrete(labels = scen_axis_labels[scen_sampling_strategy]) +
     geom_violin(aes(fill = analysis),
