@@ -92,13 +92,22 @@ mean_sa_cov_freq = function(l) {sapply(names(l[[1]]), function(x) abs(l[[2]][x] 
 tree_params = function(map, truth){
   df = get_divergence_times(map = map,
                             ref = truth)
+  n = 3
+  mean_counted = NA
+  cov_freq_counted = NA
+  if (length(df$true_age) >= 3){
+    mean_counted = c((df$max_age - df$min_age)/df$true_age) |> mean()
+    cov_freq_counted = mean(df$covered)
+  }
   
   x = c("mean_prec_div_times" = c((df$max_age - df$min_age)/df$true_age) |> mean(),
         "cov_freq_div_times" = mean(df$covered),
         "mean_sa_cov_freq" = get_sa_prob(map = map,
                                          ref = truth) |>
           mean_sa_cov_freq(),
-        "rf_dist" = phangorn::RF.dist(map@phylo, truth, rooted = TRUE, normalize = TRUE))
+        "rf_dist" = phangorn::RF.dist(map@phylo, truth, rooted = TRUE, normalize = TRUE),
+        "mean_counted" = mean_counted,
+        "cov_freq_counted" = cov_freq_counted)
   return(x)
 }
 
