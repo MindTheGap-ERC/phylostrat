@@ -13,7 +13,7 @@ docs
 *.csv
 !data/strat/selected_adms.csv
 *.txt
-*.Rdata
+
 
 /data/osf/R_outputs/*
 /data/osf/matlab_outputs/*
@@ -35,10 +35,12 @@ history.txt
 # logs
 
 # data files
-*.RData
 *.tre
 *.h5
+*.RData
 data/*
+!data/convergence_assessment.RData
+!data/post_values.RData
 
 *.toml
 !Manifest.toml
