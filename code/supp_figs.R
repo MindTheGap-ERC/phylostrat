@@ -12,7 +12,7 @@ scen_axis_labels = c("base" = "cFBD +\nCFS",
                      "strat_sinusoid" = "cFBD +\nFLG",
                      "gap_est" = "sFBDw +\nFLG",
                      "gap_prior" = "sFBDs +\nFLG")
-nchar_axis_label = "# Char"
+nchar_axis_label = "# Morph. char"
 scen_model_violation = c("base", "strat_miller", "strat_sinusoid")
 scen_sampling_strategy = c("strat_sinusoid", "gap_est", "gap_prior")
 
@@ -21,8 +21,8 @@ plot_n_converged_runs = function(){
     group_by(analysis, nchars) |>
     summarise(n_converged = sum(converged), .groups = "drop") |>
     mutate(nchars = as.factor(nchars)) |>
-    ggplot(aes(x = analysis, y = n_converged, color = nchars)) +
-    geom_point(position = position_jitter(height = 0, width = 0.15)) +
+    ggplot(aes(x = analysis, y = n_converged, color = nchars, shape = nchars)) +
+    geom_point(position = position_jitter(height = 0, width = 0.1)) +
     scale_y_continuous(
       breaks = breaks_width(1),
       labels = as.integer,
@@ -31,12 +31,14 @@ plot_n_converged_runs = function(){
     labs(title = "Converged runs",
          x = "Analysis",
          y = "Converged (out of 40)",
-         color = nchar_axis_label) +
+         color = nchar_axis_label,
+         shape = nchar_axis_label) +
     scale_x_discrete(labels = scen_axis_labels)
   return(p)
 }
 ggsave(filename = "figs/post_analysis/converged_runs.png",
-       plot = plot_n_converged_runs())
+       plot = plot_n_converged_runs(),
+       bg = "white")
 
 
 #### Tree figures ####
@@ -265,7 +267,8 @@ plot_base_vs_strat = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Extinction rate",
@@ -284,7 +287,8 @@ plot_base_vs_strat = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Speciation rate",
@@ -303,7 +307,8 @@ plot_base_vs_strat = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Origin",
@@ -322,7 +327,8 @@ plot_base_vs_strat = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Molecular clock rate",
@@ -341,18 +347,20 @@ plot_base_vs_strat = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Morphological clock rate",
          fill = "Analysis") +
     guides(color = "none")
   
-  p = ggpubr::ggarrange(p1, p2, p3, p5, p4,
+  p = ggpubr::ggarrange(p1, p2, p5, p4, p3,
                         ncol = 2,
                         nrow = 3,
                         common.legend = TRUE,
-                        legend = "bottom")
+                        legend = "bottom",
+                        labels = LETTERS[1:5])
   return(p)
 }
 
@@ -377,7 +385,8 @@ plot_sampling_strategies_comp = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Extinction rate",
@@ -396,7 +405,8 @@ plot_sampling_strategies_comp = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Speciation rate",
@@ -415,7 +425,8 @@ plot_sampling_strategies_comp = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Origin",
@@ -435,7 +446,8 @@ plot_sampling_strategies_comp = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Molecular clock rate",
@@ -454,18 +466,20 @@ plot_sampling_strategies_comp = function(){
                                                 jitter.width = 0.2,
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
-    geom_hline(yintercept = 0) +
+    geom_hline(yintercept = 0,
+               linetype = "dashed") +
     labs(y = "Rel. error [-]",
          x = nchar_axis_label,
          title = "Morphological clock rate",
          fill = "Analysis") +
     guides(color = "none")
   
-  p = ggpubr::ggarrange(p1, p2, p3, p5, p4,
+  p = ggpubr::ggarrange(p1, p2, p5, p4, p3,
                         ncol = 2,
                         nrow = 3,
                         common.legend = TRUE,
-                        legend = "bottom")
+                        legend = "bottom",
+                        labels = LETTERS[1:5])
   return(p)
 }
 p = plot_sampling_strategies_comp()
@@ -481,57 +495,64 @@ plot_coverage_freq = function(){
     select(spec_covered, analysis, nchar) |>
     group_by(analysis, nchar) |>
     summarise(spec_coverage_freq = mean(spec_covered), .groups = "drop") |>
-    ggplot(aes(x = nchar, y = spec_coverage_freq, color = analysis)) +
-    geom_point() +
-    geom_hline(yintercept = 0.9) +
+    ggplot(aes(x = nchar, y = spec_coverage_freq, color = analysis, shape = analysis)) +
+    geom_point(position = position_jitter(width = 0.05, height = 0)) +
+    geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
          y = "Coverage freq.",
          title = "Speciation rate",
-         color = "Analysis") +
+         color = "Analysis",
+         shape = "Analysis") +
     ylim(ylim_min, 1) +
-    scale_color_discrete(labels = scen_axis_labels)
+    scale_color_discrete(labels = scen_axis_labels) +
+    scale_shape_discrete(labels = scen_axis_labels)
   
   p2 = df |> 
     select(ext_covered, analysis, nchar) |>
     group_by(analysis, nchar) |>
     summarise(ext_coverage_freq = mean(ext_covered), .groups = "drop") |>
-    ggplot(aes(x = nchar, y = ext_coverage_freq, color = analysis)) +
-    geom_point() +
-    geom_hline(yintercept = 0.9)+
+    ggplot(aes(x = nchar, y = ext_coverage_freq, color = analysis, shape = analysis)) +
+    geom_point(position = position_jitter(width = 0.05, height = 0)) +
+    geom_hline(yintercept = 0.9, linetype = "dashed")+
     labs(x = nchar_axis_label,
          y = "Coverage freq.",
          title = "Extinction rate",
          color = "Analysis") +
-    ylim(ylim_min, 1) +
-    scale_color_discrete(labels = scen_axis_labels)
+    ylim(ylim_min, 1)  +
+    scale_color_discrete(labels = scen_axis_labels) +
+    scale_shape_discrete(labels = scen_axis_labels)
   
   p3 = df |> 
     select(branch_rates_mol_covered, analysis, nchar) |>
     group_by(analysis, nchar) |>
     summarise(branch_rates_mol_coverage_freq = mean(branch_rates_mol_covered), .groups = "drop") |>
-    ggplot(aes(x = nchar, y = branch_rates_mol_coverage_freq, color = analysis)) +
-    geom_point() +
-    geom_hline(yintercept = 0.9) +
+    ggplot(aes(x = nchar, y = branch_rates_mol_coverage_freq, color = analysis, shape = analysis)) +
+    geom_point(position = position_jitter(width = 0.05, height = 0)) +
+    geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
          y = "Coverage freq.",
          title = "Mol. clock rate",
-         color = "Analysis") +
+         color = "Analysis",
+         shape = "Analysis") +
     ylim(ylim_min, 1) +
-    scale_color_discrete(labels = scen_axis_labels)
+    scale_color_discrete(labels = scen_axis_labels) +
+    scale_shape_discrete(labels = scen_axis_labels)
   
   p4 = df |> 
     select(branch_rates_morpho_covered, analysis, nchar) |>
     group_by(analysis, nchar) |>
     summarise(branch_rates_morpho_coverage_freq = mean(branch_rates_morpho_covered), .groups = "drop") |>
-    ggplot(aes(x = nchar, y = branch_rates_morpho_coverage_freq, color = analysis)) +
-    geom_point() +
-    geom_hline(yintercept = 0.9) +
+    ggplot(aes(x = nchar, y = branch_rates_morpho_coverage_freq, color = analysis, shape = analysis)) +
+    geom_point(position = position_jitter(width = 0.05, height = 0)) +
+    geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
          y = "Coverage freq.",
          title = "Morph. clock rate",
-         color = "Analysis") +
-    ylim(ylim_min, 1) +
-    scale_color_discrete(labels = scen_axis_labels)
+         color = "Analysis",
+         shape = "Analysis") +
+    ylim(ylim_min, 1)  +
+    scale_color_discrete(labels = scen_axis_labels) +
+    scale_shape_discrete(labels = scen_axis_labels)
   
   p = ggpubr::ggarrange(p1, p2, p3, p4,
                         common.legend = TRUE,
