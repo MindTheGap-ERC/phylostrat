@@ -38,7 +38,7 @@ plot_n_converged_runs = function(){
     theme(legend.position = "bottom")
   return(p)
 }
-ggsave(filename = "figs/post_analysis/converged_runs.png",
+ggsave(filename = "figs/sm/converged_runs.png",
        plot = plot_n_converged_runs(),
        bg = "white")
 
@@ -143,7 +143,7 @@ plot_tree_stats_model_violation = function(){
                         legend = "bottom")
 }
 
-ggsave(filename = "figs/post_analysis/tree_statistics_model_violation.png",
+ggsave(filename = "figs/ms/tree_statistics_model_violation.png",
        plot = plot_tree_stats_model_violation(),
        bg = "white")
 
@@ -242,7 +242,7 @@ plot_tree_stats_sampling_strategy = function(){
                         legend = "bottom")
 }
 
-ggsave(filename = "figs/post_analysis/tree_statistics_sampling_strategy.png",
+ggsave(filename = "figs/ms/tree_statistics_sampling_strategy.png",
        plot = plot_tree_stats_sampling_strategy(),
        bg = "white")
 
@@ -368,7 +368,7 @@ plot_base_vs_strat = function(){
 
 p = plot_base_vs_strat()
 p
-ggsave(filename = "figs/post_analysis/param_com_model_violations.png",
+ggsave(filename = "figs/ms/param_com_model_violations.png",
        plot = plot_base_vs_strat(),
        bg = "white")
 
@@ -487,7 +487,7 @@ plot_sampling_strategies_comp = function(){
 p = plot_sampling_strategies_comp()
 p
 
-ggsave(filename = "figs/post_analysis/param_comp_sampling_strategies.png",
+ggsave(filename = "figs/ms/param_comp_sampling_strategies.png",
        plot = plot_sampling_strategies_comp(),
        bg = "white")
 
@@ -564,7 +564,7 @@ plot_coverage_freq = function(){
   
 }
 
-ggsave(filename = "figs/post_analysis/coverage_freq.png",
+ggsave(filename = "figs/sm/coverage_freq.png",
        plot = plot_coverage_freq(),
        bg = "white")
 
@@ -617,7 +617,7 @@ plot_strat_fig = function(){
 }
 
 p = plot_strat_fig()
-ggsave(filename = "figs/strat_info.png",
+ggsave(filename = "figs/ms/strat_info.png",
        plot = plot_strat_fig(),
        bg = "white")
 
