@@ -5,6 +5,7 @@ load("data/convergence_assessment.RData")
 library(ggplot2)
 library(dplyr)
 library(scales)
+library(admtools)
 
 
 scen_axis_labels = c("base" = "cFBD +\nCFS",
@@ -33,7 +34,8 @@ plot_n_converged_runs = function(){
          y = "Converged (out of 40)",
          color = nchar_axis_label,
          shape = nchar_axis_label) +
-    scale_x_discrete(labels = scen_axis_labels)
+    scale_x_discrete(labels = scen_axis_labels) +
+    theme(legend.position = "bottom")
   return(p)
 }
 ggsave(filename = "figs/post_analysis/converged_runs.png",
@@ -355,7 +357,7 @@ plot_base_vs_strat = function(){
          fill = "Analysis") +
     guides(color = "none")
   
-  p = ggpubr::ggarrange(p1, p2, p5, p4, p3,
+  p = ggpubr::ggarrange(p2, p1, p5, p4, p3,
                         ncol = 2,
                         nrow = 3,
                         common.legend = TRUE,
@@ -474,7 +476,7 @@ plot_sampling_strategies_comp = function(){
          fill = "Analysis") +
     guides(color = "none")
   
-  p = ggpubr::ggarrange(p1, p2, p5, p4, p3,
+  p = ggpubr::ggarrange(p2, p1, p5, p4, p3,
                         ncol = 2,
                         nrow = 3,
                         common.legend = TRUE,
@@ -565,6 +567,60 @@ plot_coverage_freq = function(){
 ggsave(filename = "figs/post_analysis/coverage_freq.png",
        plot = plot_coverage_freq(),
        bg = "white")
+
+#### Strat Figure ####
+df_strat = read.csv("data/strat/selected_adms.csv")
+
+adm_miller = admtools::tp_to_adm(t = df_strat$t,
+                                 h = df_strat$miller,
+                                 T_unit = "Myr",
+                                 L_unit = "m")
+adm_sinusoid = admtools::tp_to_adm(t = df_strat$t,
+                                   h = df_strat$sinusoid,
+                                   T_unit = "Myr",
+                                   L_unit = "m")
+
+plot_strat_fig = function(){
+  t_mod = df_strat$t[seq(1, length(df_strat$t), by = 1)]
+  
+  df2 = data.frame(t = rep(t_mod, 2),
+                   h = c(time_to_strat(t_mod, adm_miller), time_to_strat(t_mod, adm_sinusoid)),
+                   sl = c(rep("Miller et al.", length(t_mod)), rep("Sinusoid", length(t_mod))))
+  p1 = df2 |> 
+    ggplot(aes(x = t, y = h, color = sl)) +
+    geom_line(linewidth = 1.5) +
+    ggtitle("Age-depth models") +
+    labs(x = "Elapsed simulation time [Myr]",
+         y = "Stratigraphic height [m]",
+         color = "Sea level curve") +
+    theme(legend.position = c(0.2 ,0.8))
+  
+  df3 = data.frame(dur = c(get_hiat_duration(adm_miller),
+                           get_hiat_duration(adm_sinusoid)),
+                   sl = factor(c( rep("Miller et al.", get_hiat_no(adm_miller)),
+                                  rep("Sinusoid", get_hiat_no(adm_sinusoid)))))
+  p2 = df3 |> ggplot(aes(x = dur, fill = sl)) +
+    geom_histogram(alpha=0.6, position = "identity", color = "#e9ecef", bins = 20) +
+    scale_x_log10() +
+    labs(x = "Gap duration [Myr]",
+         y = "No. of gaps",
+         fill = "Sea level curve") +
+    theme(legend.position = c(0.8, 0.8)) +
+    ggtitle("Gap duration")
+  
+  p = ggpubr::ggarrange(p1, p2, 
+                        ncol = 2, 
+                        nrow = 1, 
+                        labels = LETTERS[1:2])
+  
+  return(p)
+}
+
+p = plot_strat_fig()
+ggsave(filename = "figs/strat_info.png",
+       plot = plot_strat_fig(),
+       bg = "white")
+
 
 
 # doodles for comparing the ranges
