@@ -7,6 +7,9 @@ library(dplyr)
 library(scales)
 library(admtools)
 
+fig_width_2col_cm = 18
+fig_height_2_col_max_cm = 17
+
 
 scen_axis_labels = c("base" = "cFBD +\nCFS",
                      "strat_miller" = "cFBD +\nMSG",
@@ -40,7 +43,10 @@ plot_n_converged_runs = function(){
 }
 ggsave(filename = "figs/sm/converged_runs.png",
        plot = plot_n_converged_runs(),
-       bg = "white")
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = 10,
+       units = "cm")
 
 
 #### Tree figures ####
@@ -109,10 +115,12 @@ plot_tree_stats_model_violation = function(){
                 alpha = 0.6) +
     labs(title = "Divergence times",
          x = nchar_axis_label,
-         y = "Coverage freq. [-]",
+         y = "95 % coverage freq. [-]",
          fill = "Analysis") +
     guides(color = "none") +
-    ylim(0,1)
+    ylim(0,1) +
+    geom_hline(yintercept = 0.95,
+               linetype = "dashed")
   
   p4 = df_stat |>
     filter(!is.na(mean_sa_cov_freq)) |>
@@ -129,11 +137,13 @@ plot_tree_stats_model_violation = function(){
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
     ylim(0,1) + 
-    labs(title = "Sampled ancestor id.",
-         y = "Mean coverage freq. [-]",
+    labs(title = "SA identification",
+         y = "95 % id. freq. [-]",
          x = nchar_axis_label,
          fill = "Analysis") +
-    guides(color = "none")
+    guides(color = "none") +
+    geom_hline(yintercept = 0.95,
+               linetype = "dashed")
   
   p = ggpubr::ggarrange(p1, p2, p3, p4, 
                         ncol = 2,
@@ -145,7 +155,10 @@ plot_tree_stats_model_violation = function(){
 
 ggsave(filename = "figs/ms/tree_statistics_model_violation.png",
        plot = plot_tree_stats_model_violation(),
-       bg = "white")
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = 15,
+       units = "cm")
 
 plot_tree_stats_sampling_strategy = function(){
   dodge = 0.6
@@ -208,10 +221,12 @@ plot_tree_stats_sampling_strategy = function(){
                 alpha = 0.6) +
     labs(title = "Divergence times",
          x = nchar_axis_label,
-         y = "Coverage freq. [-]",
+         y = "95 % coverage freq. [-]",
          fill = "Analysis") +
     guides(color = "none") +
-    ylim(0,1)
+    ylim(0,1) +
+    geom_hline(yintercept = 0.95,
+               linetype = "dashed")
   
   p4 = df_stat |>
     filter(!is.na(mean_sa_cov_freq)) |>
@@ -228,11 +243,13 @@ plot_tree_stats_sampling_strategy = function(){
                                                 jitter.height = 0.0),
                 alpha = 0.6) +
     ylim(0,1) + 
-    labs(title = "Sampled ancestor id.",
-         y = "Mean coverage freq. [-]",
+    labs(title = "SA identification",
+         y = "95 % id. freq. [-]",
          x = nchar_axis_label,
          fill = "Analysis") +
-    guides(color = "none")
+    guides(color = "none") +
+    geom_hline(yintercept = 0.95,
+          linetype = "dashed")
   
   p = ggpubr::ggarrange(p1, p2, p3, p4, 
                         ncol = 2,
@@ -244,7 +261,10 @@ plot_tree_stats_sampling_strategy = function(){
 
 ggsave(filename = "figs/ms/tree_statistics_sampling_strategy.png",
        plot = plot_tree_stats_sampling_strategy(),
-       bg = "white")
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = 15,
+       units = "cm")
 
 #### Posterior of continuous characters ####
 df = df_median 
@@ -370,7 +390,10 @@ p = plot_base_vs_strat()
 p
 ggsave(filename = "figs/ms/param_com_model_violations.png",
        plot = plot_base_vs_strat(),
-       bg = "white")
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = fig_height_2_col_max_cm,
+       units = "cm")
 
 
 plot_sampling_strategies_comp = function(){
@@ -489,7 +512,10 @@ p
 
 ggsave(filename = "figs/ms/param_comp_sampling_strategies.png",
        plot = plot_sampling_strategies_comp(),
-       bg = "white")
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = fig_height_2_col_max_cm,
+       units = "cm")
 
 plot_coverage_freq = function(){
   ylim_min = 0.5
@@ -501,7 +527,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "Coverage freq.",
+         y = "90 % coverage freq.",
          title = "Speciation rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -517,7 +543,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed")+
     labs(x = nchar_axis_label,
-         y = "Coverage freq.",
+         y = "90 % coverage freq.",
          title = "Extinction rate",
          color = "Analysis") +
     ylim(ylim_min, 1)  +
@@ -532,7 +558,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "Coverage freq.",
+         y = "90 % coverage freq.",
          title = "Mol. clock rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -548,7 +574,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "Coverage freq.",
+         y = "90 % coverage freq.",
          title = "Morph. clock rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -566,7 +592,10 @@ plot_coverage_freq = function(){
 
 ggsave(filename = "figs/sm/coverage_freq.png",
        plot = plot_coverage_freq(),
-       bg = "white")
+       bg = "white",
+       width = fig_height_2_col_max_cm,
+       height = 14,
+       units = "cm")
 
 #### Strat Figure ####
 df_strat = read.csv("data/strat/selected_adms.csv")
@@ -619,7 +648,10 @@ plot_strat_fig = function(){
 p = plot_strat_fig()
 ggsave(filename = "figs/ms/strat_info.png",
        plot = plot_strat_fig(),
-       bg = "white")
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = 7,
+       units = "cm")
 
 
 
