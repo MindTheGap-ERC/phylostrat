@@ -10,6 +10,7 @@ TODO: check exact versions
 * R version 4.5.3
 * RStudio
 * Julia
+* snakemake
 
 ## 1. Generating stratigraphic architectures
 

@@ -13,7 +13,7 @@ Orcid: [0000-0003-1559-1838](https://orcid.org/0000-0003-1559-1838)
 
 ## Requirements and reproduction
 
-Requires Julia, revBayes as `rb`, bash, and R. Details for full instructions are given in the `REPRODUCEME.md`.
+Requires Julia, revBayes as `rb`, bash, snakemake, and R. Details for full instructions are given in the `REPRODUCEME.md`.
 
 ## Repository structure
 
