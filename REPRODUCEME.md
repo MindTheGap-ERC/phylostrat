@@ -43,10 +43,10 @@ include("code/strat_architectures/make_plots.jl")
 
 To process the data and use it for further steps, open the file `phylostrat.Rproj` in RStudio, and then execute
 ```R
-source("code/strat_analysis.R")
+source("code/strat_architectures/strat_analysis.R")
 ```
 
-This exports data on the examined age-depth models as .csv for further use in R.
+in the console. This exports data on the examined age-depth models as .csv for further use in R.
 
 ## 2. Running phylogenetic simulations and inference
 
