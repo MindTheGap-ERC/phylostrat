@@ -1,2 +1,0 @@
-ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/sim_data/fbd_gap_est" "sim_data/" --overwrite
-ibridges download "irods://nluu11p/home/research-mindthegap/phylostrat/rb_output/fbd_gap_est" "rb_output/" --overwrite
