@@ -4,7 +4,6 @@ Each step of the analysis can be performed independently, though runtimes vary b
 
 ## Required software
 
-TODO: check exact versions
 * bash
 * revBayes as `rb`
 * R version 4.5.3

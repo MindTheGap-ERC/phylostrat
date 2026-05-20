@@ -10,6 +10,14 @@ email: n.h.hohmann [at] uu.nl\
 Web page: [uu.nl/staff/NHohmann](https://www.uu.nl/staff/NHHohmann)\
 Orcid: [0000-0003-1559-1838](https://orcid.org/0000-0003-1559-1838)
 
+__Emilia Jarochowska__  
+Utrecht University  
+email: e.b.jarochowska [at] uu.nl  
+Web page: [www.uu.nl/staff/EBJarochowska](https://www.uu.nl/staff/EBJarochowska)  
+ORCID: [0000-0001-8937-9405](https://orcid.org/0000-0001-8937-9405)
+
+__Raoul Schram__  
+Utrecht University
 
 ## Requirements and reproduction
 
