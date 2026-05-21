@@ -3,7 +3,7 @@
 # Usage:
 # ./download_yoda.sh https://doi.org/10.xxxx/xxxxx
 
-DOI_URL="$1"
+DOI_URL=https://doi.org/10.24416/UU01-6ON0QY
 
 if [ -z "$DOI_URL" ]; then
     echo "Usage: $0 <DOI_URL>"

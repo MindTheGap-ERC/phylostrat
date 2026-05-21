@@ -17,7 +17,8 @@ Each step of the analysis can be performed independently, though runtimes vary b
 **Data produced:** 
 * raw data under `data/strat/` (saved online)
 * figures of stratigraphic architectures under `figs/`
-* age-depth models stored as `.csv` under `data/strat/selected_adms.csv` (checked into version control)
+* age-depth models stored as `.csv` under `data/strat/selected_adms.csv` (checked into version control)  
+
 **Approximate runtime:** decaminutes
 
 Start julia via
@@ -112,7 +113,13 @@ in the console to generate the figures.
 ## 6. Downloading data
 
 **Data required:** None  
-**Data generated:** trace files and stratigraphic architectures under `data/`  
-**Approx. runtime:** decaminutes (depending on your internet speed)  
+**Data generated:** trace files, simulated data, MAP trees and stratigraphic architectures under `yoda_download/`  
+**Approx. runtime:** decaminutes to hours (depending on your internet speed)  
 
-TBA, this depends on data being archived on YoDA
+Run
+
+```
+bash code/fetch_data.sh
+```
+
+This will download all archived data into `yoda_download/`. Move this data to `data/` to reuse it for the other steps of the workflow.
