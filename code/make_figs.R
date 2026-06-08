@@ -73,7 +73,7 @@ plot_tree_stats_model_violation = function(){
     labs(title = "RF distance MAP - truth",
          x = nchar_axis_label,
          y = "RF Distance [-]",
-         fill = "Analysis")+
+         fill = "Analysis") +
     guides(color = "none")  +
     ylim(0, 1)
     
@@ -115,12 +115,12 @@ plot_tree_stats_model_violation = function(){
                 alpha = 0.6) +
     labs(title = "Divergence times",
          x = nchar_axis_label,
-         y = "95 % coverage freq. [-]",
+         y = "95 % HDP coverage freq. [-]",
          fill = "Analysis") +
     guides(color = "none") +
-    ylim(0,1) +
-    geom_hline(yintercept = 0.95,
-               linetype = "dashed")
+    ylim(0,1) # +
+    # geom_hline(yintercept = 0.95,
+    #            linetype = "dashed")
   
   p4 = df_stat |>
     filter(!is.na(mean_sa_cov_freq)) |>
@@ -141,9 +141,9 @@ plot_tree_stats_model_violation = function(){
          y = "95 % id. freq. [-]",
          x = nchar_axis_label,
          fill = "Analysis") +
-    guides(color = "none") +
-    geom_hline(yintercept = 0.95,
-               linetype = "dashed")
+    guides(color = "none") #+
+    # geom_hline(yintercept = 0.95,
+    #            linetype = "dashed")
   
   p = ggpubr::ggarrange(p1, p2, p3, p4, 
                         ncol = 2,
@@ -221,13 +221,13 @@ plot_tree_stats_sampling_strategy = function(){
                 alpha = 0.6) +
     labs(title = "Divergence times",
          x = nchar_axis_label,
-         y = "95 % coverage freq. [-]",
+         y = "95 % HDP coverage freq. [-]",
          fill = "Analysis") +
     guides(color = "none") +
-    ylim(0,1) +
-    geom_hline(yintercept = 0.95,
-               linetype = "dashed")
-  
+    ylim(0,1) #+
+    # geom_hline(yintercept = 0.95,
+    #            linetype = "dashed")
+    # 
   p4 = df_stat |>
     filter(!is.na(mean_sa_cov_freq)) |>
     mutate(across(c(nchar, analysis), factor)) |>
@@ -247,10 +247,10 @@ plot_tree_stats_sampling_strategy = function(){
          y = "95 % id. freq. [-]",
          x = nchar_axis_label,
          fill = "Analysis") +
-    guides(color = "none") +
-    geom_hline(yintercept = 0.95,
-          linetype = "dashed")
-  
+    guides(color = "none")  #+
+    # geom_hline(yintercept = 0.95,
+    #       linetype = "dashed")
+    # 
   p = ggpubr::ggarrange(p1, p2, p3, p4, 
                         ncol = 2,
                         nrow = 2,
@@ -517,7 +517,7 @@ ggsave(filename = "figs/ms/param_comp_sampling_strategies.png",
        height = fig_height_2_col_max_cm,
        units = "cm")
 
-plot_coverage_freq = function(){
+plot_coverage = function(){
   ylim_min = 0.5
   p1 = df |> 
     select(spec_covered, analysis, nchar) |>
@@ -527,7 +527,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "90 % coverage freq.",
+         y = "90 % CR coverage",
          title = "Speciation rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -543,7 +543,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed")+
     labs(x = nchar_axis_label,
-         y = "90 % coverage freq.",
+         y = "90 % CR coverage",
          title = "Extinction rate",
          color = "Analysis") +
     ylim(ylim_min, 1)  +
@@ -558,7 +558,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "90 % coverage freq.",
+         y = "90 % CR coverage",
          title = "Mol. clock rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -574,7 +574,7 @@ plot_coverage_freq = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "90 % coverage freq.",
+         y = "90 % CR coverage",
          title = "Morph. clock rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -590,8 +590,8 @@ plot_coverage_freq = function(){
   
 }
 
-ggsave(filename = "figs/sm/coverage_freq.png",
-       plot = plot_coverage_freq(),
+ggsave(filename = "figs/sm/coverage.png",
+       plot = plot_coverage(),
        bg = "white",
        width = fig_height_2_col_max_cm,
        height = 14,
