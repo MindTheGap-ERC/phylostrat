@@ -527,7 +527,7 @@ plot_coverage = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "90 % CR coverage",
+         y = "Coverage",
          title = "Speciation rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -543,7 +543,7 @@ plot_coverage = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed")+
     labs(x = nchar_axis_label,
-         y = "90 % CR coverage",
+         y = "Coverage",
          title = "Extinction rate",
          color = "Analysis") +
     ylim(ylim_min, 1)  +
@@ -558,7 +558,7 @@ plot_coverage = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "90 % CR coverage",
+         y = "Coverage",
          title = "Mol. clock rate",
          color = "Analysis",
          shape = "Analysis") +
@@ -574,7 +574,7 @@ plot_coverage = function(){
     geom_point(position = position_jitter(width = 0.05, height = 0)) +
     geom_hline(yintercept = 0.9, linetype = "dashed") +
     labs(x = nchar_axis_label,
-         y = "90 % CR coverage",
+         y = "Coverage",
          title = "Morph. clock rate",
          color = "Analysis",
          shape = "Analysis") +
