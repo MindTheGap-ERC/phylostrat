@@ -115,7 +115,7 @@ plot_tree_stats_model_violation = function(){
                 alpha = 0.6) +
     labs(title = "Divergence times",
          x = nchar_axis_label,
-         y = "95 % HDP coverage freq. [-]",
+         y = "95% HDP coverage freq. [-]",
          fill = "Analysis") +
     guides(color = "none") +
     ylim(0,1) # +
@@ -138,7 +138,7 @@ plot_tree_stats_model_violation = function(){
                 alpha = 0.6) +
     ylim(0,1) + 
     labs(title = "SA identification",
-         y = "95 % id. freq. [-]",
+         y = "95% id. freq. [-]",
          x = nchar_axis_label,
          fill = "Analysis") +
     guides(color = "none") #+
@@ -221,7 +221,7 @@ plot_tree_stats_sampling_strategy = function(){
                 alpha = 0.6) +
     labs(title = "Divergence times",
          x = nchar_axis_label,
-         y = "95 % HDP coverage freq. [-]",
+         y = "95% HDP coverage freq. [-]",
          fill = "Analysis") +
     guides(color = "none") +
     ylim(0,1) #+
@@ -244,7 +244,7 @@ plot_tree_stats_sampling_strategy = function(){
                 alpha = 0.6) +
     ylim(0,1) + 
     labs(title = "SA identification",
-         y = "95 % id. freq. [-]",
+         y = "95% id. freq. [-]",
          x = nchar_axis_label,
          fill = "Analysis") +
     guides(color = "none")  #+
