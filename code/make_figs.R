@@ -653,8 +653,88 @@ ggsave(filename = "figs/ms/strat_info.png",
        height = 7,
        units = "cm")
 
+#### Precision vs. accuracy ####
+df_median$ext_hdi_rel = (as.numeric(df_median$extinction_rate_95.) - as.numeric(df_median$extinction_rate_5.))/mu
+df_median$spec_hdi_rel = (as.numeric(df_median$speciation_rate_95.) - as.numeric(df_median$speciation_rate_5.))/lambda
+
+df_median$analysis = factor(df_median$analysis)
+df_median$nchar = factor(df_median$nchar)
 
 
+plot_acc_vs_prec_ext = function(){
+  plot_comp = function(nchars){
+    p = df_median |> 
+      filter(nchar == nchars) |>
+      ggplot(aes(x = ext_rel_error,
+                 y = ext_hdi_rel,
+                 shape = ext_covered, 
+                 color = analysis)) +
+      geom_point() +
+      scale_color_discrete(labels = scen_axis_labels,
+                           name = "Case")  +
+      labs(title = paste(nchars , "Morph. Char."),
+           x = "Rel. error ext. rate [-]",
+           y = "Rel. HDI width ext. rate [-]") +
+      guides(shape = "none") +
+      ylim(range(df_median$ext_hdi_rel)) +
+      xlim(range(df_median$ext_rel_error))
+    return(p)
+  }
+
+  p = ggpubr::ggarrange(plot_comp("30"),
+                        plot_comp("100"),
+                        plot_comp("300"),
+                        plot_comp("1000"),
+                        common.legend = TRUE,
+                        labels = LETTERS[1:4],
+                        legend = "bottom")
+  return(p)
+}
+
+plot_acc_vs_prec_spec = function(){
+  plot_comp = function(nchars){
+    p = df_median |> 
+      filter(nchar == nchars) |>
+      ggplot(aes(x = spec_rel_error,
+                 y = spec_hdi_rel,
+                 shape = spec_covered, 
+                 color = analysis)) +
+      geom_point() +
+      scale_color_discrete(labels = scen_axis_labels,
+                           name = "Case")  +
+      labs(title = paste(nchars , "Morph. Char."),
+           x = "Rel. error spec. rate [-]",
+           y = "Rel. HDI width spec. rate [-]") +
+      guides(shape = "none") +
+      ylim(range(df_median$spec_hdi_rel)) +
+      xlim(range(df_median$spec_rel_error))
+    return(p)
+  }
+  
+  p = ggpubr::ggarrange(plot_comp("30"),
+                        plot_comp("100"),
+                        plot_comp("300"),
+                        plot_comp("1000"),
+                        common.legend = TRUE,
+                        labels = LETTERS[1:4],
+                        legend = "bottom")
+  return(p)
+}
+
+
+ggsave(filename = "figs/sm/ext_acc_vs_prec.png",
+       plot = plot_acc_vs_prec_ext(),
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = fig_width_2col_cm,
+       units = "cm")
+
+ggsave(filename = "figs/sm/spec_acc_vs_prec.png",
+       plot = plot_acc_vs_prec_spec(),
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = fig_width_2col_cm,
+       units = "cm")
 # doodles for comparing the ranges
 d = df |>
   select(analysis, id, nchar, speciation_rate_5., speciation_rate_95., speciation_rate_50.) |>
