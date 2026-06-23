@@ -656,6 +656,10 @@ ggsave(filename = "figs/ms/strat_info.png",
 #### Precision vs. accuracy ####
 df_median$ext_hdi_rel = (as.numeric(df_median$extinction_rate_95.) - as.numeric(df_median$extinction_rate_5.))/mu
 df_median$spec_hdi_rel = (as.numeric(df_median$speciation_rate_95.) - as.numeric(df_median$speciation_rate_5.))/lambda
+df_median$morpho_hdi_rel = (as.numeric(df_median$branch_rates_morpho_95.) - as.numeric(df_median$branch_rates_morpho_5.))/clock_rate_morph
+df_median$mol_hdi_rel = (as.numeric(df_median$branch_rates_mol_95.) - as.numeric(df_median$branch_rates_mol_5.))/clock_rate_mol
+
+
 
 df_median$analysis = factor(df_median$analysis)
 df_median$nchar = factor(df_median$nchar)
@@ -674,7 +678,7 @@ plot_acc_vs_prec_ext = function(){
                            name = "Case")  +
       labs(title = paste(nchars , "Morph. Char."),
            x = "Rel. error ext. rate [-]",
-           y = "Rel. HDI width ext. rate [-]") +
+           y = "Rel. CI width ext. rate [-]") +
       guides(shape = "none") +
       ylim(range(df_median$ext_hdi_rel)) +
       xlim(range(df_median$ext_rel_error))
@@ -704,7 +708,7 @@ plot_acc_vs_prec_spec = function(){
                            name = "Case")  +
       labs(title = paste(nchars , "Morph. Char."),
            x = "Rel. error spec. rate [-]",
-           y = "Rel. HDI width spec. rate [-]") +
+           y = "Rel. CI width spec. rate [-]") +
       guides(shape = "none") +
       ylim(range(df_median$spec_hdi_rel)) +
       xlim(range(df_median$spec_rel_error))
@@ -721,6 +725,65 @@ plot_acc_vs_prec_spec = function(){
   return(p)
 }
 
+plot_acc_vs_prec_morph = function(){
+  plot_comp = function(nchars){
+    p = df_median |> 
+      filter(nchar == nchars) |>
+      ggplot(aes(x = branch_rates_morpho_rel_error,
+                 y = morpho_hdi_rel,
+                 shape = branch_rates_morpho_covered, 
+                 color = analysis)) +
+      geom_point() +
+      scale_color_discrete(labels = scen_axis_labels,
+                           name = "Case")  +
+      labs(title = paste(nchars , "Morph. Char."),
+           x = "Rel. error morph. clock rate [-]",
+           y = "Rel. CI width morph. clock rate [-]") +
+      guides(shape = "none") +
+      ylim(range(df_median$morpho_hdi_rel)) +
+      xlim(range(df_median$branch_rates_morpho_rel_error))
+    return(p)
+  }
+  
+  p = ggpubr::ggarrange(plot_comp("30"),
+                        plot_comp("100"),
+                        plot_comp("300"),
+                        plot_comp("1000"),
+                        common.legend = TRUE,
+                        labels = LETTERS[1:4],
+                        legend = "bottom")
+  return(p)
+}
+
+plot_acc_vs_prec_mol = function(){
+  plot_comp = function(nchars){
+    p = df_median |> 
+      filter(nchar == nchars) |>
+      ggplot(aes(x = branch_rates_mol_rel_error,
+                 y = mol_hdi_rel,
+                 shape = branch_rates_mol_covered, 
+                 color = analysis)) +
+      geom_point() +
+      scale_color_discrete(labels = scen_axis_labels,
+                           name = "Case")  +
+      labs(title = paste(nchars , "Morph. Char."),
+           x = "Rel. error mol. clock rate [-]",
+           y = "Rel. CI width mol. clock rate [-]") +
+      guides(shape = "none") +
+      ylim(range(df_median$mol_hdi_rel)) +
+      xlim(range(df_median$branch_rates_mol_rel_error))
+    return(p)
+  }
+  
+  p = ggpubr::ggarrange(plot_comp("30"),
+                        plot_comp("100"),
+                        plot_comp("300"),
+                        plot_comp("1000"),
+                        common.legend = TRUE,
+                        labels = LETTERS[1:4],
+                        legend = "bottom")
+  return(p)
+}
 
 ggsave(filename = "figs/sm/ext_acc_vs_prec.png",
        plot = plot_acc_vs_prec_ext(),
@@ -735,6 +798,21 @@ ggsave(filename = "figs/sm/spec_acc_vs_prec.png",
        width = fig_width_2col_cm,
        height = fig_width_2col_cm,
        units = "cm")
+
+ggsave(filename = "figs/sm/morph_clock_acc_vs_prec.png",
+       plot = plot_acc_vs_prec_morph(),
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = fig_width_2col_cm,
+       units = "cm")
+
+ggsave(filename = "figs/sm/mol_clock_acc_vs_prec.png",
+       plot = plot_acc_vs_prec_mol(),
+       bg = "white",
+       width = fig_width_2col_cm,
+       height = fig_width_2col_cm,
+       units = "cm")
+
 # doodles for comparing the ranges
 d = df |>
   select(analysis, id, nchar, speciation_rate_5., speciation_rate_95., speciation_rate_50.) |>
