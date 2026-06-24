@@ -661,7 +661,9 @@ df_median$mol_hdi_rel = (as.numeric(df_median$branch_rates_mol_95.) - as.numeric
 
 
 
-df_median$analysis = factor(df_median$analysis)
+df_median$analysis = factor(df_median$analysis,
+                            levels =names(scen_axis_labels),
+                            ordered = TRUE)
 df_median$nchar = factor(df_median$nchar)
 
 
