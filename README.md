@@ -63,7 +63,7 @@ Apache 2.0, see LICENSE file for license text.
 
 To cite this repository, please use
 
-* Hohmann, N., & Jarochowska, E. (2026). Phylogenetic inference from an incomplete fossil record: Simulation and inference data: Supplementary Code. Zenodo. https://doi.org/10.5281/zenodo.20393226
+* Hohmann, N., & Jarochowska, E. (2026). Phylogenetic inference from an incomplete fossil record: Supplementary Code. Zenodo. https://doi.org/10.5281/zenodo.20393226
 
 To cite the associated data, please use
 
