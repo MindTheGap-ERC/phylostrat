@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20393227.svg)](https://doi.org/10.5281/zenodo.20393227)
 
-Effects of stratigraphy of phylogenetic inference
+Phylogenetic inference from an incomplete fossil record: Supplementary Code
 
 ## Authors
 
