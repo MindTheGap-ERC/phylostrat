@@ -7,8 +7,35 @@ library(dplyr)
 library(scales)
 library(admtools)
 
-fig_width_2col_cm = 18
-fig_height_2_col_max_cm = 17
+#### Print settings (dissertation) ####
+fig_width_mm = 116   # printing width
+fig_dpi = 600        # raster resolution -> 116 mm = 2740 px
+base_font_pt = 8     # axis titles; other text is set relative to this
+
+# base_size also scales default line widths (base_size / 22) and margins
+theme_set(
+  theme_grey(base_size = base_font_pt) +
+    theme(axis.text = element_text(size = rel(0.875)),    # 7 pt tick labels (default 6.4 pt)
+          legend.text = element_text(size = rel(0.875)),  # 7 pt
+          legend.title = element_text(size = rel(1)),     # 8 pt
+          plot.title = element_text(size = rel(1.125)),   # 9 pt panel titles
+          legend.key.size = unit(3.5, "mm"))
+)
+
+# panel letters: ggpubr default is 14 pt, too large at this width
+arrange_panels = function(...){
+  ggpubr::ggarrange(..., font.label = list(size = 10, face = "bold"))
+}
+
+save_fig = function(filename, plot, height_mm, width_mm = fig_width_mm){
+  ggsave(filename = filename,
+         plot = plot,
+         bg = "white",
+         width = width_mm,
+         height = height_mm,
+         units = "mm",
+         dpi = fig_dpi)
+}
 
 
 scen_axis_labels = c("base" = "cFBD +\nCFS",
@@ -41,12 +68,9 @@ plot_n_converged_runs = function(){
     theme(legend.position = "bottom")
   return(p)
 }
-ggsave(filename = "figs/sm/converged_runs.png",
-       plot = plot_n_converged_runs(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = 10,
-       units = "cm")
+save_fig(filename = "figs/sm/converged_runs.png",
+         plot = plot_n_converged_runs(),
+         height_mm = 75)
 
 
 #### Tree figures ####
@@ -145,7 +169,7 @@ plot_tree_stats_model_violation = function(){
     # geom_hline(yintercept = 0.95,
     #            linetype = "dashed")
   
-  p = ggpubr::ggarrange(p1, p2, p3, p4, 
+  p = arrange_panels(p1, p2, p3, p4, 
                         ncol = 2,
                         nrow = 2,
                         common.legend = TRUE,
@@ -153,12 +177,9 @@ plot_tree_stats_model_violation = function(){
                         legend = "bottom")
 }
 
-ggsave(filename = "figs/ms/tree_statistics_model_violation.png",
-       plot = plot_tree_stats_model_violation(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = 15,
-       units = "cm")
+save_fig(filename = "figs/ms/tree_statistics_model_violation.png",
+         plot = plot_tree_stats_model_violation(),
+         height_mm = 110)
 
 plot_tree_stats_sampling_strategy = function(){
   dodge = 0.6
@@ -251,7 +272,7 @@ plot_tree_stats_sampling_strategy = function(){
     # geom_hline(yintercept = 0.95,
     #       linetype = "dashed")
     # 
-  p = ggpubr::ggarrange(p1, p2, p3, p4, 
+  p = arrange_panels(p1, p2, p3, p4, 
                         ncol = 2,
                         nrow = 2,
                         common.legend = TRUE,
@@ -259,12 +280,9 @@ plot_tree_stats_sampling_strategy = function(){
                         legend = "bottom")
 }
 
-ggsave(filename = "figs/ms/tree_statistics_sampling_strategy.png",
-       plot = plot_tree_stats_sampling_strategy(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = 15,
-       units = "cm")
+save_fig(filename = "figs/ms/tree_statistics_sampling_strategy.png",
+         plot = plot_tree_stats_sampling_strategy(),
+         height_mm = 110)
 
 #### Posterior of continuous characters ####
 df = df_median 
@@ -377,7 +395,7 @@ plot_base_vs_strat = function(){
          fill = "Analysis") +
     guides(color = "none")
   
-  p = ggpubr::ggarrange(p2, p1, p5, p4, p3,
+  p = arrange_panels(p2, p1, p5, p4, p3,
                         ncol = 2,
                         nrow = 3,
                         common.legend = TRUE,
@@ -388,12 +406,9 @@ plot_base_vs_strat = function(){
 
 p = plot_base_vs_strat()
 p
-ggsave(filename = "figs/ms/param_com_model_violations.png",
-       plot = plot_base_vs_strat(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = fig_height_2_col_max_cm,
-       units = "cm")
+save_fig(filename = "figs/ms/param_com_model_violations.png",
+         plot = plot_base_vs_strat(),
+         height_mm = 150)
 
 
 plot_sampling_strategies_comp = function(){
@@ -499,7 +514,7 @@ plot_sampling_strategies_comp = function(){
          fill = "Analysis") +
     guides(color = "none")
   
-  p = ggpubr::ggarrange(p2, p1, p5, p4, p3,
+  p = arrange_panels(p2, p1, p5, p4, p3,
                         ncol = 2,
                         nrow = 3,
                         common.legend = TRUE,
@@ -510,12 +525,9 @@ plot_sampling_strategies_comp = function(){
 p = plot_sampling_strategies_comp()
 p
 
-ggsave(filename = "figs/ms/param_comp_sampling_strategies.png",
-       plot = plot_sampling_strategies_comp(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = fig_height_2_col_max_cm,
-       units = "cm")
+save_fig(filename = "figs/ms/param_comp_sampling_strategies.png",
+         plot = plot_sampling_strategies_comp(),
+         height_mm = 150)
 
 plot_coverage = function(){
   ylim_min = 0.5
@@ -582,7 +594,7 @@ plot_coverage = function(){
     scale_color_discrete(labels = scen_axis_labels) +
     scale_shape_discrete(labels = scen_axis_labels)
   
-  p = ggpubr::ggarrange(p1, p2, p3, p4,
+  p = arrange_panels(p1, p2, p3, p4,
                         common.legend = TRUE,
                         legend = "bottom",
                         labels = LETTERS[1:4])
@@ -590,12 +602,9 @@ plot_coverage = function(){
   
 }
 
-ggsave(filename = "figs/sm/coverage.png",
-       plot = plot_coverage(),
-       bg = "white",
-       width = fig_height_2_col_max_cm,
-       height = 14,
-       units = "cm")
+save_fig(filename = "figs/sm/coverage.png",
+         plot = plot_coverage(),
+         height_mm = 105)
 
 #### Strat Figure ####
 df_strat = read.csv("data/strat/selected_adms.csv")
@@ -617,12 +626,11 @@ plot_strat_fig = function(){
                    sl = c(rep("Miller et al.", length(t_mod)), rep("Sinusoid", length(t_mod))))
   p1 = df2 |> 
     ggplot(aes(x = t, y = h, color = sl)) +
-    geom_line(linewidth = 1.5) +
+    geom_line(linewidth = 0.8) +
     ggtitle("Age-depth models") +
     labs(x = "Elapsed simulation time [Myr]",
          y = "Stratigraphic height [m]",
-         color = "Sea level curve") +
-    theme(legend.position = c(0.2 ,0.8))
+         color = "Sea level curve")
   
   df3 = data.frame(dur = c(get_hiat_duration(adm_miller),
                            get_hiat_duration(adm_sinusoid)),
@@ -634,24 +642,22 @@ plot_strat_fig = function(){
     labs(x = "Gap duration [Myr]",
          y = "No. of gaps",
          fill = "Sea level curve") +
-    theme(legend.position = c(0.8, 0.8)) +
     ggtitle("Gap duration")
   
-  p = ggpubr::ggarrange(p1, p2, 
+  p = arrange_panels(p1, p2, 
                         ncol = 2, 
                         nrow = 1, 
-                        labels = LETTERS[1:2])
+                        labels = LETTERS[1:2],
+                        common.legend = TRUE,
+                        legend = "bottom")
   
   return(p)
 }
 
 p = plot_strat_fig()
-ggsave(filename = "figs/ms/strat_info.png",
-       plot = plot_strat_fig(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = 7,
-       units = "cm")
+save_fig(filename = "figs/ms/strat_info.png",
+         plot = plot_strat_fig(),
+         height_mm = 65)
 
 #### Precision vs. accuracy ####
 df_median$ext_hdi_rel = (as.numeric(df_median$extinction_rate_95.) - as.numeric(df_median$extinction_rate_5.))/mu
@@ -687,7 +693,7 @@ plot_acc_vs_prec_ext = function(){
     return(p)
   }
 
-  p = ggpubr::ggarrange(plot_comp("30"),
+  p = arrange_panels(plot_comp("30"),
                         plot_comp("100"),
                         plot_comp("300"),
                         plot_comp("1000"),
@@ -717,7 +723,7 @@ plot_acc_vs_prec_spec = function(){
     return(p)
   }
   
-  p = ggpubr::ggarrange(plot_comp("30"),
+  p = arrange_panels(plot_comp("30"),
                         plot_comp("100"),
                         plot_comp("300"),
                         plot_comp("1000"),
@@ -747,7 +753,7 @@ plot_acc_vs_prec_morph = function(){
     return(p)
   }
   
-  p = ggpubr::ggarrange(plot_comp("30"),
+  p = arrange_panels(plot_comp("30"),
                         plot_comp("100"),
                         plot_comp("300"),
                         plot_comp("1000"),
@@ -777,7 +783,7 @@ plot_acc_vs_prec_mol = function(){
     return(p)
   }
   
-  p = ggpubr::ggarrange(plot_comp("30"),
+  p = arrange_panels(plot_comp("30"),
                         plot_comp("100"),
                         plot_comp("300"),
                         plot_comp("1000"),
@@ -787,33 +793,21 @@ plot_acc_vs_prec_mol = function(){
   return(p)
 }
 
-ggsave(filename = "figs/sm/ext_acc_vs_prec.png",
-       plot = plot_acc_vs_prec_ext(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = fig_width_2col_cm,
-       units = "cm")
+save_fig(filename = "figs/sm/ext_acc_vs_prec.png",
+         plot = plot_acc_vs_prec_ext(),
+         height_mm = 116)
 
-ggsave(filename = "figs/sm/spec_acc_vs_prec.png",
-       plot = plot_acc_vs_prec_spec(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = fig_width_2col_cm,
-       units = "cm")
+save_fig(filename = "figs/sm/spec_acc_vs_prec.png",
+         plot = plot_acc_vs_prec_spec(),
+         height_mm = 116)
 
-ggsave(filename = "figs/sm/morph_clock_acc_vs_prec.png",
-       plot = plot_acc_vs_prec_morph(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = fig_width_2col_cm,
-       units = "cm")
+save_fig(filename = "figs/sm/morph_clock_acc_vs_prec.png",
+         plot = plot_acc_vs_prec_morph(),
+         height_mm = 116)
 
-ggsave(filename = "figs/sm/mol_clock_acc_vs_prec.png",
-       plot = plot_acc_vs_prec_mol(),
-       bg = "white",
-       width = fig_width_2col_cm,
-       height = fig_width_2col_cm,
-       units = "cm")
+save_fig(filename = "figs/sm/mol_clock_acc_vs_prec.png",
+         plot = plot_acc_vs_prec_mol(),
+         height_mm = 116)
 
 # doodles for comparing the ranges
 d = df |>

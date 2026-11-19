@@ -11,11 +11,11 @@ using HDF5
 const na = [CartesianIndex()]
 
 #### Print settings ####
-# Figures are designed at final print size for a B5 dissertation (176 x 250 mm page).
+# Figures are designed at final print size (116 mm wide, matching the R figures in code/make_figs.R).
 # Figure sizes are given in pt (1 pt = 1/72 in), so font sizes and line widths below
 # correspond to their printed size. Raster output is written at `DPI`.
 const MM = 72 / 25.4                 # pt per mm
-const TEXT_WIDTH = 130 * MM          # usable text width on a B5 page [pt]
+const TEXT_WIDTH = 116 * MM          # printing width [pt]
 const DPI = 600
 const PX_PER_UNIT = DPI / 72
 
@@ -26,14 +26,14 @@ const LW_SAMPLING = 0.8              # sampling position
 # original 1200 px wide figure. Scale to keep their original size relative to the figure.
 const LW_UNCONFORMITY = TEXT_WIDTH / 1200
 const LW_SEALEVEL_PROFILE = 2.5       # end sea level in sediment profiles (half of CarboKitten's 5)
-const PANEL_LABEL_SIZE = 11
+const PANEL_LABEL_SIZE = 10           # as ggpubr panel letters in R
 
 const PRINT_THEME = Theme(
     fontsize = 8,
     figure_padding = (2, 6, 2, 2),
     backgroundcolor = :white,
     Axis = (
-        titlesize = 8.5,
+        titlesize = 9,                # as plot.title in R
         titlefont = :bold,
         titlealign = :left,
         xlabelsize = 8,
@@ -149,18 +149,18 @@ function my_profile!(ax::Axis, header::Header, data::DataSlice, time_lines, samp
     return ax
 end
 
-facies_colorbar!(pos, ft) = Colorbar(pos, ft; vertical = false, flipaxis = false,
+facies_colorbar!(pos, ft; width = Relative(0.6)) = Colorbar(pos, ft; vertical = false, flipaxis = false,
     ticks = FACIES_TICKS, label = FACIES_LABEL,
-    width = Relative(0.6), tellheight = true)
+    width = width, tellheight = true)
 
 function plot_scenario_comparison()
-    fig = Figure(size = (TEXT_WIDTH, 120 * MM))
+    fig = Figure(size = (TEXT_WIDTH, 115 * MM))
 
     # column headers
     Label(fig[0, 1], "Scenario 1: Miller et al. (2020) sea level",
-        fontsize = 9, font = :bold, tellwidth = false)
+        fontsize = 8.5, font = :bold, tellwidth = false)
     Label(fig[0, 2], "Scenario 2: sinusoidal sea level",
-        fontsize = 9, font = :bold, tellwidth = false)
+        fontsize = 8.5, font = :bold, tellwidth = false)
 
     header, data = read_slice("data/strat/miller_2020.h5", :profile)
     ax_miller_profile = Axis(fig[1, 1], title = "Sediment profile")
@@ -197,9 +197,9 @@ end
 function my_summary_plot(input::String, fig_name::String, time_lines, sampling_position, case)
     header, data = read_slice(input, :profile)
 
-    fig = Figure(size = (TEXT_WIDTH, 125 * MM))
+    fig = Figure(size = (TEXT_WIDTH, 112 * MM))
 
-    Label(fig[0, 1:3], case, fontsize = 9, font = :bold, tellwidth = false)
+    Label(fig[0, 1:3], case, fontsize = 8.5, font = :bold, tellwidth = false)
 
     ax_profile = Axis(fig[1, 1], title = "Sediment profile")
     my_profile!(ax_profile, header, data, time_lines, sampling_position)
@@ -224,7 +224,7 @@ function my_summary_plot(input::String, fig_name::String, time_lines, sampling_p
         title = "Eustatic sea level",
         xlabel = "Sea level [m]",
         ylabel = time_label,
-        xticks = LinearTicks(3),
+        xticks = LinearTicks(2),
         limits = (nothing, (header.axes.t[1] |> in_units_of(u"Myr"), header.axes.t[end] |> in_units_of(u"Myr"))))
     lines!(ax_ws, header.sea_level |> in_units_of(u"m"), header.axes.t |> in_units_of(u"Myr"),
         linewidth = 0.6, color = :blue) # thin: high-frequency signal
@@ -237,7 +237,7 @@ function my_summary_plot(input::String, fig_name::String, time_lines, sampling_p
     # shared time axis: drop redundant labels on the sea level panel
     hideydecorations!(ax_ws, ticks = false, grid = false)
 
-    facies_colorbar!(fig[3, 1], df)
+    facies_colorbar!(fig[3, 1], df; width = Relative(0.9))
 
     colsize!(fig.layout, 1, Relative(0.68))
     rowgap!(fig.layout, 6)
